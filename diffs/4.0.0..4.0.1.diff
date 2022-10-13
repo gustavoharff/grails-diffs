@@ -1,0 +1,8 @@
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index 73b7708..dfbc02d 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,2 +1,2 @@
+-grailsVersion=4.0.0
++grailsVersion=4.0.1
+ gorm.version=7.0.2.RELEASE
