@@ -1,0 +1,113 @@
+diff --git a/myapp/build.gradle b/myapp/build.gradle
+index 8cab410..b58a86c 100644
+--- a/myapp/build.gradle
++++ b/myapp/build.gradle
+@@ -4,8 +4,8 @@ buildscript {
+     }
+     dependencies {
+         classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
+-        classpath "org.grails.plugins:hibernate5:7.1.0"
+-        classpath "org.grails.plugins:views-gradle:2.1.0"
++        classpath "org.grails.plugins:hibernate5:7.2.1"
++        classpath "org.grails.plugins:views-gradle:2.2.0"
+     }
+ }
+ 
+@@ -51,7 +51,7 @@ dependencies {
+     implementation "org.grails.plugins:cache"
+     implementation "org.grails.plugins:async"
+     implementation "org.grails.plugins:hibernate5"
+-    implementation "org.hibernate:hibernate-core:5.5.7.Final"
++    implementation "org.hibernate:hibernate-core:5.6.3.Final"
+     implementation "org.grails.plugins:events"
+     implementation "org.grails.plugins:views-json"
+     implementation "org.grails.plugins:views-json-templates"
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index 47997f8..2ab1369 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,7 +1,7 @@
+-grailsVersion=5.0.2
+-grailsGradlePluginVersion=5.0.0
++grailsVersion=5.1.2
++grailsGradlePluginVersion=5.1.1
+ groovyVersion=3.0.7
+-gorm.version=7.1.0
++gorm.version=7.1.2
+ org.gradle.daemon=true
+ org.gradle.parallel=true
+ org.gradle.jvmargs=-Dfile.encoding=UTF-8 -Xmx1024M
+diff --git a/myapp/grails-app/conf/logback.groovy b/myapp/grails-app/conf/logback.groovy
+deleted file mode 100644
+index b835215..0000000
+--- a/myapp/grails-app/conf/logback.groovy
++++ /dev/null
+@@ -1,37 +0,0 @@
+-import grails.util.BuildSettings
+-import grails.util.Environment
+-import org.springframework.boot.logging.logback.ColorConverter
+-import org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter
+-
+-import java.nio.charset.StandardCharsets
+-
+-conversionRule 'clr', ColorConverter
+-conversionRule 'wex', WhitespaceThrowableProxyConverter
+-
+-// See http://logback.qos.ch/manual/groovy.html for details on configuration
+-appender('STDOUT', ConsoleAppender) {
+-    encoder(PatternLayoutEncoder) {
+-        charset = StandardCharsets.UTF_8
+-
+-        pattern =
+-                '%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} ' + // Date
+-                        '%clr(%5p) ' + // Log level
+-                        '%clr(---){faint} %clr([%15.15t]){faint} ' + // Thread
+-                        '%clr(%-40.40logger{39}){cyan} %clr(:){faint} ' + // Logger
+-                        '%m%n%wex' // Message
+-    }
+-}
+-
+-def targetDir = BuildSettings.TARGET_DIR
+-if (Environment.isDevelopmentMode() && targetDir != null) {
+-    appender("FULL_STACKTRACE", FileAppender) {
+-        file = "${targetDir}/stacktrace.log"
+-        append = true
+-        encoder(PatternLayoutEncoder) {
+-            charset = StandardCharsets.UTF_8
+-            pattern = "%level %logger - %msg%n"
+-        }
+-    }
+-    logger("StackTrace", ERROR, ['FULL_STACKTRACE'], false)
+-}
+-root(ERROR, ['STDOUT'])
+diff --git a/myapp/grails-app/conf/logback.xml b/myapp/grails-app/conf/logback.xml
+new file mode 100644
+index 0000000..f4e7783
+--- /dev/null
++++ b/myapp/grails-app/conf/logback.xml
+@@ -0,0 +1,17 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<configuration>
++
++    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
++    <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
++
++    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
++        <encoder>
++            <charset>UTF-8</charset>
++            <pattern>'%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wex'</pattern>
++        </encoder>
++    </appender>
++
++    <root level="error">
++        <appender-ref ref="STDOUT" />
++    </root>
++</configuration>
+\ No newline at end of file
+diff --git a/myapp/settings.gradle b/myapp/settings.gradle
+new file mode 100644
+index 0000000..6d35791
+--- /dev/null
++++ b/myapp/settings.gradle
+@@ -0,0 +1 @@
++rootProject.name = 'myapp'
