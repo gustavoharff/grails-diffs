@@ -11,19 +11,19 @@ BaseBranch=base
 ReleasesFile=RELEASES
 
 function guardMissingArg () {
-    if [ "$#" -ne 1 ]; then
+    if [ "$#" -ne 2 ]; then
         echo "Release argument missing."
         exit "$ErrorReleaseArgMissing"
     fi
 }
 
 function guardExisting () {
-    if grep -qFx "$newRelease" "$ReleasesFile"; then
-        echo "Release $newRelease already exists!"
+    if grep -qFx "$newRelease-$profile" "$ReleasesFile"; then
+        echo "Release $newRelease-$profile already exists!"
         exit "$ErrorReleaseExists"
     fi
-    if [ $(git tag -l "version/$newRelease") ]; then
-        echo "Release tag version/$newRelease already exists!"
+    if [ $(git tag -l "version/$newRelease-$profile") ]; then
+        echo "Release tag version/$newRelease-$profile already exists!"
         exit "$ErrorReleaseTagExists"
     fi
 }
@@ -45,7 +45,7 @@ function generateNewReleaseBranch () {
 
     git pull origin "$BaseBranch"
     # make a new branch
-    branchName=release/"$newRelease"
+    branchName=release/"$newRelease-$profile"
     git branch -D "$branchName" || true
     git checkout -b "$branchName"
 
@@ -53,13 +53,13 @@ function generateNewReleaseBranch () {
     asdf install grails "$newRelease"
     asdf local grails "$newRelease"
 
-    grails create-app "$AppName" --profile=rest-api
+    grails create-app "$AppName" --profile="$profile"
 
     # commit and push branch
     git add "$AppName"
-    git commit -m "Release $newRelease"
+    git commit -m "Release $newRelease-$profile"
     git push origin --delete "$branchName" || git push origin "$branchName"
-    git tag "version/$newRelease"
+    git tag "version/$newRelease-$profile"
     git push --set-upstream origin "$branchName" --tags
 
     # go back to master
@@ -80,13 +80,13 @@ function generateDiffs () {
     IFS=$'\n' GLOBIGNORE='*' command eval 'releases=($(cat "$ReleasesFile"))'
     for existingRelease in "${releases[@]}"
     do
-        git diff --binary origin/release/"$existingRelease"..origin/release/"$newRelease" > wt-diffs/diffs/"$existingRelease".."$newRelease".diff
-        git diff --binary origin/release/"$newRelease"..origin/release/"$existingRelease" > wt-diffs/diffs/"$newRelease".."$existingRelease".diff
+        git diff --binary origin/release/"$existingRelease"..origin/release/"$newRelease-$profile" > wt-diffs/diffs/"$existingRelease".."$newRelease-$profile".diff
+        git diff --binary origin/release/"$newRelease-$profile"..origin/release/"$existingRelease" > wt-diffs/diffs/"$newRelease-$profile".."$existingRelease".diff
     done
 
     cd wt-diffs
     git add .
-    git commit -m "Add release $newRelease diffs"
+    git commit -m "Add release $newRelease-$profile diffs"
     git push
     cd ..
 }
@@ -94,12 +94,12 @@ function generateDiffs () {
 function pushMaster () {
     # commit and push
     git add .
-    git commit -m "Add release $newRelease"
+    git commit -m "Add release $newRelease-$profile"
     git push
 }
 
 function addReleaseToList () {
-    echo "$newRelease" >> RELEASES
+    echo "$newRelease-$profile" >> RELEASES
 
     if command -v tac; then
         #   take each line ->dedup->    sort them              -> reverse them -> save them
@@ -112,9 +112,6 @@ function addReleaseToList () {
     mv tmpfile RELEASES
 }
 
-ReadmeHeader=README_HEADER.md
-ReadmeFooter=README_FOOTER.md
-
 function cleanUp () {
     rm -rf wt-app
     rm -rf wt-diffs
@@ -124,6 +121,7 @@ function cleanUp () {
 
 guardMissingArg $*
 newRelease=$1
+profile=$2
 
 guardExisting
 
