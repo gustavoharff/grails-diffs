@@ -1,0 +1,11 @@
+{
+  "name": "grails-diffs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:gustavoharff/grails-diffs.git",
+  "author": "Gustavo Harff <gustavo.harff@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "semver": "^6.0.0"
+  }
+}

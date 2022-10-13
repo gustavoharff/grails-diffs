@@ -32,7 +32,7 @@ function prepare () {
     # This git config setting, in combination with the `.gitattributes` file, tells the scripts to not pay attention to some files that don't need to be in the diffs, like the root `.gitignore` of this repo (not the RnDiffApp project).
     git config --local diff.nodiff.command true
     git pull
-    # yarn install
+    yarn install
 }
 
 function generateNewReleaseBranch () {
@@ -50,7 +50,9 @@ function generateNewReleaseBranch () {
     git checkout -b "$branchName"
 
     # generate app
+    asdf install grails "$newRelease"
     asdf local grails "$newRelease"
+
     grails create-app "$AppName" --profile=rest-api
 
     # commit and push branch
@@ -96,11 +98,26 @@ function pushMaster () {
     git push
 }
 
+function addReleaseToList () {
+    echo "$newRelease" >> RELEASES
+
+    if command -v tac; then
+        #   take each line ->dedup->    sort them              -> reverse them -> save them
+        cat RELEASES | uniq | xargs yarn --silent semver | tac           > tmpfile
+    else
+        #   take each line ->dedup->    sort them              -> reverse them -> save them
+        cat RELEASES | uniq | xargs yarn --silent semver | tail -r       > tmpfile
+    fi
+
+    mv tmpfile RELEASES
+}
+
 ReadmeHeader=README_HEADER.md
 ReadmeFooter=README_FOOTER.md
 
 function cleanUp () {
     rm -rf wt-app
+    rm -rf wt-diffs
     git worktree prune
 }
 
@@ -112,6 +129,7 @@ guardExisting
 
 prepare
 generateNewReleaseBranch
+addReleaseToList
 generateDiffs
 
 cleanUp
