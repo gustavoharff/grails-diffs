@@ -1,12 +1,12 @@
 diff --git a/myapp/application.properties b/myapp/application.properties
-index 192599c..0aeb961 100644
+index 192599c..73b0f5d 100644
 --- a/myapp/application.properties
 +++ b/myapp/application.properties
 @@ -1,5 +1,5 @@
  #Grails Metadata file
 -#Thu Oct 13 11:33:34 BRT 2022
 -app.grails.version=2.3.11
-+#Thu Oct 13 11:37:22 BRT 2022
++#Thu Oct 13 11:38:38 BRT 2022
 +app.grails.version=2.5.6
  app.name=myapp
  app.version=0.1
