@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-version=$0
+version=$1
 
 find ./diffs -name "$version..*.diff" -delete
 find ./diffs -name "*..$version.diff" -delete
