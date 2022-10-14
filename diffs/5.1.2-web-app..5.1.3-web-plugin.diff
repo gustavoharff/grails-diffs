@@ -1,0 +1,931 @@
+diff --git a/myapp/grails-app/views/error.gsp b/myapp/grails-app/views/error.gsp
+deleted file mode 100644
+index 9a3bb8a..0000000
+--- a/myapp/grails-app/views/error.gsp
++++ /dev/null
+@@ -1,31 +0,0 @@
+-<!doctype html>
+-<html>
+-    <head>
+-        <title><g:if env="development">Grails Runtime Exception</g:if><g:else>Error</g:else></title>
+-        <meta name="layout" content="main">
+-        <g:if env="development"><asset:stylesheet src="errors.css"/></g:if>
+-    </head>
+-    <body>
+-        <g:if env="development">
+-            <g:if test="${Throwable.isInstance(exception)}">
+-                <g:renderException exception="${exception}" />
+-            </g:if>
+-            <g:elseif test="${request.getAttribute('javax.servlet.error.exception')}">
+-                <g:renderException exception="${request.getAttribute('javax.servlet.error.exception')}" />
+-            </g:elseif>
+-            <g:else>
+-                <ul class="errors">
+-                    <li>An error has occurred</li>
+-                    <li>Exception: ${exception}</li>
+-                    <li>Message: ${message}</li>
+-                    <li>Path: ${path}</li>
+-                </ul>
+-            </g:else>
+-        </g:if>
+-        <g:else>
+-            <ul class="errors">
+-                <li>An error has occurred</li>
+-            </ul>
+-        </g:else>
+-    </body>
+-</html>
+diff --git a/myapp/grails-app/views/notFound.gsp b/myapp/grails-app/views/notFound.gsp
+deleted file mode 100644
+index 4c873ba..0000000
+--- a/myapp/grails-app/views/notFound.gsp
++++ /dev/null
+@@ -1,14 +0,0 @@
+-<!doctype html>
+-<html>
+-    <head>
+-        <title>Page Not Found</title>
+-        <meta name="layout" content="main">
+-        <g:if env="development"><asset:stylesheet src="errors.css"/></g:if>
+-    </head>
+-    <body>
+-        <ul class="errors">
+-            <li>Error: Page Not Found (404)</li>
+-            <li>Path: ${request.forwardURI}</li>
+-        </ul>
+-    </body>
+-</html>
+diff --git a/myapp/settings.gradle b/myapp/settings.gradle
+deleted file mode 100644
+index 6d35791..0000000
+--- a/myapp/settings.gradle
++++ /dev/null
+@@ -1 +0,0 @@
+-rootProject.name = 'myapp'
+diff --git a/myapp/.gitignore b/myplugin/.gitignore
+similarity index 100%
+rename from myapp/.gitignore
+rename to myplugin/.gitignore
+diff --git a/myapp/build.gradle b/myplugin/build.gradle
+similarity index 82%
+rename from myapp/build.gradle
+rename to myplugin/build.gradle
+index 973b599..5c7674a 100644
+--- a/myapp/build.gradle
++++ b/myplugin/build.gradle
+@@ -4,22 +4,22 @@ buildscript {
+     }
+     dependencies {
+         classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
+-        classpath "org.grails.plugins:hibernate5:7.2.1"
++        classpath "org.grails.plugins:hibernate5:7.2.2"
+         classpath "gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.6"
+         classpath "com.bertramlabs.plugins:asset-pipeline-gradle:3.3.4"
+     }
+ }
+ 
+ version "0.1"
+-group "myapp"
++group "myplugin"
+ 
+ apply plugin:"eclipse"
+ apply plugin:"idea"
+ apply plugin:"war"
+ apply plugin:"org.grails.grails-web"
+ apply plugin:"com.github.erdi.webdriver-binaries"
+-apply plugin:"org.grails.grails-gsp"
+ apply plugin:"com.bertramlabs.asset-pipeline"
++apply plugin:"org.grails.grails-gsp"
+ 
+ repositories {
+     maven { url "https://repo.grails.org/grails/core" }
+@@ -54,7 +54,7 @@ dependencies {
+     implementation "org.grails.plugins:async"
+     implementation "org.grails.plugins:scaffolding"
+     implementation "org.grails.plugins:hibernate5"
+-    implementation "org.hibernate:hibernate-core:5.6.3.Final"
++    implementation "org.hibernate:hibernate-core:5.6.5.Final"
+     implementation "org.grails.plugins:events"
+     implementation "org.grails.plugins:gsp"
+     profile "org.grails.profiles:web"
+@@ -98,15 +98,25 @@ tasks.withType(Test) {
+ }
+ 
+ webdriverBinaries {
+-    chromedriver '2.45.0'
+-    geckodriver '0.30.0'
++    if (!System.getenv().containsKey('GITHUB_ACTIONS')) {
++        chromedriver {
++            version = '2.45.0'
++            fallbackTo32Bit = true
++        }
++        geckodriver '0.30.0'
++    }
+ }
+ 
+ tasks.withType(Test) {
+     systemProperty "geb.env", System.getProperty('geb.env')
+     systemProperty "geb.build.reportsDir", reporting.file("geb/integrationTest")
+-    systemProperty "webdriver.chrome.driver", System.getProperty('webdriver.chrome.driver')
+-    systemProperty "webdriver.gecko.driver", System.getProperty('webdriver.gecko.driver')
++    if (!System.getenv().containsKey('GITHUB_ACTIONS')) {
++        systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver')
++        systemProperty 'webdriver.gecko.driver', System.getProperty('webdriver.gecko.driver')
++    } else {
++        systemProperty 'webdriver.chrome.driver', "${System.getenv('CHROMEWEBDRIVER')}/chromedriver"
++        systemProperty 'webdriver.gecko.driver', "${System.getenv('GECKOWEBDRIVER')}/geckodriver"
++    }
+ }
+ 
+ 
+diff --git a/myapp/gradle.properties b/myplugin/gradle.properties
+similarity index 62%
+rename from myapp/gradle.properties
+rename to myplugin/gradle.properties
+index 2ab1369..2b3f20f 100644
+--- a/myapp/gradle.properties
++++ b/myplugin/gradle.properties
+@@ -1,7 +1,7 @@
+-grailsVersion=5.1.2
+-grailsGradlePluginVersion=5.1.1
++grailsVersion=5.1.3
++grailsGradlePluginVersion=5.1.3
+ groovyVersion=3.0.7
+-gorm.version=7.1.2
++gorm.version=7.2.1
+ org.gradle.daemon=true
+ org.gradle.parallel=true
+ org.gradle.jvmargs=-Dfile.encoding=UTF-8 -Xmx1024M
+diff --git a/myapp/gradle/wrapper/gradle-wrapper.jar b/myplugin/gradle/wrapper/gradle-wrapper.jar
+similarity index 100%
+rename from myapp/gradle/wrapper/gradle-wrapper.jar
+rename to myplugin/gradle/wrapper/gradle-wrapper.jar
+diff --git a/myapp/gradle/wrapper/gradle-wrapper.properties b/myplugin/gradle/wrapper/gradle-wrapper.properties
+similarity index 100%
+rename from myapp/gradle/wrapper/gradle-wrapper.properties
+rename to myplugin/gradle/wrapper/gradle-wrapper.properties
+diff --git a/myapp/gradlew b/myplugin/gradlew
+similarity index 100%
+rename from myapp/gradlew
+rename to myplugin/gradlew
+diff --git a/myapp/gradlew.bat b/myplugin/gradlew.bat
+similarity index 96%
+rename from myapp/gradlew.bat
+rename to myplugin/gradlew.bat
+index 107acd3..ac1b06f 100755
+--- a/myapp/gradlew.bat
++++ b/myplugin/gradlew.bat
+@@ -1,89 +1,89 @@
+-@rem
+-@rem Copyright 2015 the original author or authors.
+-@rem
+-@rem Licensed under the Apache License, Version 2.0 (the "License");
+-@rem you may not use this file except in compliance with the License.
+-@rem You may obtain a copy of the License at
+-@rem
+-@rem      https://www.apache.org/licenses/LICENSE-2.0
+-@rem
+-@rem Unless required by applicable law or agreed to in writing, software
+-@rem distributed under the License is distributed on an "AS IS" BASIS,
+-@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-@rem See the License for the specific language governing permissions and
+-@rem limitations under the License.
+-@rem
+-
+-@if "%DEBUG%" == "" @echo off
+-@rem ##########################################################################
+-@rem
+-@rem  Gradle startup script for Windows
+-@rem
+-@rem ##########################################################################
+-
+-@rem Set local scope for the variables with windows NT shell
+-if "%OS%"=="Windows_NT" setlocal
+-
+-set DIRNAME=%~dp0
+-if "%DIRNAME%" == "" set DIRNAME=.
+-set APP_BASE_NAME=%~n0
+-set APP_HOME=%DIRNAME%
+-
+-@rem Resolve any "." and ".." in APP_HOME to make it shorter.
+-for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
+-
+-@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+-set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
+-
+-@rem Find java.exe
+-if defined JAVA_HOME goto findJavaFromJavaHome
+-
+-set JAVA_EXE=java.exe
+-%JAVA_EXE% -version >NUL 2>&1
+-if "%ERRORLEVEL%" == "0" goto execute
+-
+-echo.
+-echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+-echo.
+-echo Please set the JAVA_HOME variable in your environment to match the
+-echo location of your Java installation.
+-
+-goto fail
+-
+-:findJavaFromJavaHome
+-set JAVA_HOME=%JAVA_HOME:"=%
+-set JAVA_EXE=%JAVA_HOME%/bin/java.exe
+-
+-if exist "%JAVA_EXE%" goto execute
+-
+-echo.
+-echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME%
+-echo.
+-echo Please set the JAVA_HOME variable in your environment to match the
+-echo location of your Java installation.
+-
+-goto fail
+-
+-:execute
+-@rem Setup the command line
+-
+-set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
+-
+-
+-@rem Execute Gradle
+-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
+-
+-:end
+-@rem End local scope for the variables with windows NT shell
+-if "%ERRORLEVEL%"=="0" goto mainEnd
+-
+-:fail
+-rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
+-rem the _cmd.exe /c_ return code!
+-if  not "" == "%GRADLE_EXIT_CONSOLE%" exit 1
+-exit /b 1
+-
+-:mainEnd
+-if "%OS%"=="Windows_NT" endlocal
+-
+-:omega
++@rem
++@rem Copyright 2015 the original author or authors.
++@rem
++@rem Licensed under the Apache License, Version 2.0 (the "License");
++@rem you may not use this file except in compliance with the License.
++@rem You may obtain a copy of the License at
++@rem
++@rem      https://www.apache.org/licenses/LICENSE-2.0
++@rem
++@rem Unless required by applicable law or agreed to in writing, software
++@rem distributed under the License is distributed on an "AS IS" BASIS,
++@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++@rem See the License for the specific language governing permissions and
++@rem limitations under the License.
++@rem
++
++@if "%DEBUG%" == "" @echo off
++@rem ##########################################################################
++@rem
++@rem  Gradle startup script for Windows
++@rem
++@rem ##########################################################################
++
++@rem Set local scope for the variables with windows NT shell
++if "%OS%"=="Windows_NT" setlocal
++
++set DIRNAME=%~dp0
++if "%DIRNAME%" == "" set DIRNAME=.
++set APP_BASE_NAME=%~n0
++set APP_HOME=%DIRNAME%
++
++@rem Resolve any "." and ".." in APP_HOME to make it shorter.
++for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
++
++@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
++set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
++
++@rem Find java.exe
++if defined JAVA_HOME goto findJavaFromJavaHome
++
++set JAVA_EXE=java.exe
++%JAVA_EXE% -version >NUL 2>&1
++if "%ERRORLEVEL%" == "0" goto execute
++
++echo.
++echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
++echo.
++echo Please set the JAVA_HOME variable in your environment to match the
++echo location of your Java installation.
++
++goto fail
++
++:findJavaFromJavaHome
++set JAVA_HOME=%JAVA_HOME:"=%
++set JAVA_EXE=%JAVA_HOME%/bin/java.exe
++
++if exist "%JAVA_EXE%" goto execute
++
++echo.
++echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME%
++echo.
++echo Please set the JAVA_HOME variable in your environment to match the
++echo location of your Java installation.
++
++goto fail
++
++:execute
++@rem Setup the command line
++
++set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
++
++
++@rem Execute Gradle
++"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
++
++:end
++@rem End local scope for the variables with windows NT shell
++if "%ERRORLEVEL%"=="0" goto mainEnd
++
++:fail
++rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
++rem the _cmd.exe /c_ return code!
++if  not "" == "%GRADLE_EXIT_CONSOLE%" exit 1
++exit /b 1
++
++:mainEnd
++if "%OS%"=="Windows_NT" endlocal
++
++:omega
+diff --git a/myapp/grails-app/assets/images/advancedgrails.svg b/myplugin/grails-app/assets/images/advancedgrails.svg
+similarity index 100%
+rename from myapp/grails-app/assets/images/advancedgrails.svg
+rename to myplugin/grails-app/assets/images/advancedgrails.svg
+diff --git a/myapp/grails-app/assets/images/apple-touch-icon-retina.png b/myplugin/grails-app/assets/images/apple-touch-icon-retina.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/apple-touch-icon-retina.png
+rename to myplugin/grails-app/assets/images/apple-touch-icon-retina.png
+diff --git a/myapp/grails-app/assets/images/apple-touch-icon.png b/myplugin/grails-app/assets/images/apple-touch-icon.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/apple-touch-icon.png
+rename to myplugin/grails-app/assets/images/apple-touch-icon.png
+diff --git a/myapp/grails-app/assets/images/documentation.svg b/myplugin/grails-app/assets/images/documentation.svg
+similarity index 100%
+rename from myapp/grails-app/assets/images/documentation.svg
+rename to myplugin/grails-app/assets/images/documentation.svg
+diff --git a/myapp/grails-app/assets/images/favicon.ico b/myplugin/grails-app/assets/images/favicon.ico
+similarity index 100%
+rename from myapp/grails-app/assets/images/favicon.ico
+rename to myplugin/grails-app/assets/images/favicon.ico
+diff --git a/myapp/grails-app/assets/images/grails-cupsonly-logo-white.svg b/myplugin/grails-app/assets/images/grails-cupsonly-logo-white.svg
+similarity index 100%
+rename from myapp/grails-app/assets/images/grails-cupsonly-logo-white.svg
+rename to myplugin/grails-app/assets/images/grails-cupsonly-logo-white.svg
+diff --git a/myapp/grails-app/assets/images/grails.svg b/myplugin/grails-app/assets/images/grails.svg
+similarity index 100%
+rename from myapp/grails-app/assets/images/grails.svg
+rename to myplugin/grails-app/assets/images/grails.svg
+diff --git a/myapp/grails-app/assets/images/skin/database_add.png b/myplugin/grails-app/assets/images/skin/database_add.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/database_add.png
+rename to myplugin/grails-app/assets/images/skin/database_add.png
+diff --git a/myapp/grails-app/assets/images/skin/database_delete.png b/myplugin/grails-app/assets/images/skin/database_delete.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/database_delete.png
+rename to myplugin/grails-app/assets/images/skin/database_delete.png
+diff --git a/myapp/grails-app/assets/images/skin/database_edit.png b/myplugin/grails-app/assets/images/skin/database_edit.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/database_edit.png
+rename to myplugin/grails-app/assets/images/skin/database_edit.png
+diff --git a/myapp/grails-app/assets/images/skin/database_save.png b/myplugin/grails-app/assets/images/skin/database_save.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/database_save.png
+rename to myplugin/grails-app/assets/images/skin/database_save.png
+diff --git a/myapp/grails-app/assets/images/skin/database_table.png b/myplugin/grails-app/assets/images/skin/database_table.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/database_table.png
+rename to myplugin/grails-app/assets/images/skin/database_table.png
+diff --git a/myapp/grails-app/assets/images/skin/exclamation.png b/myplugin/grails-app/assets/images/skin/exclamation.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/exclamation.png
+rename to myplugin/grails-app/assets/images/skin/exclamation.png
+diff --git a/myapp/grails-app/assets/images/skin/house.png b/myplugin/grails-app/assets/images/skin/house.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/house.png
+rename to myplugin/grails-app/assets/images/skin/house.png
+diff --git a/myapp/grails-app/assets/images/skin/information.png b/myplugin/grails-app/assets/images/skin/information.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/information.png
+rename to myplugin/grails-app/assets/images/skin/information.png
+diff --git a/myapp/grails-app/assets/images/skin/sorted_asc.gif b/myplugin/grails-app/assets/images/skin/sorted_asc.gif
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/sorted_asc.gif
+rename to myplugin/grails-app/assets/images/skin/sorted_asc.gif
+diff --git a/myapp/grails-app/assets/images/skin/sorted_desc.gif b/myplugin/grails-app/assets/images/skin/sorted_desc.gif
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/sorted_desc.gif
+rename to myplugin/grails-app/assets/images/skin/sorted_desc.gif
+diff --git a/myapp/grails-app/assets/images/slack.svg b/myplugin/grails-app/assets/images/slack.svg
+similarity index 100%
+rename from myapp/grails-app/assets/images/slack.svg
+rename to myplugin/grails-app/assets/images/slack.svg
+diff --git a/myapp/grails-app/assets/images/spinner.gif b/myplugin/grails-app/assets/images/spinner.gif
+similarity index 100%
+rename from myapp/grails-app/assets/images/spinner.gif
+rename to myplugin/grails-app/assets/images/spinner.gif
+diff --git a/myapp/grails-app/assets/javascripts/application.js b/myplugin/grails-app/assets/javascripts/application.js
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/application.js
+rename to myplugin/grails-app/assets/javascripts/application.js
+diff --git a/myapp/grails-app/assets/javascripts/bootstrap.bundle.js b/myplugin/grails-app/assets/javascripts/bootstrap.bundle.js
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/bootstrap.bundle.js
+rename to myplugin/grails-app/assets/javascripts/bootstrap.bundle.js
+diff --git a/myapp/grails-app/assets/javascripts/bootstrap.bundle.js.map b/myplugin/grails-app/assets/javascripts/bootstrap.bundle.js.map
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/bootstrap.bundle.js.map
+rename to myplugin/grails-app/assets/javascripts/bootstrap.bundle.js.map
+diff --git a/myapp/grails-app/assets/javascripts/bootstrap.bundle.min.js b/myplugin/grails-app/assets/javascripts/bootstrap.bundle.min.js
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/bootstrap.bundle.min.js
+rename to myplugin/grails-app/assets/javascripts/bootstrap.bundle.min.js
+diff --git a/myapp/grails-app/assets/javascripts/bootstrap.bundle.min.js.map b/myplugin/grails-app/assets/javascripts/bootstrap.bundle.min.js.map
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/bootstrap.bundle.min.js.map
+rename to myplugin/grails-app/assets/javascripts/bootstrap.bundle.min.js.map
+diff --git a/myapp/grails-app/assets/javascripts/bootstrap.js b/myplugin/grails-app/assets/javascripts/bootstrap.js
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/bootstrap.js
+rename to myplugin/grails-app/assets/javascripts/bootstrap.js
+diff --git a/myapp/grails-app/assets/javascripts/bootstrap.js.map b/myplugin/grails-app/assets/javascripts/bootstrap.js.map
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/bootstrap.js.map
+rename to myplugin/grails-app/assets/javascripts/bootstrap.js.map
+diff --git a/myapp/grails-app/assets/javascripts/bootstrap.min.js b/myplugin/grails-app/assets/javascripts/bootstrap.min.js
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/bootstrap.min.js
+rename to myplugin/grails-app/assets/javascripts/bootstrap.min.js
+diff --git a/myapp/grails-app/assets/javascripts/bootstrap.min.js.map b/myplugin/grails-app/assets/javascripts/bootstrap.min.js.map
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/bootstrap.min.js.map
+rename to myplugin/grails-app/assets/javascripts/bootstrap.min.js.map
+diff --git a/myapp/grails-app/assets/javascripts/jquery-3.5.1.js b/myplugin/grails-app/assets/javascripts/jquery-3.5.1.js
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/jquery-3.5.1.js
+rename to myplugin/grails-app/assets/javascripts/jquery-3.5.1.js
+diff --git a/myapp/grails-app/assets/javascripts/jquery-3.5.1.min.js b/myplugin/grails-app/assets/javascripts/jquery-3.5.1.min.js
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/jquery-3.5.1.min.js
+rename to myplugin/grails-app/assets/javascripts/jquery-3.5.1.min.js
+diff --git a/myapp/grails-app/assets/javascripts/jquery-3.5.1.min.js.map b/myplugin/grails-app/assets/javascripts/jquery-3.5.1.min.js.map
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/jquery-3.5.1.min.js.map
+rename to myplugin/grails-app/assets/javascripts/jquery-3.5.1.min.js.map
+diff --git a/myapp/grails-app/assets/javascripts/popper.js b/myplugin/grails-app/assets/javascripts/popper.js
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/popper.js
+rename to myplugin/grails-app/assets/javascripts/popper.js
+diff --git a/myapp/grails-app/assets/javascripts/popper.min.js b/myplugin/grails-app/assets/javascripts/popper.min.js
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/popper.min.js
+rename to myplugin/grails-app/assets/javascripts/popper.min.js
+diff --git a/myapp/grails-app/assets/javascripts/popper.min.js.map b/myplugin/grails-app/assets/javascripts/popper.min.js.map
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/popper.min.js.map
+rename to myplugin/grails-app/assets/javascripts/popper.min.js.map
+diff --git a/myapp/grails-app/assets/stylesheets/application.css b/myplugin/grails-app/assets/stylesheets/application.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/application.css
+rename to myplugin/grails-app/assets/stylesheets/application.css
+diff --git a/myapp/grails-app/assets/stylesheets/bootstrap-grid.css b/myplugin/grails-app/assets/stylesheets/bootstrap-grid.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/bootstrap-grid.css
+rename to myplugin/grails-app/assets/stylesheets/bootstrap-grid.css
+diff --git a/myapp/grails-app/assets/stylesheets/bootstrap-grid.css.map b/myplugin/grails-app/assets/stylesheets/bootstrap-grid.css.map
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/bootstrap-grid.css.map
+rename to myplugin/grails-app/assets/stylesheets/bootstrap-grid.css.map
+diff --git a/myapp/grails-app/assets/stylesheets/bootstrap-grid.min.css b/myplugin/grails-app/assets/stylesheets/bootstrap-grid.min.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/bootstrap-grid.min.css
+rename to myplugin/grails-app/assets/stylesheets/bootstrap-grid.min.css
+diff --git a/myapp/grails-app/assets/stylesheets/bootstrap-grid.min.css.map b/myplugin/grails-app/assets/stylesheets/bootstrap-grid.min.css.map
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/bootstrap-grid.min.css.map
+rename to myplugin/grails-app/assets/stylesheets/bootstrap-grid.min.css.map
+diff --git a/myapp/grails-app/assets/stylesheets/bootstrap-reboot.css b/myplugin/grails-app/assets/stylesheets/bootstrap-reboot.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/bootstrap-reboot.css
+rename to myplugin/grails-app/assets/stylesheets/bootstrap-reboot.css
+diff --git a/myapp/grails-app/assets/stylesheets/bootstrap.css b/myplugin/grails-app/assets/stylesheets/bootstrap.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/bootstrap.css
+rename to myplugin/grails-app/assets/stylesheets/bootstrap.css
+diff --git a/myapp/grails-app/assets/stylesheets/bootstrap.css.map b/myplugin/grails-app/assets/stylesheets/bootstrap.css.map
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/bootstrap.css.map
+rename to myplugin/grails-app/assets/stylesheets/bootstrap.css.map
+diff --git a/myapp/grails-app/assets/stylesheets/bootstrap.min.css b/myplugin/grails-app/assets/stylesheets/bootstrap.min.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/bootstrap.min.css
+rename to myplugin/grails-app/assets/stylesheets/bootstrap.min.css
+diff --git a/myapp/grails-app/assets/stylesheets/bootstrap.min.css.map b/myplugin/grails-app/assets/stylesheets/bootstrap.min.css.map
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/bootstrap.min.css.map
+rename to myplugin/grails-app/assets/stylesheets/bootstrap.min.css.map
+diff --git a/myapp/grails-app/assets/stylesheets/errors.css b/myplugin/grails-app/assets/stylesheets/errors.css
+similarity index 65%
+rename from myapp/grails-app/assets/stylesheets/errors.css
+rename to myplugin/grails-app/assets/stylesheets/errors.css
+index 1c616d8..b41ab9c 100644
+--- a/myapp/grails-app/assets/stylesheets/errors.css
++++ b/myplugin/grails-app/assets/stylesheets/errors.css
+@@ -1,9 +1,9 @@
+-h1, h2 {
+-    margin: 10px 25px 5px;
++h1 {
++    font-size: 2rem;
+ }
+ 
+ h2 {
+-    font-size: 1.1em;
++    font-size: 1.25rem;
+ }
+ 
+ .filename {
+@@ -19,32 +19,21 @@ h2 {
+ 
+ .stack,
+ .snippet {
+-    margin: 0 25px 10px;
++    margin: 10px 0;
+ }
+ 
+ .stack,
+ .snippet {
+     border: 1px solid #ccc;
+-       -mox-box-shadow: 0 0 2px rgba(0,0,0,0.2);
+-    -webkit-box-shadow: 0 0 2px rgba(0,0,0,0.2);
+-            box-shadow: 0 0 2px rgba(0,0,0,0.2);
+ }
+ 
+ /* error details */
+ .error-details {
+-    border-top: 1px solid #FFAAAA;
+-       -mox-box-shadow: 0 0 2px rgba(0,0,0,0.2);
+-    -webkit-box-shadow: 0 0 2px rgba(0,0,0,0.2);
+-            box-shadow: 0 0 2px rgba(0,0,0,0.2);
+-    border-bottom: 1px solid #FFAAAA;
+-       -mox-box-shadow: 0 0 2px rgba(0,0,0,0.2);
+-    -webkit-box-shadow: 0 0 2px rgba(0,0,0,0.2);
+-            box-shadow: 0 0 2px rgba(0,0,0,0.2);
++    border: 1px solid #FFAAAA;
+     background-color:#FFF3F3;
+     line-height: 1.5;
+     overflow: hidden;
+-    padding: 5px;
+-    padding-left:25px;
++    padding: 10px 0 5px 25px;
+ }
+ 
+ .error-details dt {
+@@ -66,7 +55,7 @@ h2 {
+ .stack {
+     padding: 5px;
+     overflow: auto;
+-    height: 150px;
++    height: 300px;
+ }
+ 
+ /* code snippet */
+diff --git a/myapp/grails-app/assets/stylesheets/grails.css b/myplugin/grails-app/assets/stylesheets/grails.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/grails.css
+rename to myplugin/grails-app/assets/stylesheets/grails.css
+diff --git a/myapp/grails-app/assets/stylesheets/main.css b/myplugin/grails-app/assets/stylesheets/main.css
+similarity index 98%
+rename from myapp/grails-app/assets/stylesheets/main.css
+rename to myplugin/grails-app/assets/stylesheets/main.css
+index e2d13a5..56a9669 100644
+--- a/myapp/grails-app/assets/stylesheets/main.css
++++ b/myplugin/grails-app/assets/stylesheets/main.css
+@@ -75,8 +75,7 @@ img {
+ 
+ .content h1 {
+     border-bottom: 1px solid #CCCCCC;
+-    margin: 0.8em 1em 0.3em;
+-    padding: 0 0.25em;
++    padding: 0 0 1em 0;
+ }
+ 
+ .scaffold-list h1 {
+@@ -235,7 +234,7 @@ fieldset,
+ label {
+     cursor: pointer;
+     display: inline-block;
+-    margin: 0 0.25em 0 0;
++    margin: 0 0.5em 0 0;
+ }
+ 
+ input, select, textarea {
+@@ -316,10 +315,8 @@ fieldset.embedded legend {
+ 
+ .errors,
+ .message {
+-    font-size: 0.8em;
+-    line-height: 2;
+-    margin: 1em 2em;
+-    padding: 0.25em;
++    margin: 1em 0;
++    padding: 0.5em;
+ }
+ 
+ .message {
+@@ -387,7 +384,7 @@ input:invalid:focus, select:invalid:focus, textarea:invalid:focus {
+ /* TABLES */
+ 
+ table {
+-    border-top: 1px solid #DFDFDF;
++    border: 1px solid #DFDFDF;
+     border-collapse: collapse;
+     width: 100%;
+     margin-bottom: 1em;
+diff --git a/myapp/grails-app/assets/stylesheets/mobile.css b/myplugin/grails-app/assets/stylesheets/mobile.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/mobile.css
+rename to myplugin/grails-app/assets/stylesheets/mobile.css
+diff --git a/myapp/grails-app/conf/application.yml b/myplugin/grails-app/conf/application.yml
+similarity index 90%
+rename from myapp/grails-app/conf/application.yml
+rename to myplugin/grails-app/conf/application.yml
+index 3d3c6a8..2f681f6 100644
+--- a/myapp/grails-app/conf/application.yml
++++ b/myplugin/grails-app/conf/application.yml
+@@ -2,7 +2,7 @@
+ grails:
+     profile: web
+     codegen:
+-        defaultPackage: myapp
++        defaultPackage: myplugin
+     gorm:
+         reactor:
+             # Whether to translate GORM events into Reactor events
+@@ -30,9 +30,19 @@ spring:
+                 - '**/*.gson'
+                 - 'logback.groovy'
+                 - '*.properties'
+-management:
+-    endpoints:
+-        enabled-by-default: false
++environments:
++    development:
++        management:
++            endpoints:
++                enabled-by-default: true
++                web:
++                    base-path: '/actuator'
++                    exposure:
++                        include: '*'
++    production:
++        management:
++            endpoints:
++                enabled-by-default: false
+ 
+ ---
+ grails:
+diff --git a/myapp/grails-app/conf/logback.xml b/myplugin/grails-app/conf/logback.xml
+similarity index 73%
+rename from myapp/grails-app/conf/logback.xml
+rename to myplugin/grails-app/conf/logback.xml
+index f4e7783..3128faa 100644
+--- a/myapp/grails-app/conf/logback.xml
++++ b/myplugin/grails-app/conf/logback.xml
+@@ -7,11 +7,11 @@
+     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+         <encoder>
+             <charset>UTF-8</charset>
+-            <pattern>'%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wex'</pattern>
++            <pattern>%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wex</pattern>
+         </encoder>
+     </appender>
+ 
+     <root level="error">
+         <appender-ref ref="STDOUT" />
+     </root>
+-</configuration>
+\ No newline at end of file
++</configuration>
+diff --git a/myapp/grails-app/conf/spring/resources.groovy b/myplugin/grails-app/conf/spring/resources.groovy
+similarity index 100%
+rename from myapp/grails-app/conf/spring/resources.groovy
+rename to myplugin/grails-app/conf/spring/resources.groovy
+diff --git a/myapp/grails-app/controllers/myapp/UrlMappings.groovy b/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
+similarity index 94%
+rename from myapp/grails-app/controllers/myapp/UrlMappings.groovy
+rename to myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
+index 1be4f0c..90d38d4 100644
+--- a/myapp/grails-app/controllers/myapp/UrlMappings.groovy
++++ b/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
+@@ -1,4 +1,4 @@
+-package myapp
++package myplugin
+ 
+ class UrlMappings {
+ 
+diff --git a/myapp/grails-app/i18n/messages.properties b/myplugin/grails-app/i18n/messages.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages.properties
+rename to myplugin/grails-app/i18n/messages.properties
+diff --git a/myapp/grails-app/i18n/messages_cs.properties b/myplugin/grails-app/i18n/messages_cs.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_cs.properties
+rename to myplugin/grails-app/i18n/messages_cs.properties
+diff --git a/myapp/grails-app/i18n/messages_da.properties b/myplugin/grails-app/i18n/messages_da.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_da.properties
+rename to myplugin/grails-app/i18n/messages_da.properties
+diff --git a/myapp/grails-app/i18n/messages_de.properties b/myplugin/grails-app/i18n/messages_de.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_de.properties
+rename to myplugin/grails-app/i18n/messages_de.properties
+diff --git a/myapp/grails-app/i18n/messages_es.properties b/myplugin/grails-app/i18n/messages_es.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_es.properties
+rename to myplugin/grails-app/i18n/messages_es.properties
+diff --git a/myapp/grails-app/i18n/messages_fr.properties b/myplugin/grails-app/i18n/messages_fr.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_fr.properties
+rename to myplugin/grails-app/i18n/messages_fr.properties
+diff --git a/myapp/grails-app/i18n/messages_it.properties b/myplugin/grails-app/i18n/messages_it.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_it.properties
+rename to myplugin/grails-app/i18n/messages_it.properties
+diff --git a/myapp/grails-app/i18n/messages_ja.properties b/myplugin/grails-app/i18n/messages_ja.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_ja.properties
+rename to myplugin/grails-app/i18n/messages_ja.properties
+diff --git a/myapp/grails-app/i18n/messages_nb.properties b/myplugin/grails-app/i18n/messages_nb.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_nb.properties
+rename to myplugin/grails-app/i18n/messages_nb.properties
+diff --git a/myapp/grails-app/i18n/messages_nl.properties b/myplugin/grails-app/i18n/messages_nl.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_nl.properties
+rename to myplugin/grails-app/i18n/messages_nl.properties
+diff --git a/myapp/grails-app/i18n/messages_pl.properties b/myplugin/grails-app/i18n/messages_pl.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_pl.properties
+rename to myplugin/grails-app/i18n/messages_pl.properties
+diff --git a/myapp/grails-app/i18n/messages_pt_BR.properties b/myplugin/grails-app/i18n/messages_pt_BR.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_pt_BR.properties
+rename to myplugin/grails-app/i18n/messages_pt_BR.properties
+diff --git a/myapp/grails-app/i18n/messages_pt_PT.properties b/myplugin/grails-app/i18n/messages_pt_PT.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_pt_PT.properties
+rename to myplugin/grails-app/i18n/messages_pt_PT.properties
+diff --git a/myapp/grails-app/i18n/messages_ru.properties b/myplugin/grails-app/i18n/messages_ru.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_ru.properties
+rename to myplugin/grails-app/i18n/messages_ru.properties
+diff --git a/myapp/grails-app/i18n/messages_sk.properties b/myplugin/grails-app/i18n/messages_sk.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_sk.properties
+rename to myplugin/grails-app/i18n/messages_sk.properties
+diff --git a/myapp/grails-app/i18n/messages_sv.properties b/myplugin/grails-app/i18n/messages_sv.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_sv.properties
+rename to myplugin/grails-app/i18n/messages_sv.properties
+diff --git a/myapp/grails-app/i18n/messages_th.properties b/myplugin/grails-app/i18n/messages_th.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_th.properties
+rename to myplugin/grails-app/i18n/messages_th.properties
+diff --git a/myapp/grails-app/i18n/messages_zh_CN.properties b/myplugin/grails-app/i18n/messages_zh_CN.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_zh_CN.properties
+rename to myplugin/grails-app/i18n/messages_zh_CN.properties
+diff --git a/myapp/grails-app/init/myapp/Application.groovy b/myplugin/grails-app/init/myplugin/Application.groovy
+similarity index 93%
+rename from myapp/grails-app/init/myapp/Application.groovy
+rename to myplugin/grails-app/init/myplugin/Application.groovy
+index 980180d..ace04f1 100644
+--- a/myapp/grails-app/init/myapp/Application.groovy
++++ b/myplugin/grails-app/init/myplugin/Application.groovy
+@@ -1,4 +1,4 @@
+-package myapp
++package myplugin
+ 
+ import grails.boot.GrailsApp
+ import grails.boot.config.GrailsAutoConfiguration
+diff --git a/myapp/grails-app/init/myapp/BootStrap.groovy b/myplugin/grails-app/init/myplugin/BootStrap.groovy
+similarity index 83%
+rename from myapp/grails-app/init/myapp/BootStrap.groovy
+rename to myplugin/grails-app/init/myplugin/BootStrap.groovy
+index 5cf149b..e8ad49b 100644
+--- a/myapp/grails-app/init/myapp/BootStrap.groovy
++++ b/myplugin/grails-app/init/myplugin/BootStrap.groovy
+@@ -1,4 +1,4 @@
+-package myapp
++package myplugin
+ 
+ class BootStrap {
+ 
+diff --git a/myplugin/grails-app/views/error.gsp b/myplugin/grails-app/views/error.gsp
+new file mode 100644
+index 0000000..72e3d00
+--- /dev/null
++++ b/myplugin/grails-app/views/error.gsp
+@@ -0,0 +1,39 @@
++<!doctype html>
++<html>
++    <head>
++        <title><g:if env="development">Grails Runtime Exception</g:if><g:else>Error</g:else></title>
++        <meta name="layout" content="main">
++        <g:if env="development"><asset:stylesheet src="errors.css"/></g:if>
++    </head>
++    <body>
++    <div id="content" role="main">
++        <div class="container">
++            <section class="row">
++                <div class="col-12">
++                <g:if env="development">
++                    <g:if test="${Throwable.isInstance(exception)}">
++                        <g:renderException exception="${exception}" />
++                    </g:if>
++                    <g:elseif test="${request.getAttribute('javax.servlet.error.exception')}">
++                        <g:renderException exception="${request.getAttribute('javax.servlet.error.exception')}" />
++                    </g:elseif>
++                    <g:else>
++                        <ul class="errors">
++                            <li>An error has occurred</li>
++                            <li>Exception: ${exception}</li>
++                            <li>Message: ${message}</li>
++                            <li>Path: ${path}</li>
++                        </ul>
++                    </g:else>
++                </g:if>
++                <g:else>
++                    <ul class="errors">
++                        <li>An error has occurred</li>
++                    </ul>
++                </g:else>
++                </div>
++            </section>
++        </div>
++    </div>
++    </body>
++</html>
+diff --git a/myapp/grails-app/views/index.gsp b/myplugin/grails-app/views/index.gsp
+similarity index 100%
+rename from myapp/grails-app/views/index.gsp
+rename to myplugin/grails-app/views/index.gsp
+diff --git a/myapp/grails-app/views/layouts/main.gsp b/myplugin/grails-app/views/layouts/main.gsp
+similarity index 100%
+rename from myapp/grails-app/views/layouts/main.gsp
+rename to myplugin/grails-app/views/layouts/main.gsp
+diff --git a/myplugin/grails-app/views/notFound.gsp b/myplugin/grails-app/views/notFound.gsp
+new file mode 100644
+index 0000000..fd0f55a
+--- /dev/null
++++ b/myplugin/grails-app/views/notFound.gsp
+@@ -0,0 +1,20 @@
++<!doctype html>
++<html>
++    <head>
++        <title>Page Not Found</title>
++        <meta name="layout" content="main">
++        <g:if env="development"><asset:stylesheet src="errors.css"/></g:if>
++    </head>
++    <body>
++    <div id="content" role="main">
++        <div class="container">
++            <section class="row">
++                <ul class="col-12 errors">
++                    <li>Error: Page Not Found (404)</li>
++                    <li>Path: ${request.forwardURI}</li>
++                </ul>
++            </section>
++        </div>
++    </div>
++    </body>
++</html>
+diff --git a/myapp/grails-wrapper.jar b/myplugin/grails-wrapper.jar
+similarity index 100%
+rename from myapp/grails-wrapper.jar
+rename to myplugin/grails-wrapper.jar
+diff --git a/myapp/grailsw b/myplugin/grailsw
+similarity index 100%
+rename from myapp/grailsw
+rename to myplugin/grailsw
+diff --git a/myapp/grailsw.bat b/myplugin/grailsw.bat
+similarity index 100%
+rename from myapp/grailsw.bat
+rename to myplugin/grailsw.bat
+diff --git a/myplugin/settings.gradle b/myplugin/settings.gradle
+new file mode 100644
+index 0000000..8d5eb67
+--- /dev/null
++++ b/myplugin/settings.gradle
+@@ -0,0 +1 @@
++rootProject.name = 'myplugin'
+diff --git a/myapp/src/integration-test/resources/GebConfig.groovy b/myplugin/src/integration-test/resources/GebConfig.groovy
+similarity index 100%
+rename from myapp/src/integration-test/resources/GebConfig.groovy
+rename to myplugin/src/integration-test/resources/GebConfig.groovy

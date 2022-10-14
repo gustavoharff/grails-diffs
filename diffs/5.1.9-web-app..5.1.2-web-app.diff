@@ -1,0 +1,497 @@
+diff --git a/myapp/build.gradle b/myapp/build.gradle
+index 9d479b1..973b599 100644
+--- a/myapp/build.gradle
++++ b/myapp/build.gradle
+@@ -4,7 +4,7 @@ buildscript {
+     }
+     dependencies {
+         classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
+-        classpath "org.grails.plugins:hibernate5:7.2.2"
++        classpath "org.grails.plugins:hibernate5:7.2.1"
+         classpath "gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.6"
+         classpath "com.bertramlabs.plugins:asset-pipeline-gradle:3.3.4"
+     }
+@@ -18,8 +18,8 @@ apply plugin:"idea"
+ apply plugin:"war"
+ apply plugin:"org.grails.grails-web"
+ apply plugin:"com.github.erdi.webdriver-binaries"
+-apply plugin:"com.bertramlabs.asset-pipeline"
+ apply plugin:"org.grails.grails-gsp"
++apply plugin:"com.bertramlabs.asset-pipeline"
+ 
+ repositories {
+     maven { url "https://repo.grails.org/grails/core" }
+@@ -54,7 +54,7 @@ dependencies {
+     implementation "org.grails.plugins:async"
+     implementation "org.grails.plugins:scaffolding"
+     implementation "org.grails.plugins:hibernate5"
+-    implementation "org.hibernate:hibernate-core:5.6.5.Final"
++    implementation "org.hibernate:hibernate-core:5.6.3.Final"
+     implementation "org.grails.plugins:events"
+     implementation "org.grails.plugins:gsp"
+     profile "org.grails.profiles:web"
+@@ -98,25 +98,15 @@ tasks.withType(Test) {
+ }
+ 
+ webdriverBinaries {
+-    if (!System.getenv().containsKey('GITHUB_ACTIONS')) {
+-        chromedriver {
+-            version = '2.45.0'
+-            fallbackTo32Bit = true
+-        }
+-        geckodriver '0.30.0'
+-    }
++    chromedriver '2.45.0'
++    geckodriver '0.30.0'
+ }
+ 
+ tasks.withType(Test) {
+     systemProperty "geb.env", System.getProperty('geb.env')
+     systemProperty "geb.build.reportsDir", reporting.file("geb/integrationTest")
+-    if (!System.getenv().containsKey('GITHUB_ACTIONS')) {
+-        systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver')
+-        systemProperty 'webdriver.gecko.driver', System.getProperty('webdriver.gecko.driver')
+-    } else {
+-        systemProperty 'webdriver.chrome.driver', "${System.getenv('CHROMEWEBDRIVER')}/chromedriver"
+-        systemProperty 'webdriver.gecko.driver', "${System.getenv('GECKOWEBDRIVER')}/geckodriver"
+-    }
++    systemProperty "webdriver.chrome.driver", System.getProperty('webdriver.chrome.driver')
++    systemProperty "webdriver.gecko.driver", System.getProperty('webdriver.gecko.driver')
+ }
+ 
+ 
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index 1c2da0b..2ab1369 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,7 +1,7 @@
+-grailsVersion=5.1.9
+-grailsGradlePluginVersion=5.1.5
++grailsVersion=5.1.2
++grailsGradlePluginVersion=5.1.1
+ groovyVersion=3.0.7
+-gorm.version=7.2.1
++gorm.version=7.1.2
+ org.gradle.daemon=true
+ org.gradle.parallel=true
+ org.gradle.jvmargs=-Dfile.encoding=UTF-8 -Xmx1024M
+diff --git a/myapp/gradlew.bat b/myapp/gradlew.bat
+index ac1b06f..107acd3 100755
+--- a/myapp/gradlew.bat
++++ b/myapp/gradlew.bat
+@@ -1,89 +1,89 @@
+-@rem
+-@rem Copyright 2015 the original author or authors.
+-@rem
+-@rem Licensed under the Apache License, Version 2.0 (the "License");
+-@rem you may not use this file except in compliance with the License.
+-@rem You may obtain a copy of the License at
+-@rem
+-@rem      https://www.apache.org/licenses/LICENSE-2.0
+-@rem
+-@rem Unless required by applicable law or agreed to in writing, software
+-@rem distributed under the License is distributed on an "AS IS" BASIS,
+-@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-@rem See the License for the specific language governing permissions and
+-@rem limitations under the License.
+-@rem
+-
+-@if "%DEBUG%" == "" @echo off
+-@rem ##########################################################################
+-@rem
+-@rem  Gradle startup script for Windows
+-@rem
+-@rem ##########################################################################
+-
+-@rem Set local scope for the variables with windows NT shell
+-if "%OS%"=="Windows_NT" setlocal
+-
+-set DIRNAME=%~dp0
+-if "%DIRNAME%" == "" set DIRNAME=.
+-set APP_BASE_NAME=%~n0
+-set APP_HOME=%DIRNAME%
+-
+-@rem Resolve any "." and ".." in APP_HOME to make it shorter.
+-for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
+-
+-@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+-set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
+-
+-@rem Find java.exe
+-if defined JAVA_HOME goto findJavaFromJavaHome
+-
+-set JAVA_EXE=java.exe
+-%JAVA_EXE% -version >NUL 2>&1
+-if "%ERRORLEVEL%" == "0" goto execute
+-
+-echo.
+-echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+-echo.
+-echo Please set the JAVA_HOME variable in your environment to match the
+-echo location of your Java installation.
+-
+-goto fail
+-
+-:findJavaFromJavaHome
+-set JAVA_HOME=%JAVA_HOME:"=%
+-set JAVA_EXE=%JAVA_HOME%/bin/java.exe
+-
+-if exist "%JAVA_EXE%" goto execute
+-
+-echo.
+-echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME%
+-echo.
+-echo Please set the JAVA_HOME variable in your environment to match the
+-echo location of your Java installation.
+-
+-goto fail
+-
+-:execute
+-@rem Setup the command line
+-
+-set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
+-
+-
+-@rem Execute Gradle
+-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
+-
+-:end
+-@rem End local scope for the variables with windows NT shell
+-if "%ERRORLEVEL%"=="0" goto mainEnd
+-
+-:fail
+-rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
+-rem the _cmd.exe /c_ return code!
+-if  not "" == "%GRADLE_EXIT_CONSOLE%" exit 1
+-exit /b 1
+-
+-:mainEnd
+-if "%OS%"=="Windows_NT" endlocal
+-
+-:omega
++@rem
++@rem Copyright 2015 the original author or authors.
++@rem
++@rem Licensed under the Apache License, Version 2.0 (the "License");
++@rem you may not use this file except in compliance with the License.
++@rem You may obtain a copy of the License at
++@rem
++@rem      https://www.apache.org/licenses/LICENSE-2.0
++@rem
++@rem Unless required by applicable law or agreed to in writing, software
++@rem distributed under the License is distributed on an "AS IS" BASIS,
++@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++@rem See the License for the specific language governing permissions and
++@rem limitations under the License.
++@rem
++
++@if "%DEBUG%" == "" @echo off
++@rem ##########################################################################
++@rem
++@rem  Gradle startup script for Windows
++@rem
++@rem ##########################################################################
++
++@rem Set local scope for the variables with windows NT shell
++if "%OS%"=="Windows_NT" setlocal
++
++set DIRNAME=%~dp0
++if "%DIRNAME%" == "" set DIRNAME=.
++set APP_BASE_NAME=%~n0
++set APP_HOME=%DIRNAME%
++
++@rem Resolve any "." and ".." in APP_HOME to make it shorter.
++for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
++
++@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
++set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
++
++@rem Find java.exe
++if defined JAVA_HOME goto findJavaFromJavaHome
++
++set JAVA_EXE=java.exe
++%JAVA_EXE% -version >NUL 2>&1
++if "%ERRORLEVEL%" == "0" goto execute
++
++echo.
++echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
++echo.
++echo Please set the JAVA_HOME variable in your environment to match the
++echo location of your Java installation.
++
++goto fail
++
++:findJavaFromJavaHome
++set JAVA_HOME=%JAVA_HOME:"=%
++set JAVA_EXE=%JAVA_HOME%/bin/java.exe
++
++if exist "%JAVA_EXE%" goto execute
++
++echo.
++echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME%
++echo.
++echo Please set the JAVA_HOME variable in your environment to match the
++echo location of your Java installation.
++
++goto fail
++
++:execute
++@rem Setup the command line
++
++set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
++
++
++@rem Execute Gradle
++"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
++
++:end
++@rem End local scope for the variables with windows NT shell
++if "%ERRORLEVEL%"=="0" goto mainEnd
++
++:fail
++rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
++rem the _cmd.exe /c_ return code!
++if  not "" == "%GRADLE_EXIT_CONSOLE%" exit 1
++exit /b 1
++
++:mainEnd
++if "%OS%"=="Windows_NT" endlocal
++
++:omega
+diff --git a/myapp/grails-app/assets/stylesheets/errors.css b/myapp/grails-app/assets/stylesheets/errors.css
+index b41ab9c..1c616d8 100644
+--- a/myapp/grails-app/assets/stylesheets/errors.css
++++ b/myapp/grails-app/assets/stylesheets/errors.css
+@@ -1,9 +1,9 @@
+-h1 {
+-    font-size: 2rem;
++h1, h2 {
++    margin: 10px 25px 5px;
+ }
+ 
+ h2 {
+-    font-size: 1.25rem;
++    font-size: 1.1em;
+ }
+ 
+ .filename {
+@@ -19,21 +19,32 @@ h2 {
+ 
+ .stack,
+ .snippet {
+-    margin: 10px 0;
++    margin: 0 25px 10px;
+ }
+ 
+ .stack,
+ .snippet {
+     border: 1px solid #ccc;
++       -mox-box-shadow: 0 0 2px rgba(0,0,0,0.2);
++    -webkit-box-shadow: 0 0 2px rgba(0,0,0,0.2);
++            box-shadow: 0 0 2px rgba(0,0,0,0.2);
+ }
+ 
+ /* error details */
+ .error-details {
+-    border: 1px solid #FFAAAA;
++    border-top: 1px solid #FFAAAA;
++       -mox-box-shadow: 0 0 2px rgba(0,0,0,0.2);
++    -webkit-box-shadow: 0 0 2px rgba(0,0,0,0.2);
++            box-shadow: 0 0 2px rgba(0,0,0,0.2);
++    border-bottom: 1px solid #FFAAAA;
++       -mox-box-shadow: 0 0 2px rgba(0,0,0,0.2);
++    -webkit-box-shadow: 0 0 2px rgba(0,0,0,0.2);
++            box-shadow: 0 0 2px rgba(0,0,0,0.2);
+     background-color:#FFF3F3;
+     line-height: 1.5;
+     overflow: hidden;
+-    padding: 10px 0 5px 25px;
++    padding: 5px;
++    padding-left:25px;
+ }
+ 
+ .error-details dt {
+@@ -55,7 +66,7 @@ h2 {
+ .stack {
+     padding: 5px;
+     overflow: auto;
+-    height: 300px;
++    height: 150px;
+ }
+ 
+ /* code snippet */
+diff --git a/myapp/grails-app/assets/stylesheets/main.css b/myapp/grails-app/assets/stylesheets/main.css
+index 56a9669..e2d13a5 100644
+--- a/myapp/grails-app/assets/stylesheets/main.css
++++ b/myapp/grails-app/assets/stylesheets/main.css
+@@ -75,7 +75,8 @@ img {
+ 
+ .content h1 {
+     border-bottom: 1px solid #CCCCCC;
+-    padding: 0 0 1em 0;
++    margin: 0.8em 1em 0.3em;
++    padding: 0 0.25em;
+ }
+ 
+ .scaffold-list h1 {
+@@ -234,7 +235,7 @@ fieldset,
+ label {
+     cursor: pointer;
+     display: inline-block;
+-    margin: 0 0.5em 0 0;
++    margin: 0 0.25em 0 0;
+ }
+ 
+ input, select, textarea {
+@@ -315,8 +316,10 @@ fieldset.embedded legend {
+ 
+ .errors,
+ .message {
+-    margin: 1em 0;
+-    padding: 0.5em;
++    font-size: 0.8em;
++    line-height: 2;
++    margin: 1em 2em;
++    padding: 0.25em;
+ }
+ 
+ .message {
+@@ -384,7 +387,7 @@ input:invalid:focus, select:invalid:focus, textarea:invalid:focus {
+ /* TABLES */
+ 
+ table {
+-    border: 1px solid #DFDFDF;
++    border-top: 1px solid #DFDFDF;
+     border-collapse: collapse;
+     width: 100%;
+     margin-bottom: 1em;
+diff --git a/myapp/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
+index 1190eb0..3d3c6a8 100644
+--- a/myapp/grails-app/conf/application.yml
++++ b/myapp/grails-app/conf/application.yml
+@@ -30,19 +30,9 @@ spring:
+                 - '**/*.gson'
+                 - 'logback.groovy'
+                 - '*.properties'
+-environments:
+-    development:
+-        management:
+-            endpoints:
+-                enabled-by-default: true
+-                web:
+-                    base-path: '/actuator'
+-                    exposure:
+-                        include: '*'
+-    production:
+-        management:
+-            endpoints:
+-                enabled-by-default: false
++management:
++    endpoints:
++        enabled-by-default: false
+ 
+ ---
+ grails:
+diff --git a/myapp/grails-app/conf/logback.xml b/myapp/grails-app/conf/logback.xml
+index 3128faa..f4e7783 100644
+--- a/myapp/grails-app/conf/logback.xml
++++ b/myapp/grails-app/conf/logback.xml
+@@ -7,11 +7,11 @@
+     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+         <encoder>
+             <charset>UTF-8</charset>
+-            <pattern>%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wex</pattern>
++            <pattern>'%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wex'</pattern>
+         </encoder>
+     </appender>
+ 
+     <root level="error">
+         <appender-ref ref="STDOUT" />
+     </root>
+-</configuration>
++</configuration>
+\ No newline at end of file
+diff --git a/myapp/grails-app/views/error.gsp b/myapp/grails-app/views/error.gsp
+index 72e3d00..9a3bb8a 100644
+--- a/myapp/grails-app/views/error.gsp
++++ b/myapp/grails-app/views/error.gsp
+@@ -6,34 +6,26 @@
+         <g:if env="development"><asset:stylesheet src="errors.css"/></g:if>
+     </head>
+     <body>
+-    <div id="content" role="main">
+-        <div class="container">
+-            <section class="row">
+-                <div class="col-12">
+-                <g:if env="development">
+-                    <g:if test="${Throwable.isInstance(exception)}">
+-                        <g:renderException exception="${exception}" />
+-                    </g:if>
+-                    <g:elseif test="${request.getAttribute('javax.servlet.error.exception')}">
+-                        <g:renderException exception="${request.getAttribute('javax.servlet.error.exception')}" />
+-                    </g:elseif>
+-                    <g:else>
+-                        <ul class="errors">
+-                            <li>An error has occurred</li>
+-                            <li>Exception: ${exception}</li>
+-                            <li>Message: ${message}</li>
+-                            <li>Path: ${path}</li>
+-                        </ul>
+-                    </g:else>
+-                </g:if>
+-                <g:else>
+-                    <ul class="errors">
+-                        <li>An error has occurred</li>
+-                    </ul>
+-                </g:else>
+-                </div>
+-            </section>
+-        </div>
+-    </div>
++        <g:if env="development">
++            <g:if test="${Throwable.isInstance(exception)}">
++                <g:renderException exception="${exception}" />
++            </g:if>
++            <g:elseif test="${request.getAttribute('javax.servlet.error.exception')}">
++                <g:renderException exception="${request.getAttribute('javax.servlet.error.exception')}" />
++            </g:elseif>
++            <g:else>
++                <ul class="errors">
++                    <li>An error has occurred</li>
++                    <li>Exception: ${exception}</li>
++                    <li>Message: ${message}</li>
++                    <li>Path: ${path}</li>
++                </ul>
++            </g:else>
++        </g:if>
++        <g:else>
++            <ul class="errors">
++                <li>An error has occurred</li>
++            </ul>
++        </g:else>
+     </body>
+ </html>
+diff --git a/myapp/grails-app/views/notFound.gsp b/myapp/grails-app/views/notFound.gsp
+index fd0f55a..4c873ba 100644
+--- a/myapp/grails-app/views/notFound.gsp
++++ b/myapp/grails-app/views/notFound.gsp
+@@ -6,15 +6,9 @@
+         <g:if env="development"><asset:stylesheet src="errors.css"/></g:if>
+     </head>
+     <body>
+-    <div id="content" role="main">
+-        <div class="container">
+-            <section class="row">
+-                <ul class="col-12 errors">
+-                    <li>Error: Page Not Found (404)</li>
+-                    <li>Path: ${request.forwardURI}</li>
+-                </ul>
+-            </section>
+-        </div>
+-    </div>
++        <ul class="errors">
++            <li>Error: Page Not Found (404)</li>
++            <li>Path: ${request.forwardURI}</li>
++        </ul>
+     </body>
+ </html>
