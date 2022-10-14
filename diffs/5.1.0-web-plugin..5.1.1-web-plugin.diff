@@ -1,0 +1,19 @@
+diff --git a/myplugin/gradle.properties b/myplugin/gradle.properties
+index a27b46d..c83370a 100644
+--- a/myplugin/gradle.properties
++++ b/myplugin/gradle.properties
+@@ -1,5 +1,5 @@
+-grailsVersion=5.1.0
+-grailsGradlePluginVersion=5.0.0
++grailsVersion=5.1.1
++grailsGradlePluginVersion=5.1.0
+ groovyVersion=3.0.7
+ gorm.version=7.1.2
+ org.gradle.daemon=true
+diff --git a/myplugin/settings.gradle b/myplugin/settings.gradle
+index 15256ad..8d5eb67 100644
+--- a/myplugin/settings.gradle
++++ b/myplugin/settings.gradle
+@@ -1 +1 @@
+-rootProject.name = '@info.app.name@'
++rootProject.name = 'myplugin'
