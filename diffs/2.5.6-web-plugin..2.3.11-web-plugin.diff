@@ -1,0 +1,90 @@
+diff --git a/myplugin/MypluginGrailsPlugin.groovy b/myplugin/MypluginGrailsPlugin.groovy
+index e218f10..7b62202 100644
+--- a/myplugin/MypluginGrailsPlugin.groovy
++++ b/myplugin/MypluginGrailsPlugin.groovy
+@@ -2,7 +2,7 @@ class MypluginGrailsPlugin {
+     // the plugin version
+     def version = "0.1"
+     // the version or versions of Grails the plugin is designed for
+-    def grailsVersion = "2.5 > *"
++    def grailsVersion = "2.3 > *"
+     // resources that are excluded from plugin packaging
+     def pluginExcludes = [
+         "grails-app/views/error.gsp"
+diff --git a/myplugin/application.properties b/myplugin/application.properties
+index 6a24217..20a54f8 100644
+--- a/myplugin/application.properties
++++ b/myplugin/application.properties
+@@ -1,4 +1,4 @@
+ #Grails Metadata file
+-#Thu Oct 13 23:04:31 BRT 2022
+-app.grails.version=2.5.6
++#Thu Oct 13 23:02:30 BRT 2022
++app.grails.version=2.3.11
+ app.name=myplugin
+diff --git a/myplugin/grails-app/conf/BuildConfig.groovy b/myplugin/grails-app/conf/BuildConfig.groovy
+index b1c77f9..2d22b15 100644
+--- a/myplugin/grails-app/conf/BuildConfig.groovy
++++ b/myplugin/grails-app/conf/BuildConfig.groovy
+@@ -40,8 +40,8 @@ grails.project.dependency.resolution = {
+     }
+ 
+     plugins {
+-        build(":release:3.1.2",
+-              ":rest-client-builder:2.1.1") {
++        build(":release:3.0.1",
++              ":rest-client-builder:1.0.3") {
+             export = false
+         }
+     }
+diff --git a/myplugin/grails-app/conf/DataSource.groovy b/myplugin/grails-app/conf/DataSource.groovy
+index 71e076c..f9d80a5 100644
+--- a/myplugin/grails-app/conf/DataSource.groovy
++++ b/myplugin/grails-app/conf/DataSource.groovy
+@@ -8,10 +8,9 @@ dataSource {
+ hibernate {
+     cache.use_second_level_cache = true
+     cache.use_query_cache = false
+-//    cache.region.factory_class = 'org.hibernate.cache.SingletonEhCacheRegionFactory' // Hibernate 3
+-    cache.region.factory_class = 'org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory' // Hibernate 4
++    cache.region.factory_class = 'net.sf.ehcache.hibernate.EhCacheRegionFactory' // Hibernate 3
++//    cache.region.factory_class = 'org.hibernate.cache.ehcache.EhCacheRegionFactory' // Hibernate 4
+     singleSession = true // configure OSIV singleSession mode
+-    flush.mode = 'manual' // OSIV session flush mode outside of transactional context
+ }
+ 
+ // environment specific settings
+diff --git a/myplugin/grails-app/views/error.gsp b/myplugin/grails-app/views/error.gsp
+index 95e11ed..d85f57b 100644
+--- a/myplugin/grails-app/views/error.gsp
++++ b/myplugin/grails-app/views/error.gsp
+@@ -3,7 +3,7 @@
+ 	<head>
+ 		<title><g:if env="development">Grails Runtime Exception</g:if><g:else>Error</g:else></title>
+ 		<meta name="layout" content="main">
+-		<g:if env="development"><asset:stylesheet src="errors.css"/></g:if>
++		<g:if env="development"><link rel="stylesheet" href="${resource(dir: 'css', file: 'errors.css')}" type="text/css"></g:if>
+ 	</head>
+ 	<body>
+ 		<g:if env="development">
+diff --git a/myplugin/web-app/WEB-INF/applicationContext.xml b/myplugin/web-app/WEB-INF/applicationContext.xml
+index 130e70d..a48dec0 100644
+--- a/myplugin/web-app/WEB-INF/applicationContext.xml
++++ b/myplugin/web-app/WEB-INF/applicationContext.xml
+@@ -6,6 +6,7 @@
+ 	<bean id="grailsApplication" class="org.codehaus.groovy.grails.commons.GrailsApplicationFactoryBean">
+ 		<description>Grails application factory bean</description>
+ 		<property name="grailsDescriptor" value="/WEB-INF/grails.xml" />
++		<property name="grailsResourceLoader" ref="grailsResourceLoader" />
+ 	</bean>
+ 
+ 	<bean id="pluginManager" class="org.codehaus.groovy.grails.plugins.GrailsPluginManagerFactoryBean">
+@@ -21,6 +22,8 @@
+ 		<property name="pluginManager" ref="pluginManager" />
+ 	</bean>
+ 
++	<bean id="grailsResourceLoader" class="org.codehaus.groovy.grails.commons.GrailsResourceLoaderFactoryBean" />
++
+ 	<bean id="characterEncodingFilter" class="org.springframework.web.filter.CharacterEncodingFilter">
+ 		<property name="encoding">
+ 			<value>utf-8</value>
