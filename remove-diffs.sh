@@ -10,5 +10,5 @@ git add .
 git commit -m "Remove releases diffs"
 git push origin diffs
 
-git push --delete origin "release/$version"
+git push --delete origin release/$version
 git tag -d version/$version
