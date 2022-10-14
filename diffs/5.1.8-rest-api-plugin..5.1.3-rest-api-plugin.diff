@@ -1,0 +1,10 @@
+diff --git a/myplugin/gradle.properties b/myplugin/gradle.properties
+index 70c280d..2b3f20f 100644
+--- a/myplugin/gradle.properties
++++ b/myplugin/gradle.properties
+@@ -1,4 +1,4 @@
+-grailsVersion=5.1.8
++grailsVersion=5.1.3
+ grailsGradlePluginVersion=5.1.3
+ groovyVersion=3.0.7
+ gorm.version=7.2.1
