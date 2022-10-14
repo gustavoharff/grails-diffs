@@ -1,0 +1,269 @@
+diff --git a/myplugin/.gitignore b/myapp/.gitignore
+similarity index 100%
+rename from myplugin/.gitignore
+rename to myapp/.gitignore
+diff --git a/myplugin/build.gradle b/myapp/build.gradle
+similarity index 94%
+rename from myplugin/build.gradle
+rename to myapp/build.gradle
+index 5d31823..e2f0447 100644
+--- a/myplugin/build.gradle
++++ b/myapp/build.gradle
+@@ -4,13 +4,13 @@ buildscript {
+     }
+     dependencies {
+         classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
+-        classpath "org.grails.plugins:hibernate5:7.3.0"
+-        classpath "org.grails.plugins:views-gradle:2.3.2"
++        classpath "org.grails.plugins:hibernate5:7.2.2"
++        classpath "org.grails.plugins:views-gradle:2.2.1"
+     }
+ }
+ 
+ version "0.1"
+-group "myplugin"
++group "myapp"
+ 
+ apply plugin:"eclipse"
+ apply plugin:"idea"
+@@ -50,9 +50,9 @@ dependencies {
+     implementation "org.grails:grails-logging"
+     implementation "org.grails.plugins:cache"
+     implementation "org.grails.plugins:async"
+-    implementation "org.grails.plugins:events"
+     implementation "org.grails.plugins:hibernate5"
+-    implementation "org.hibernate:hibernate-core:5.6.9.Final"
++    implementation "org.hibernate:hibernate-core:5.6.5.Final"
++    implementation "org.grails.plugins:events"
+     implementation "org.grails.plugins:views-json"
+     implementation "org.grails.plugins:views-json-templates"
+     profile "org.grails.profiles:rest-api"
+diff --git a/myplugin/gradle.properties b/myapp/gradle.properties
+similarity index 51%
+rename from myplugin/gradle.properties
+rename to myapp/gradle.properties
+index 2cc0d8a..8e81e61 100644
+--- a/myplugin/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,7 +1,7 @@
+-grailsVersion=5.2.4
+-grailsGradlePluginVersion=5.2.3
+-groovyVersion=3.0.11
+-gorm.version=7.3.2
++grailsVersion=5.1.6
++grailsGradlePluginVersion=5.1.3
++groovyVersion=3.0.7
++gorm.version=7.2.1
+ org.gradle.daemon=true
+ org.gradle.parallel=true
+ org.gradle.jvmargs=-Dfile.encoding=UTF-8 -Xmx1024M
+diff --git a/myplugin/gradle/wrapper/gradle-wrapper.jar b/myapp/gradle/wrapper/gradle-wrapper.jar
+similarity index 100%
+rename from myplugin/gradle/wrapper/gradle-wrapper.jar
+rename to myapp/gradle/wrapper/gradle-wrapper.jar
+diff --git a/myplugin/gradle/wrapper/gradle-wrapper.properties b/myapp/gradle/wrapper/gradle-wrapper.properties
+similarity index 100%
+rename from myplugin/gradle/wrapper/gradle-wrapper.properties
+rename to myapp/gradle/wrapper/gradle-wrapper.properties
+diff --git a/myplugin/gradlew b/myapp/gradlew
+similarity index 100%
+rename from myplugin/gradlew
+rename to myapp/gradlew
+diff --git a/myplugin/gradlew.bat b/myapp/gradlew.bat
+similarity index 100%
+rename from myplugin/gradlew.bat
+rename to myapp/gradlew.bat
+diff --git a/myplugin/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
+similarity index 99%
+rename from myplugin/grails-app/conf/application.yml
+rename to myapp/grails-app/conf/application.yml
+index b3ce9b8..b74239d 100644
+--- a/myplugin/grails-app/conf/application.yml
++++ b/myapp/grails-app/conf/application.yml
+@@ -2,7 +2,7 @@
+ grails:
+     profile: rest-api
+     codegen:
+-        defaultPackage: myplugin
++        defaultPackage: myapp
+     gorm:
+         reactor:
+             # Whether to translate GORM events into Reactor events
+diff --git a/myplugin/grails-app/conf/logback.xml b/myapp/grails-app/conf/logback.xml
+similarity index 100%
+rename from myplugin/grails-app/conf/logback.xml
+rename to myapp/grails-app/conf/logback.xml
+diff --git a/myplugin/grails-app/conf/spring/resources.groovy b/myapp/grails-app/conf/spring/resources.groovy
+similarity index 100%
+rename from myplugin/grails-app/conf/spring/resources.groovy
+rename to myapp/grails-app/conf/spring/resources.groovy
+diff --git a/myplugin/grails-app/controllers/myplugin/ApplicationController.groovy b/myapp/grails-app/controllers/myapp/ApplicationController.groovy
+similarity index 94%
+rename from myplugin/grails-app/controllers/myplugin/ApplicationController.groovy
+rename to myapp/grails-app/controllers/myapp/ApplicationController.groovy
+index bc28483..d40d868 100644
+--- a/myplugin/grails-app/controllers/myplugin/ApplicationController.groovy
++++ b/myapp/grails-app/controllers/myapp/ApplicationController.groovy
+@@ -1,4 +1,4 @@
+-package myplugin
++package myapp
+ 
+ import grails.core.GrailsApplication
+ import grails.plugins.*
+diff --git a/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy b/myapp/grails-app/controllers/myapp/UrlMappings.groovy
+similarity index 96%
+rename from myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
+rename to myapp/grails-app/controllers/myapp/UrlMappings.groovy
+index 2b44064..34bcc50 100644
+--- a/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
++++ b/myapp/grails-app/controllers/myapp/UrlMappings.groovy
+@@ -1,4 +1,4 @@
+-package myplugin
++package myapp
+ 
+ class UrlMappings {
+ 
+diff --git a/myplugin/grails-app/i18n/messages.properties b/myapp/grails-app/i18n/messages.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages.properties
+rename to myapp/grails-app/i18n/messages.properties
+diff --git a/myplugin/grails-app/i18n/messages_cs.properties b/myapp/grails-app/i18n/messages_cs.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_cs.properties
+rename to myapp/grails-app/i18n/messages_cs.properties
+diff --git a/myplugin/grails-app/i18n/messages_da.properties b/myapp/grails-app/i18n/messages_da.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_da.properties
+rename to myapp/grails-app/i18n/messages_da.properties
+diff --git a/myplugin/grails-app/i18n/messages_de.properties b/myapp/grails-app/i18n/messages_de.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_de.properties
+rename to myapp/grails-app/i18n/messages_de.properties
+diff --git a/myplugin/grails-app/i18n/messages_es.properties b/myapp/grails-app/i18n/messages_es.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_es.properties
+rename to myapp/grails-app/i18n/messages_es.properties
+diff --git a/myplugin/grails-app/i18n/messages_fr.properties b/myapp/grails-app/i18n/messages_fr.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_fr.properties
+rename to myapp/grails-app/i18n/messages_fr.properties
+diff --git a/myplugin/grails-app/i18n/messages_it.properties b/myapp/grails-app/i18n/messages_it.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_it.properties
+rename to myapp/grails-app/i18n/messages_it.properties
+diff --git a/myplugin/grails-app/i18n/messages_ja.properties b/myapp/grails-app/i18n/messages_ja.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_ja.properties
+rename to myapp/grails-app/i18n/messages_ja.properties
+diff --git a/myplugin/grails-app/i18n/messages_nb.properties b/myapp/grails-app/i18n/messages_nb.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_nb.properties
+rename to myapp/grails-app/i18n/messages_nb.properties
+diff --git a/myplugin/grails-app/i18n/messages_nl.properties b/myapp/grails-app/i18n/messages_nl.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_nl.properties
+rename to myapp/grails-app/i18n/messages_nl.properties
+diff --git a/myplugin/grails-app/i18n/messages_pl.properties b/myapp/grails-app/i18n/messages_pl.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_pl.properties
+rename to myapp/grails-app/i18n/messages_pl.properties
+diff --git a/myplugin/grails-app/i18n/messages_pt_BR.properties b/myapp/grails-app/i18n/messages_pt_BR.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_pt_BR.properties
+rename to myapp/grails-app/i18n/messages_pt_BR.properties
+diff --git a/myplugin/grails-app/i18n/messages_pt_PT.properties b/myapp/grails-app/i18n/messages_pt_PT.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_pt_PT.properties
+rename to myapp/grails-app/i18n/messages_pt_PT.properties
+diff --git a/myplugin/grails-app/i18n/messages_ru.properties b/myapp/grails-app/i18n/messages_ru.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_ru.properties
+rename to myapp/grails-app/i18n/messages_ru.properties
+diff --git a/myplugin/grails-app/i18n/messages_sk.properties b/myapp/grails-app/i18n/messages_sk.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_sk.properties
+rename to myapp/grails-app/i18n/messages_sk.properties
+diff --git a/myplugin/grails-app/i18n/messages_sv.properties b/myapp/grails-app/i18n/messages_sv.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_sv.properties
+rename to myapp/grails-app/i18n/messages_sv.properties
+diff --git a/myplugin/grails-app/i18n/messages_th.properties b/myapp/grails-app/i18n/messages_th.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_th.properties
+rename to myapp/grails-app/i18n/messages_th.properties
+diff --git a/myplugin/grails-app/i18n/messages_zh_CN.properties b/myapp/grails-app/i18n/messages_zh_CN.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_zh_CN.properties
+rename to myapp/grails-app/i18n/messages_zh_CN.properties
+diff --git a/myplugin/grails-app/init/myplugin/Application.groovy b/myapp/grails-app/init/myapp/Application.groovy
+similarity index 93%
+rename from myplugin/grails-app/init/myplugin/Application.groovy
+rename to myapp/grails-app/init/myapp/Application.groovy
+index ace04f1..980180d 100644
+--- a/myplugin/grails-app/init/myplugin/Application.groovy
++++ b/myapp/grails-app/init/myapp/Application.groovy
+@@ -1,4 +1,4 @@
+-package myplugin
++package myapp
+ 
+ import grails.boot.GrailsApp
+ import grails.boot.config.GrailsAutoConfiguration
+diff --git a/myplugin/grails-app/init/myplugin/BootStrap.groovy b/myapp/grails-app/init/myapp/BootStrap.groovy
+similarity index 83%
+rename from myplugin/grails-app/init/myplugin/BootStrap.groovy
+rename to myapp/grails-app/init/myapp/BootStrap.groovy
+index e8ad49b..5cf149b 100644
+--- a/myplugin/grails-app/init/myplugin/BootStrap.groovy
++++ b/myapp/grails-app/init/myapp/BootStrap.groovy
+@@ -1,4 +1,4 @@
+-package myplugin
++package myapp
+ 
+ class BootStrap {
+ 
+diff --git a/myplugin/grails-app/views/application/index.gson b/myapp/grails-app/views/application/index.gson
+similarity index 100%
+rename from myplugin/grails-app/views/application/index.gson
+rename to myapp/grails-app/views/application/index.gson
+diff --git a/myplugin/grails-app/views/error.gson b/myapp/grails-app/views/error.gson
+similarity index 100%
+rename from myplugin/grails-app/views/error.gson
+rename to myapp/grails-app/views/error.gson
+diff --git a/myplugin/grails-app/views/errors/_errors.gson b/myapp/grails-app/views/errors/_errors.gson
+similarity index 100%
+rename from myplugin/grails-app/views/errors/_errors.gson
+rename to myapp/grails-app/views/errors/_errors.gson
+diff --git a/myplugin/grails-app/views/notFound.gson b/myapp/grails-app/views/notFound.gson
+similarity index 100%
+rename from myplugin/grails-app/views/notFound.gson
+rename to myapp/grails-app/views/notFound.gson
+diff --git a/myplugin/grails-app/views/object/_object.gson b/myapp/grails-app/views/object/_object.gson
+similarity index 100%
+rename from myplugin/grails-app/views/object/_object.gson
+rename to myapp/grails-app/views/object/_object.gson
+diff --git a/myplugin/grails-wrapper.jar b/myapp/grails-wrapper.jar
+similarity index 100%
+rename from myplugin/grails-wrapper.jar
+rename to myapp/grails-wrapper.jar
+diff --git a/myplugin/grailsw b/myapp/grailsw
+similarity index 100%
+rename from myplugin/grailsw
+rename to myapp/grailsw
+diff --git a/myplugin/grailsw.bat b/myapp/grailsw.bat
+similarity index 100%
+rename from myplugin/grailsw.bat
+rename to myapp/grailsw.bat
+diff --git a/myapp/settings.gradle b/myapp/settings.gradle
+new file mode 100644
+index 0000000..6d35791
+--- /dev/null
++++ b/myapp/settings.gradle
+@@ -0,0 +1 @@
++rootProject.name = 'myapp'
+diff --git a/myplugin/settings.gradle b/myplugin/settings.gradle
+deleted file mode 100644
+index 8d5eb67..0000000
+--- a/myplugin/settings.gradle
++++ /dev/null
+@@ -1 +0,0 @@
+-rootProject.name = 'myplugin'
