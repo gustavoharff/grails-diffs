@@ -1,0 +1,23 @@
+diff --git a/myplugin/build.gradle b/myplugin/build.gradle
+index 9d93086..4f3d758 100644
+--- a/myplugin/build.gradle
++++ b/myplugin/build.gradle
+@@ -5,7 +5,7 @@ buildscript {
+     dependencies {
+         classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
+         classpath "org.grails.plugins:hibernate5:7.1.0"
+-        classpath "org.grails.plugins:views-gradle:2.1.1"
++        classpath "org.grails.plugins:views-gradle:2.1.0"
+     }
+ }
+ 
+diff --git a/myplugin/gradle.properties b/myplugin/gradle.properties
+index d85f348..89567b6 100644
+--- a/myplugin/gradle.properties
++++ b/myplugin/gradle.properties
+@@ -1,4 +1,4 @@
+-grailsVersion=5.0.3
++grailsVersion=5.0.0
+ grailsGradlePluginVersion=5.0.0
+ groovyVersion=3.0.7
+ gorm.version=7.1.0
