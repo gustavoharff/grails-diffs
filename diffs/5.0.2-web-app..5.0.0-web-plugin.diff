@@ -1,0 +1,388 @@
+diff --git a/myapp/.gitignore b/myplugin/.gitignore
+similarity index 100%
+rename from myapp/.gitignore
+rename to myplugin/.gitignore
+diff --git a/myapp/build.gradle b/myplugin/build.gradle
+similarity index 99%
+rename from myapp/build.gradle
+rename to myplugin/build.gradle
+index 54a8355..522af5e 100644
+--- a/myapp/build.gradle
++++ b/myplugin/build.gradle
+@@ -11,7 +11,7 @@ buildscript {
+ }
+ 
+ version "0.1"
+-group "myapp"
++group "myplugin"
+ 
+ apply plugin:"eclipse"
+ apply plugin:"idea"
+diff --git a/myapp/gradle.properties b/myplugin/gradle.properties
+similarity index 89%
+rename from myapp/gradle.properties
+rename to myplugin/gradle.properties
+index 47997f8..89567b6 100644
+--- a/myapp/gradle.properties
++++ b/myplugin/gradle.properties
+@@ -1,4 +1,4 @@
+-grailsVersion=5.0.2
++grailsVersion=5.0.0
+ grailsGradlePluginVersion=5.0.0
+ groovyVersion=3.0.7
+ gorm.version=7.1.0
+diff --git a/myapp/gradle/wrapper/gradle-wrapper.jar b/myplugin/gradle/wrapper/gradle-wrapper.jar
+similarity index 100%
+rename from myapp/gradle/wrapper/gradle-wrapper.jar
+rename to myplugin/gradle/wrapper/gradle-wrapper.jar
+diff --git a/myapp/gradle/wrapper/gradle-wrapper.properties b/myplugin/gradle/wrapper/gradle-wrapper.properties
+similarity index 100%
+rename from myapp/gradle/wrapper/gradle-wrapper.properties
+rename to myplugin/gradle/wrapper/gradle-wrapper.properties
+diff --git a/myapp/gradlew b/myplugin/gradlew
+similarity index 100%
+rename from myapp/gradlew
+rename to myplugin/gradlew
+diff --git a/myapp/gradlew.bat b/myplugin/gradlew.bat
+similarity index 100%
+rename from myapp/gradlew.bat
+rename to myplugin/gradlew.bat
+diff --git a/myapp/grails-app/assets/images/advancedgrails.svg b/myplugin/grails-app/assets/images/advancedgrails.svg
+similarity index 100%
+rename from myapp/grails-app/assets/images/advancedgrails.svg
+rename to myplugin/grails-app/assets/images/advancedgrails.svg
+diff --git a/myapp/grails-app/assets/images/apple-touch-icon-retina.png b/myplugin/grails-app/assets/images/apple-touch-icon-retina.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/apple-touch-icon-retina.png
+rename to myplugin/grails-app/assets/images/apple-touch-icon-retina.png
+diff --git a/myapp/grails-app/assets/images/apple-touch-icon.png b/myplugin/grails-app/assets/images/apple-touch-icon.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/apple-touch-icon.png
+rename to myplugin/grails-app/assets/images/apple-touch-icon.png
+diff --git a/myapp/grails-app/assets/images/documentation.svg b/myplugin/grails-app/assets/images/documentation.svg
+similarity index 100%
+rename from myapp/grails-app/assets/images/documentation.svg
+rename to myplugin/grails-app/assets/images/documentation.svg
+diff --git a/myapp/grails-app/assets/images/favicon.ico b/myplugin/grails-app/assets/images/favicon.ico
+similarity index 100%
+rename from myapp/grails-app/assets/images/favicon.ico
+rename to myplugin/grails-app/assets/images/favicon.ico
+diff --git a/myapp/grails-app/assets/images/grails-cupsonly-logo-white.svg b/myplugin/grails-app/assets/images/grails-cupsonly-logo-white.svg
+similarity index 100%
+rename from myapp/grails-app/assets/images/grails-cupsonly-logo-white.svg
+rename to myplugin/grails-app/assets/images/grails-cupsonly-logo-white.svg
+diff --git a/myapp/grails-app/assets/images/grails.svg b/myplugin/grails-app/assets/images/grails.svg
+similarity index 100%
+rename from myapp/grails-app/assets/images/grails.svg
+rename to myplugin/grails-app/assets/images/grails.svg
+diff --git a/myapp/grails-app/assets/images/skin/database_add.png b/myplugin/grails-app/assets/images/skin/database_add.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/database_add.png
+rename to myplugin/grails-app/assets/images/skin/database_add.png
+diff --git a/myapp/grails-app/assets/images/skin/database_delete.png b/myplugin/grails-app/assets/images/skin/database_delete.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/database_delete.png
+rename to myplugin/grails-app/assets/images/skin/database_delete.png
+diff --git a/myapp/grails-app/assets/images/skin/database_edit.png b/myplugin/grails-app/assets/images/skin/database_edit.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/database_edit.png
+rename to myplugin/grails-app/assets/images/skin/database_edit.png
+diff --git a/myapp/grails-app/assets/images/skin/database_save.png b/myplugin/grails-app/assets/images/skin/database_save.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/database_save.png
+rename to myplugin/grails-app/assets/images/skin/database_save.png
+diff --git a/myapp/grails-app/assets/images/skin/database_table.png b/myplugin/grails-app/assets/images/skin/database_table.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/database_table.png
+rename to myplugin/grails-app/assets/images/skin/database_table.png
+diff --git a/myapp/grails-app/assets/images/skin/exclamation.png b/myplugin/grails-app/assets/images/skin/exclamation.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/exclamation.png
+rename to myplugin/grails-app/assets/images/skin/exclamation.png
+diff --git a/myapp/grails-app/assets/images/skin/house.png b/myplugin/grails-app/assets/images/skin/house.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/house.png
+rename to myplugin/grails-app/assets/images/skin/house.png
+diff --git a/myapp/grails-app/assets/images/skin/information.png b/myplugin/grails-app/assets/images/skin/information.png
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/information.png
+rename to myplugin/grails-app/assets/images/skin/information.png
+diff --git a/myapp/grails-app/assets/images/skin/shadow.jpg b/myplugin/grails-app/assets/images/skin/shadow.jpg
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/shadow.jpg
+rename to myplugin/grails-app/assets/images/skin/shadow.jpg
+diff --git a/myapp/grails-app/assets/images/skin/sorted_asc.gif b/myplugin/grails-app/assets/images/skin/sorted_asc.gif
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/sorted_asc.gif
+rename to myplugin/grails-app/assets/images/skin/sorted_asc.gif
+diff --git a/myapp/grails-app/assets/images/skin/sorted_desc.gif b/myplugin/grails-app/assets/images/skin/sorted_desc.gif
+similarity index 100%
+rename from myapp/grails-app/assets/images/skin/sorted_desc.gif
+rename to myplugin/grails-app/assets/images/skin/sorted_desc.gif
+diff --git a/myapp/grails-app/assets/images/slack.svg b/myplugin/grails-app/assets/images/slack.svg
+similarity index 100%
+rename from myapp/grails-app/assets/images/slack.svg
+rename to myplugin/grails-app/assets/images/slack.svg
+diff --git a/myapp/grails-app/assets/images/spinner.gif b/myplugin/grails-app/assets/images/spinner.gif
+similarity index 100%
+rename from myapp/grails-app/assets/images/spinner.gif
+rename to myplugin/grails-app/assets/images/spinner.gif
+diff --git a/myapp/grails-app/assets/javascripts/application.js b/myplugin/grails-app/assets/javascripts/application.js
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/application.js
+rename to myplugin/grails-app/assets/javascripts/application.js
+diff --git a/myapp/grails-app/assets/javascripts/bootstrap.bundle.js b/myplugin/grails-app/assets/javascripts/bootstrap.bundle.js
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/bootstrap.bundle.js
+rename to myplugin/grails-app/assets/javascripts/bootstrap.bundle.js
+diff --git a/myapp/grails-app/assets/javascripts/bootstrap.bundle.js.map b/myplugin/grails-app/assets/javascripts/bootstrap.bundle.js.map
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/bootstrap.bundle.js.map
+rename to myplugin/grails-app/assets/javascripts/bootstrap.bundle.js.map
+diff --git a/myapp/grails-app/assets/javascripts/bootstrap.bundle.min.js b/myplugin/grails-app/assets/javascripts/bootstrap.bundle.min.js
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/bootstrap.bundle.min.js
+rename to myplugin/grails-app/assets/javascripts/bootstrap.bundle.min.js
+diff --git a/myapp/grails-app/assets/javascripts/bootstrap.bundle.min.js.map b/myplugin/grails-app/assets/javascripts/bootstrap.bundle.min.js.map
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/bootstrap.bundle.min.js.map
+rename to myplugin/grails-app/assets/javascripts/bootstrap.bundle.min.js.map
+diff --git a/myapp/grails-app/assets/javascripts/bootstrap.js b/myplugin/grails-app/assets/javascripts/bootstrap.js
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/bootstrap.js
+rename to myplugin/grails-app/assets/javascripts/bootstrap.js
+diff --git a/myapp/grails-app/assets/javascripts/bootstrap.js.map b/myplugin/grails-app/assets/javascripts/bootstrap.js.map
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/bootstrap.js.map
+rename to myplugin/grails-app/assets/javascripts/bootstrap.js.map
+diff --git a/myapp/grails-app/assets/javascripts/bootstrap.min.js b/myplugin/grails-app/assets/javascripts/bootstrap.min.js
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/bootstrap.min.js
+rename to myplugin/grails-app/assets/javascripts/bootstrap.min.js
+diff --git a/myapp/grails-app/assets/javascripts/bootstrap.min.js.map b/myplugin/grails-app/assets/javascripts/bootstrap.min.js.map
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/bootstrap.min.js.map
+rename to myplugin/grails-app/assets/javascripts/bootstrap.min.js.map
+diff --git a/myapp/grails-app/assets/javascripts/jquery-3.3.1.min.js b/myplugin/grails-app/assets/javascripts/jquery-3.3.1.min.js
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/jquery-3.3.1.min.js
+rename to myplugin/grails-app/assets/javascripts/jquery-3.3.1.min.js
+diff --git a/myapp/grails-app/assets/javascripts/jquery-3.3.1.min.js.map b/myplugin/grails-app/assets/javascripts/jquery-3.3.1.min.js.map
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/jquery-3.3.1.min.js.map
+rename to myplugin/grails-app/assets/javascripts/jquery-3.3.1.min.js.map
+diff --git a/myapp/grails-app/assets/javascripts/popper.min.js b/myplugin/grails-app/assets/javascripts/popper.min.js
+similarity index 100%
+rename from myapp/grails-app/assets/javascripts/popper.min.js
+rename to myplugin/grails-app/assets/javascripts/popper.min.js
+diff --git a/myapp/grails-app/assets/stylesheets/application.css b/myplugin/grails-app/assets/stylesheets/application.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/application.css
+rename to myplugin/grails-app/assets/stylesheets/application.css
+diff --git a/myapp/grails-app/assets/stylesheets/bootstrap-grid.css b/myplugin/grails-app/assets/stylesheets/bootstrap-grid.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/bootstrap-grid.css
+rename to myplugin/grails-app/assets/stylesheets/bootstrap-grid.css
+diff --git a/myapp/grails-app/assets/stylesheets/bootstrap-reboot.css b/myplugin/grails-app/assets/stylesheets/bootstrap-reboot.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/bootstrap-reboot.css
+rename to myplugin/grails-app/assets/stylesheets/bootstrap-reboot.css
+diff --git a/myapp/grails-app/assets/stylesheets/bootstrap.css b/myplugin/grails-app/assets/stylesheets/bootstrap.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/bootstrap.css
+rename to myplugin/grails-app/assets/stylesheets/bootstrap.css
+diff --git a/myapp/grails-app/assets/stylesheets/bootstrap.css.map b/myplugin/grails-app/assets/stylesheets/bootstrap.css.map
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/bootstrap.css.map
+rename to myplugin/grails-app/assets/stylesheets/bootstrap.css.map
+diff --git a/myapp/grails-app/assets/stylesheets/bootstrap.min.css b/myplugin/grails-app/assets/stylesheets/bootstrap.min.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/bootstrap.min.css
+rename to myplugin/grails-app/assets/stylesheets/bootstrap.min.css
+diff --git a/myapp/grails-app/assets/stylesheets/bootstrap.min.css.map b/myplugin/grails-app/assets/stylesheets/bootstrap.min.css.map
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/bootstrap.min.css.map
+rename to myplugin/grails-app/assets/stylesheets/bootstrap.min.css.map
+diff --git a/myapp/grails-app/assets/stylesheets/errors.css b/myplugin/grails-app/assets/stylesheets/errors.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/errors.css
+rename to myplugin/grails-app/assets/stylesheets/errors.css
+diff --git a/myapp/grails-app/assets/stylesheets/grails.css b/myplugin/grails-app/assets/stylesheets/grails.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/grails.css
+rename to myplugin/grails-app/assets/stylesheets/grails.css
+diff --git a/myapp/grails-app/assets/stylesheets/main.css b/myplugin/grails-app/assets/stylesheets/main.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/main.css
+rename to myplugin/grails-app/assets/stylesheets/main.css
+diff --git a/myapp/grails-app/assets/stylesheets/mobile.css b/myplugin/grails-app/assets/stylesheets/mobile.css
+similarity index 100%
+rename from myapp/grails-app/assets/stylesheets/mobile.css
+rename to myplugin/grails-app/assets/stylesheets/mobile.css
+diff --git a/myapp/grails-app/conf/application.yml b/myplugin/grails-app/conf/application.yml
+similarity index 99%
+rename from myapp/grails-app/conf/application.yml
+rename to myplugin/grails-app/conf/application.yml
+index 754df0b..ed5c817 100644
+--- a/myapp/grails-app/conf/application.yml
++++ b/myplugin/grails-app/conf/application.yml
+@@ -2,7 +2,7 @@
+ grails:
+     profile: web
+     codegen:
+-        defaultPackage: myapp
++        defaultPackage: myplugin
+     gorm:
+         reactor:
+             # Whether to translate GORM events into Reactor events
+diff --git a/myapp/grails-app/conf/logback.groovy b/myplugin/grails-app/conf/logback.groovy
+similarity index 100%
+rename from myapp/grails-app/conf/logback.groovy
+rename to myplugin/grails-app/conf/logback.groovy
+diff --git a/myapp/grails-app/conf/spring/resources.groovy b/myplugin/grails-app/conf/spring/resources.groovy
+similarity index 100%
+rename from myapp/grails-app/conf/spring/resources.groovy
+rename to myplugin/grails-app/conf/spring/resources.groovy
+diff --git a/myapp/grails-app/controllers/myapp/UrlMappings.groovy b/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
+similarity index 94%
+rename from myapp/grails-app/controllers/myapp/UrlMappings.groovy
+rename to myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
+index 1be4f0c..90d38d4 100644
+--- a/myapp/grails-app/controllers/myapp/UrlMappings.groovy
++++ b/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
+@@ -1,4 +1,4 @@
+-package myapp
++package myplugin
+ 
+ class UrlMappings {
+ 
+diff --git a/myapp/grails-app/i18n/messages.properties b/myplugin/grails-app/i18n/messages.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages.properties
+rename to myplugin/grails-app/i18n/messages.properties
+diff --git a/myapp/grails-app/i18n/messages_cs.properties b/myplugin/grails-app/i18n/messages_cs.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_cs.properties
+rename to myplugin/grails-app/i18n/messages_cs.properties
+diff --git a/myapp/grails-app/i18n/messages_da.properties b/myplugin/grails-app/i18n/messages_da.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_da.properties
+rename to myplugin/grails-app/i18n/messages_da.properties
+diff --git a/myapp/grails-app/i18n/messages_de.properties b/myplugin/grails-app/i18n/messages_de.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_de.properties
+rename to myplugin/grails-app/i18n/messages_de.properties
+diff --git a/myapp/grails-app/i18n/messages_es.properties b/myplugin/grails-app/i18n/messages_es.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_es.properties
+rename to myplugin/grails-app/i18n/messages_es.properties
+diff --git a/myapp/grails-app/i18n/messages_fr.properties b/myplugin/grails-app/i18n/messages_fr.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_fr.properties
+rename to myplugin/grails-app/i18n/messages_fr.properties
+diff --git a/myapp/grails-app/i18n/messages_it.properties b/myplugin/grails-app/i18n/messages_it.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_it.properties
+rename to myplugin/grails-app/i18n/messages_it.properties
+diff --git a/myapp/grails-app/i18n/messages_ja.properties b/myplugin/grails-app/i18n/messages_ja.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_ja.properties
+rename to myplugin/grails-app/i18n/messages_ja.properties
+diff --git a/myapp/grails-app/i18n/messages_nb.properties b/myplugin/grails-app/i18n/messages_nb.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_nb.properties
+rename to myplugin/grails-app/i18n/messages_nb.properties
+diff --git a/myapp/grails-app/i18n/messages_nl.properties b/myplugin/grails-app/i18n/messages_nl.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_nl.properties
+rename to myplugin/grails-app/i18n/messages_nl.properties
+diff --git a/myapp/grails-app/i18n/messages_pl.properties b/myplugin/grails-app/i18n/messages_pl.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_pl.properties
+rename to myplugin/grails-app/i18n/messages_pl.properties
+diff --git a/myapp/grails-app/i18n/messages_pt_BR.properties b/myplugin/grails-app/i18n/messages_pt_BR.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_pt_BR.properties
+rename to myplugin/grails-app/i18n/messages_pt_BR.properties
+diff --git a/myapp/grails-app/i18n/messages_pt_PT.properties b/myplugin/grails-app/i18n/messages_pt_PT.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_pt_PT.properties
+rename to myplugin/grails-app/i18n/messages_pt_PT.properties
+diff --git a/myapp/grails-app/i18n/messages_ru.properties b/myplugin/grails-app/i18n/messages_ru.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_ru.properties
+rename to myplugin/grails-app/i18n/messages_ru.properties
+diff --git a/myapp/grails-app/i18n/messages_sk.properties b/myplugin/grails-app/i18n/messages_sk.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_sk.properties
+rename to myplugin/grails-app/i18n/messages_sk.properties
+diff --git a/myapp/grails-app/i18n/messages_sv.properties b/myplugin/grails-app/i18n/messages_sv.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_sv.properties
+rename to myplugin/grails-app/i18n/messages_sv.properties
+diff --git a/myapp/grails-app/i18n/messages_th.properties b/myplugin/grails-app/i18n/messages_th.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_th.properties
+rename to myplugin/grails-app/i18n/messages_th.properties
+diff --git a/myapp/grails-app/i18n/messages_zh_CN.properties b/myplugin/grails-app/i18n/messages_zh_CN.properties
+similarity index 100%
+rename from myapp/grails-app/i18n/messages_zh_CN.properties
+rename to myplugin/grails-app/i18n/messages_zh_CN.properties
+diff --git a/myapp/grails-app/init/myapp/Application.groovy b/myplugin/grails-app/init/myplugin/Application.groovy
+similarity index 93%
+rename from myapp/grails-app/init/myapp/Application.groovy
+rename to myplugin/grails-app/init/myplugin/Application.groovy
+index 980180d..ace04f1 100644
+--- a/myapp/grails-app/init/myapp/Application.groovy
++++ b/myplugin/grails-app/init/myplugin/Application.groovy
+@@ -1,4 +1,4 @@
+-package myapp
++package myplugin
+ 
+ import grails.boot.GrailsApp
+ import grails.boot.config.GrailsAutoConfiguration
+diff --git a/myapp/grails-app/init/myapp/BootStrap.groovy b/myplugin/grails-app/init/myplugin/BootStrap.groovy
+similarity index 83%
+rename from myapp/grails-app/init/myapp/BootStrap.groovy
+rename to myplugin/grails-app/init/myplugin/BootStrap.groovy
+index 5cf149b..e8ad49b 100644
+--- a/myapp/grails-app/init/myapp/BootStrap.groovy
++++ b/myplugin/grails-app/init/myplugin/BootStrap.groovy
+@@ -1,4 +1,4 @@
+-package myapp
++package myplugin
+ 
+ class BootStrap {
+ 
+diff --git a/myapp/grails-app/views/error.gsp b/myplugin/grails-app/views/error.gsp
+similarity index 100%
+rename from myapp/grails-app/views/error.gsp
+rename to myplugin/grails-app/views/error.gsp
+diff --git a/myapp/grails-app/views/index.gsp b/myplugin/grails-app/views/index.gsp
+similarity index 100%
+rename from myapp/grails-app/views/index.gsp
+rename to myplugin/grails-app/views/index.gsp
+diff --git a/myapp/grails-app/views/layouts/main.gsp b/myplugin/grails-app/views/layouts/main.gsp
+similarity index 100%
+rename from myapp/grails-app/views/layouts/main.gsp
+rename to myplugin/grails-app/views/layouts/main.gsp
+diff --git a/myapp/grails-app/views/notFound.gsp b/myplugin/grails-app/views/notFound.gsp
+similarity index 100%
+rename from myapp/grails-app/views/notFound.gsp
+rename to myplugin/grails-app/views/notFound.gsp
+diff --git a/myapp/grails-wrapper.jar b/myplugin/grails-wrapper.jar
+similarity index 100%
+rename from myapp/grails-wrapper.jar
+rename to myplugin/grails-wrapper.jar
+diff --git a/myapp/grailsw b/myplugin/grailsw
+similarity index 100%
+rename from myapp/grailsw
+rename to myplugin/grailsw
+diff --git a/myapp/grailsw.bat b/myplugin/grailsw.bat
+similarity index 100%
+rename from myapp/grailsw.bat
+rename to myplugin/grailsw.bat
+diff --git a/myapp/src/integration-test/resources/GebConfig.groovy b/myplugin/src/integration-test/resources/GebConfig.groovy
+similarity index 100%
+rename from myapp/src/integration-test/resources/GebConfig.groovy
+rename to myplugin/src/integration-test/resources/GebConfig.groovy
