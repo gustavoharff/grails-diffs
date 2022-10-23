@@ -1,0 +1,57 @@
+diff --git a/myapp/build.gradle b/myapp/build.gradle
+index 215c93e1..d39d8a78 100644
+--- a/myapp/build.gradle
++++ b/myapp/build.gradle
+@@ -4,8 +4,8 @@ buildscript {
+     }
+     dependencies {
+         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+-        classpath "gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.0"
+         classpath "org.grails.plugins:hibernate5:7.0.0"
++        classpath "gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.0"
+         classpath "com.bertramlabs.plugins:asset-pipeline-gradle:3.0.10"
+     }
+ }
+@@ -18,8 +18,8 @@ apply plugin:"idea"
+ apply plugin:"war"
+ apply plugin:"org.grails.grails-web"
+ apply plugin:"com.github.erdi.webdriver-binaries"
+-apply plugin:"com.bertramlabs.asset-pipeline"
+ apply plugin:"org.grails.grails-gsp"
++apply plugin:"com.bertramlabs.asset-pipeline"
+ 
+ repositories {
+     maven { url "https://repo.grails.org/grails/core" }
+@@ -74,7 +74,6 @@ dependencies {
+ }
+ 
+ bootRun {
+-    ignoreExitValue true
+     jvmArgs(
+         '-Dspring.output.ansi.enabled=always', 
+         '-noverify', 
+@@ -85,12 +84,6 @@ bootRun {
+     systemProperty springProfilesActive, System.getProperty(springProfilesActive)
+ }
+ 
+-tasks.withType(GroovyCompile) {
+-    configure(groovyOptions) {
+-        forkOptions.jvmArgs = ['-Xmx1024m']
+-    }
+-}
+-
+ webdriverBinaries {
+     chromedriver '2.45.0'
+     geckodriver '0.24.0'
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index 04c3976f..dfbc02dc 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,5 +1,2 @@
+-grailsVersion=4.0.2
+-gorm.version=7.0.3.RELEASE
+-org.gradle.daemon=true
+-org.gradle.parallel=true
+-org.gradle.jvmargs=-Dfile.encoding=UTF-8 -Xmx1024M
++grailsVersion=4.0.1
++gorm.version=7.0.2.RELEASE
