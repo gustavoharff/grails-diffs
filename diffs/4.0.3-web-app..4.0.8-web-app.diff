@@ -1,0 +1,59 @@
+diff --git a/myapp/build.gradle b/myapp/build.gradle
+index 215c93e1..94405cbc 100644
+--- a/myapp/build.gradle
++++ b/myapp/build.gradle
+@@ -5,8 +5,8 @@ buildscript {
+     dependencies {
+         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+         classpath "gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.0"
+-        classpath "org.grails.plugins:hibernate5:7.0.0"
+-        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:3.0.10"
++        classpath "org.grails.plugins:hibernate5:7.0.4"
++        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:3.2.4"
+     }
+ }
+ 
+@@ -52,7 +52,7 @@ dependencies {
+     compile "org.grails.plugins:scaffolding"
+     compile "org.grails.plugins:events"
+     compile "org.grails.plugins:hibernate5"
+-    compile "org.hibernate:hibernate-core:5.4.0.Final"
++    compile "org.hibernate:hibernate-core:5.4.18.Final"
+     compile "org.grails.plugins:gsp"
+     compileOnly "io.micronaut:micronaut-inject-groovy"
+     console "org.grails:grails-console"
+@@ -60,8 +60,9 @@ dependencies {
+     runtime "org.glassfish.web:el-impl:2.1.2-b03"
+     runtime "com.h2database:h2"
+     runtime "org.apache.tomcat:tomcat-jdbc"
+-    runtime "javax.xml.bind:jaxb-api:2.3.0"
+-    runtime "com.bertramlabs.plugins:asset-pipeline-grails:3.0.10"
++    runtime "javax.xml.bind:jaxb-api:2.3.1"
++    runtime "com.bertramlabs.plugins:asset-pipeline-grails:3.2.4"
++    testCompile "io.micronaut:micronaut-inject-groovy"
+     testCompile "org.grails:grails-gorm-testing-support"
+     testCompile "org.mockito:mockito-core"
+     testCompile "org.grails:grails-web-testing-support"
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index 59367d7a..39337b17 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,5 +1,5 @@
+-grailsVersion=4.0.3
+-gorm.version=7.0.4.RELEASE
++grailsVersion=4.0.8
++gorm.version=7.0.8.RELEASE
+ org.gradle.daemon=true
+ org.gradle.parallel=true
+ org.gradle.jvmargs=-Dfile.encoding=UTF-8 -Xmx1024M
+diff --git a/myapp/gradle/wrapper/gradle-wrapper.properties b/myapp/gradle/wrapper/gradle-wrapper.properties
+index 558870da..5028f28f 100644
+--- a/myapp/gradle/wrapper/gradle-wrapper.properties
++++ b/myapp/gradle/wrapper/gradle-wrapper.properties
+@@ -1,5 +1,5 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-5.1.1-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-5.6.4-bin.zip
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
