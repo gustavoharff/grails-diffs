@@ -1,0 +1,449 @@
+diff --git a/myplugin/.gitignore b/myapp/.gitignore
+similarity index 100%
+rename from myplugin/.gitignore
+rename to myapp/.gitignore
+diff --git a/myplugin/build.gradle b/myapp/build.gradle
+similarity index 99%
+rename from myplugin/build.gradle
+rename to myapp/build.gradle
+index e3e0890f..116786e1 100644
+--- a/myplugin/build.gradle
++++ b/myapp/build.gradle
+@@ -11,7 +11,7 @@ buildscript {
+ }
+ 
+ version "0.1"
+-group "myplugin"
++group "myapp"
+ 
+ apply plugin:"eclipse"
+ apply plugin:"idea"
+diff --git a/myplugin/gradle.properties b/myapp/gradle.properties
+similarity index 71%
+rename from myplugin/gradle.properties
+rename to myapp/gradle.properties
+index fed966eb..5d7add64 100644
+--- a/myplugin/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,3 +1,3 @@
+-grailsVersion=3.3.10
++grailsVersion=3.3.14
+ gormVersion=6.1.12.RELEASE
+ gradleWrapperVersion=3.5
+diff --git a/myplugin/gradle/wrapper/gradle-wrapper.jar b/myapp/gradle/wrapper/gradle-wrapper.jar
+similarity index 100%
+rename from myplugin/gradle/wrapper/gradle-wrapper.jar
+rename to myapp/gradle/wrapper/gradle-wrapper.jar
+diff --git a/myplugin/gradle/wrapper/gradle-wrapper.properties b/myapp/gradle/wrapper/gradle-wrapper.properties
+similarity index 100%
+rename from myplugin/gradle/wrapper/gradle-wrapper.properties
+rename to myapp/gradle/wrapper/gradle-wrapper.properties
+diff --git a/myplugin/gradlew b/myapp/gradlew
+similarity index 100%
+rename from myplugin/gradlew
+rename to myapp/gradlew
+diff --git a/myplugin/gradlew.bat b/myapp/gradlew.bat
+similarity index 100%
+rename from myplugin/gradlew.bat
+rename to myapp/gradlew.bat
+diff --git a/myplugin/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
+similarity index 98%
+rename from myplugin/grails-app/conf/application.yml
+rename to myapp/grails-app/conf/application.yml
+index 08950b1c..9dc16ede 100644
+--- a/myplugin/grails-app/conf/application.yml
++++ b/myapp/grails-app/conf/application.yml
+@@ -2,7 +2,7 @@
+ grails:
+     profile: rest-api
+     codegen:
+-        defaultPackage: myplugin
++        defaultPackage: myapp
+     gorm:
+         reactor:
+             # Whether to translate GORM events into Reactor events
+diff --git a/myplugin/grails-app/conf/logback.groovy b/myapp/grails-app/conf/logback.groovy
+similarity index 100%
+rename from myplugin/grails-app/conf/logback.groovy
+rename to myapp/grails-app/conf/logback.groovy
+diff --git a/myplugin/grails-app/conf/spring/resources.groovy b/myapp/grails-app/conf/spring/resources.groovy
+similarity index 100%
+rename from myplugin/grails-app/conf/spring/resources.groovy
+rename to myapp/grails-app/conf/spring/resources.groovy
+diff --git a/myplugin/grails-app/controllers/myplugin/ApplicationController.groovy b/myapp/grails-app/controllers/myapp/ApplicationController.groovy
+similarity index 94%
+rename from myplugin/grails-app/controllers/myplugin/ApplicationController.groovy
+rename to myapp/grails-app/controllers/myapp/ApplicationController.groovy
+index bc284837..d40d868e 100644
+--- a/myplugin/grails-app/controllers/myplugin/ApplicationController.groovy
++++ b/myapp/grails-app/controllers/myapp/ApplicationController.groovy
+@@ -1,4 +1,4 @@
+-package myplugin
++package myapp
+ 
+ import grails.core.GrailsApplication
+ import grails.plugins.*
+diff --git a/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy b/myapp/grails-app/controllers/myapp/UrlMappings.groovy
+similarity index 96%
+rename from myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
+rename to myapp/grails-app/controllers/myapp/UrlMappings.groovy
+index 2b44064d..34bcc508 100644
+--- a/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
++++ b/myapp/grails-app/controllers/myapp/UrlMappings.groovy
+@@ -1,4 +1,4 @@
+-package myplugin
++package myapp
+ 
+ class UrlMappings {
+ 
+diff --git a/myplugin/grails-app/i18n/messages.properties b/myapp/grails-app/i18n/messages.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages.properties
+rename to myapp/grails-app/i18n/messages.properties
+diff --git a/myplugin/grails-app/i18n/messages_cs.properties b/myapp/grails-app/i18n/messages_cs.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_cs.properties
+rename to myapp/grails-app/i18n/messages_cs.properties
+diff --git a/myplugin/grails-app/i18n/messages_da.properties b/myapp/grails-app/i18n/messages_da.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_da.properties
+rename to myapp/grails-app/i18n/messages_da.properties
+diff --git a/myplugin/grails-app/i18n/messages_de.properties b/myapp/grails-app/i18n/messages_de.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_de.properties
+rename to myapp/grails-app/i18n/messages_de.properties
+diff --git a/myplugin/grails-app/i18n/messages_es.properties b/myapp/grails-app/i18n/messages_es.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_es.properties
+rename to myapp/grails-app/i18n/messages_es.properties
+diff --git a/myplugin/grails-app/i18n/messages_fr.properties b/myapp/grails-app/i18n/messages_fr.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_fr.properties
+rename to myapp/grails-app/i18n/messages_fr.properties
+diff --git a/myplugin/grails-app/i18n/messages_it.properties b/myapp/grails-app/i18n/messages_it.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_it.properties
+rename to myapp/grails-app/i18n/messages_it.properties
+diff --git a/myplugin/grails-app/i18n/messages_ja.properties b/myapp/grails-app/i18n/messages_ja.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_ja.properties
+rename to myapp/grails-app/i18n/messages_ja.properties
+diff --git a/myplugin/grails-app/i18n/messages_nb.properties b/myapp/grails-app/i18n/messages_nb.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_nb.properties
+rename to myapp/grails-app/i18n/messages_nb.properties
+diff --git a/myplugin/grails-app/i18n/messages_nl.properties b/myapp/grails-app/i18n/messages_nl.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_nl.properties
+rename to myapp/grails-app/i18n/messages_nl.properties
+diff --git a/myplugin/grails-app/i18n/messages_pl.properties b/myapp/grails-app/i18n/messages_pl.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_pl.properties
+rename to myapp/grails-app/i18n/messages_pl.properties
+diff --git a/myplugin/grails-app/i18n/messages_pt_BR.properties b/myapp/grails-app/i18n/messages_pt_BR.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_pt_BR.properties
+rename to myapp/grails-app/i18n/messages_pt_BR.properties
+diff --git a/myplugin/grails-app/i18n/messages_pt_PT.properties b/myapp/grails-app/i18n/messages_pt_PT.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_pt_PT.properties
+rename to myapp/grails-app/i18n/messages_pt_PT.properties
+diff --git a/myplugin/grails-app/i18n/messages_ru.properties b/myapp/grails-app/i18n/messages_ru.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_ru.properties
+rename to myapp/grails-app/i18n/messages_ru.properties
+diff --git a/myplugin/grails-app/i18n/messages_sk.properties b/myapp/grails-app/i18n/messages_sk.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_sk.properties
+rename to myapp/grails-app/i18n/messages_sk.properties
+diff --git a/myplugin/grails-app/i18n/messages_sv.properties b/myapp/grails-app/i18n/messages_sv.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_sv.properties
+rename to myapp/grails-app/i18n/messages_sv.properties
+diff --git a/myplugin/grails-app/i18n/messages_th.properties b/myapp/grails-app/i18n/messages_th.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_th.properties
+rename to myapp/grails-app/i18n/messages_th.properties
+diff --git a/myplugin/grails-app/i18n/messages_zh_CN.properties b/myapp/grails-app/i18n/messages_zh_CN.properties
+similarity index 100%
+rename from myplugin/grails-app/i18n/messages_zh_CN.properties
+rename to myapp/grails-app/i18n/messages_zh_CN.properties
+diff --git a/myplugin/grails-app/init/myplugin/Application.groovy b/myapp/grails-app/init/myapp/Application.groovy
+similarity index 92%
+rename from myplugin/grails-app/init/myplugin/Application.groovy
+rename to myapp/grails-app/init/myapp/Application.groovy
+index a393df0f..b2e6839f 100644
+--- a/myplugin/grails-app/init/myplugin/Application.groovy
++++ b/myapp/grails-app/init/myapp/Application.groovy
+@@ -1,4 +1,4 @@
+-package myplugin
++package myapp
+ 
+ import grails.boot.GrailsApp
+ import grails.boot.config.GrailsAutoConfiguration
+diff --git a/myplugin/grails-app/init/myplugin/BootStrap.groovy b/myapp/grails-app/init/myapp/BootStrap.groovy
+similarity index 83%
+rename from myplugin/grails-app/init/myplugin/BootStrap.groovy
+rename to myapp/grails-app/init/myapp/BootStrap.groovy
+index e8ad49ba..5cf149b2 100644
+--- a/myplugin/grails-app/init/myplugin/BootStrap.groovy
++++ b/myapp/grails-app/init/myapp/BootStrap.groovy
+@@ -1,4 +1,4 @@
+-package myplugin
++package myapp
+ 
+ class BootStrap {
+ 
+diff --git a/myplugin/grails-app/views/application/index.gson b/myapp/grails-app/views/application/index.gson
+similarity index 100%
+rename from myplugin/grails-app/views/application/index.gson
+rename to myapp/grails-app/views/application/index.gson
+diff --git a/myplugin/grails-app/views/error.gson b/myapp/grails-app/views/error.gson
+similarity index 100%
+rename from myplugin/grails-app/views/error.gson
+rename to myapp/grails-app/views/error.gson
+diff --git a/myplugin/grails-app/views/errors/_errors.gson b/myapp/grails-app/views/errors/_errors.gson
+similarity index 100%
+rename from myplugin/grails-app/views/errors/_errors.gson
+rename to myapp/grails-app/views/errors/_errors.gson
+diff --git a/myplugin/grails-app/views/notFound.gson b/myapp/grails-app/views/notFound.gson
+similarity index 100%
+rename from myplugin/grails-app/views/notFound.gson
+rename to myapp/grails-app/views/notFound.gson
+diff --git a/myplugin/grails-app/views/object/_object.gson b/myapp/grails-app/views/object/_object.gson
+similarity index 100%
+rename from myplugin/grails-app/views/object/_object.gson
+rename to myapp/grails-app/views/object/_object.gson
+diff --git a/myapp/grails-wrapper.jar b/myapp/grails-wrapper.jar
+new file mode 100644
+index 0000000000000000000000000000000000000000..d037cf9987e8edaf7e37b88d2777348cb851cbad
+GIT binary patch
+literal 6049
+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%0AbdZxKsWX7(Sd
+z`tEsxWQN1EZKbJ}LYxMf-f|})eMWLpGi>fxNad6|i-U6(gfk~tl>Gu*Npa$E>H752
+zatlqB#KsTGkC|@m5SDhqO>_9Bd9V5FGWX_wqClq`kZ4gJj6D2WRJnjAUFr!LSy}15
+z2N?sYkeUb1i7!9qT~{|%Y7S6IGX(%%uQ6Q874FvcO}9CHihf3^o%q3zoc6p$VMh6r
+zNA%&;RjX|Iu=9EAK#^~V<QZ<W^3IXC&v5{31%9PFa!d*c^*mhhcI{1G1yyrarCuvn
+zz_*+(Q;KX4_%a5(6pbP`{YsLR!7Aw5OiKR45*a_`NYnZ_bW&pNmi@RzJnG8XM?<-P
+z&^}jt=>_)?8lx09b^vyU%jlezf3yA>3>EoVz(=EIggGmTX3LZlKUoSyUNSZ27O#+&
+zvXtvSS)TJL6cweDsjTvzqOL~hJu0%T-|0H^cw2O93BN*~+ZnYfV?(zb&Z`QgeQ(ds
+zON{;bclcq0aA%BNsG@jk=QR-ReFL*X!csAO$kaX7e|E8tjq6_?62`x~SSOdaUf%z3
+zhqM^h<jEi1AwmQ=IJV!x>fWwymJTW|Z=Eb%+<=y@;_hxXmX2;fb5pmse>z3#4$3&<
+z&jS*SeAoFh)6wu$b6KZLrcZ=v2&jN&W@@!r(}2qwu%fTe9JHluMs&^k6rMow_Q^fn
+z>YQpGVs;BwHSh3%&`Fh`XrTYilO+~10=8Igw$M;ngCE&3j6efL^WJuDrh-_`Pcj|v
+z!m?v<Nv8<aKn9DNAVO^Frru1=5W@~OeOG^2_P1|TYcz{6luBFiNMA*kc>wvll%0AC
+zh;12j!)~aOHWK-bQVuyorFNpYHemguQ%iwBr?z8ciC8(i#jFI>n;-yX?cmcOhF_Rp
+zZ+Xk|VZ$o=dg{K^vvG{?`foE%4l*%wUYuIU3%OHKUku;If0*y$vQhv$Np=@Ud?{pO
+zx}#-=D998!QXjxH>0ZOT@zFRg^F(h>pVJz2lg1sa8G-jiB)xA5*$3{JH{Mf7R?j{^
+z^r3w1UcHzXP@ufE!MTWEwWCTH%u>K5H2R{h6Ywg!mMw-{vZ@t!e1-?<t8Y%89$pRb
+z9pQy&oFc_E9&!pXLBkBdZg=N1z%CJtXqRpR=aS5sWfwy^r8&Lcg>sI8j99ZKTi!~A
+zSu@IOn)Yl@ahC+HaHU4G*Ztup8Ro8G77R%0d@^G~F7HB5+-&RLMTVGwMtZcE$W2zz
+zu`?<zNoNw`Yt)Rh^tUhh+Se$e{OgosB9i=qK0JXRMbaN-P#5OE9>&>r?p%4bY(Ua|
+ztnt&&V38WU>LlItwlm=K9fpehlcz7?|GVk>>tBU~dk(iR{%iirg8c{WHw*R`_*dix
+z(LauV(f(%0{zKsr_jhCU7yFNm;~(dL*{uH;>6gv=NBqjR`EmI#(*K&SzcYU~UH|0f
+z25tSu{BIWQ?~1>BQ~y@Pc|5v*&*g7U)$by|NPm8XU!~!X`1L|RvHueJqfq=#{k>59
+gNzM&I!ugH*|0o+O@`y;k6i^;7g2#+paeqDi58Jf@^Z)<=
+
+literal 0
+HcmV?d00001
+
+diff --git a/myplugin/grailsw b/myapp/grailsw
+similarity index 100%
+rename from myplugin/grailsw
+rename to myapp/grailsw
+diff --git a/myplugin/grailsw.bat b/myapp/grailsw.bat
+similarity index 100%
+rename from myplugin/grailsw.bat
+rename to myapp/grailsw.bat
+diff --git a/myplugin/src/integration-test/resources/GebConfig.groovy b/myapp/src/integration-test/resources/GebConfig.groovy
+similarity index 100%
+rename from myplugin/src/integration-test/resources/GebConfig.groovy
+rename to myapp/src/integration-test/resources/GebConfig.groovy
+diff --git a/myplugin/grails-wrapper.jar b/myplugin/grails-wrapper.jar
+deleted file mode 100644
+index bc85146c130e69264ce20e079987784615201b35..0000000000000000000000000000000000000000
+GIT binary patch
+literal 0
+HcmV?d00001
+
+literal 5463
+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
+Q1NO~BaT5_U$?e<!0AXT=bN~PV
+
