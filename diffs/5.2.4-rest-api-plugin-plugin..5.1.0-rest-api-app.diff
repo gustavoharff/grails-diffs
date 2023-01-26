@@ -1,0 +1,1705 @@
+diff --git a/myplugin/.gitignore b/myapp/.gitignore
+similarity index 100%
+rename from myplugin/.gitignore
+rename to myapp/.gitignore
+diff --git a/myplugin/build.gradle b/myapp/build.gradle
+similarity index 84%
+rename from myplugin/build.gradle
+rename to myapp/build.gradle
+index 43a41903..4db9f674 100644
+--- a/myplugin/build.gradle
++++ b/myapp/build.gradle
+@@ -4,18 +4,18 @@ buildscript {
+     }
+     dependencies {
+         classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
+-        classpath "org.grails.plugins:hibernate5:7.3.0"
+-        classpath "org.grails.plugins:views-gradle:2.3.2"
++        classpath "org.grails.plugins:hibernate5:7.2.0"
++        classpath "org.grails.plugins:views-gradle:2.1.2"
+     }
+ }
+ 
+ version "0.1"
+-group "myplugin"
++group "myapp"
+ 
+ apply plugin:"eclipse"
+ apply plugin:"idea"
+-apply plugin:"org.grails.grails-plugin"
+-apply plugin:"org.grails.grails-plugin-publish"
++apply plugin:"war"
++apply plugin:"org.grails.grails-web"
+ apply plugin:"org.grails.plugins.views-json"
+ 
+ repositories {
+@@ -50,12 +50,12 @@ dependencies {
+     implementation "org.grails:grails-logging"
+     implementation "org.grails.plugins:cache"
+     implementation "org.grails.plugins:async"
++    implementation "org.grails.plugins:events"
+     implementation "org.grails.plugins:hibernate5"
+-    implementation "org.hibernate:hibernate-core:5.6.9.Final"
++    implementation "org.hibernate:hibernate-core:5.6.3.Final"
+     implementation "org.grails.plugins:views-json"
+     implementation "org.grails.plugins:views-json-templates"
+-    profile "org.grails.profiles:rest-api-plugin"
+-    provided "org.springframework.boot:spring-boot-starter-tomcat"
++    profile "org.grails.profiles:rest-api"
+     runtimeOnly "org.glassfish.web:el-impl:2.2.1-b05"
+     runtimeOnly "com.h2database:h2"
+     runtimeOnly "org.apache.tomcat:tomcat-jdbc"
+@@ -67,7 +67,6 @@ dependencies {
+     testImplementation "org.grails:grails-web-testing-support"
+     testImplementation "org.grails:views-json-testing-support"
+     testImplementation "org.hibernate.validator:hibernate-validator:6.1.7.Final"
+-    testImplementation "io.micronaut:micronaut-http-client:2.5.11"
+ }
+ 
+ bootRun {
+@@ -91,5 +90,3 @@ tasks.withType(GroovyCompile) {
+ tasks.withType(Test) {
+     useJUnitPlatform()
+ }
+-// enable if you wish to package this plugin as a standalone application
+-bootJar.enabled = false
+diff --git a/myplugin/gradle.properties b/myapp/gradle.properties
+similarity index 51%
+rename from myplugin/gradle.properties
+rename to myapp/gradle.properties
+index 2cc0d8a5..a27b46de 100644
+--- a/myplugin/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,7 +1,7 @@
+-grailsVersion=5.2.4
+-grailsGradlePluginVersion=5.2.3
+-groovyVersion=3.0.11
+-gorm.version=7.3.2
++grailsVersion=5.1.0
++grailsGradlePluginVersion=5.0.0
++groovyVersion=3.0.7
++gorm.version=7.1.2
+ org.gradle.daemon=true
+ org.gradle.parallel=true
+ org.gradle.jvmargs=-Dfile.encoding=UTF-8 -Xmx1024M
+diff --git a/myplugin/gradle/wrapper/gradle-wrapper.jar b/myapp/gradle/wrapper/gradle-wrapper.jar
+similarity index 100%
+rename from myplugin/gradle/wrapper/gradle-wrapper.jar
+rename to myapp/gradle/wrapper/gradle-wrapper.jar
+diff --git a/myplugin/gradle/wrapper/gradle-wrapper.properties b/myapp/gradle/wrapper/gradle-wrapper.properties
+similarity index 100%
+rename from myplugin/gradle/wrapper/gradle-wrapper.properties
+rename to myapp/gradle/wrapper/gradle-wrapper.properties
+diff --git a/myplugin/gradlew b/myapp/gradlew
+similarity index 100%
+rename from myplugin/gradlew
+rename to myapp/gradlew
+diff --git a/myplugin/gradlew.bat b/myapp/gradlew.bat
+similarity index 96%
+rename from myplugin/gradlew.bat
+rename to myapp/gradlew.bat
+index ac1b06f9..107acd32 100755
+--- a/myplugin/gradlew.bat
++++ b/myapp/gradlew.bat
+@@ -1,89 +1,89 @@
+-@rem
+-@rem Copyright 2015 the original author or authors.
+-@rem
+-@rem Licensed under the Apache License, Version 2.0 (the "License");
+-@rem you may not use this file except in compliance with the License.
+-@rem You may obtain a copy of the License at
+-@rem
+-@rem      https://www.apache.org/licenses/LICENSE-2.0
+-@rem
+-@rem Unless required by applicable law or agreed to in writing, software
+-@rem distributed under the License is distributed on an "AS IS" BASIS,
+-@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-@rem See the License for the specific language governing permissions and
+-@rem limitations under the License.
+-@rem
+-
+-@if "%DEBUG%" == "" @echo off
+-@rem ##########################################################################
+-@rem
+-@rem  Gradle startup script for Windows
+-@rem
+-@rem ##########################################################################
+-
+-@rem Set local scope for the variables with windows NT shell
+-if "%OS%"=="Windows_NT" setlocal
+-
+-set DIRNAME=%~dp0
+-if "%DIRNAME%" == "" set DIRNAME=.
+-set APP_BASE_NAME=%~n0
+-set APP_HOME=%DIRNAME%
+-
+-@rem Resolve any "." and ".." in APP_HOME to make it shorter.
+-for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
+-
+-@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+-set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
+-
+-@rem Find java.exe
+-if defined JAVA_HOME goto findJavaFromJavaHome
+-
+-set JAVA_EXE=java.exe
+-%JAVA_EXE% -version >NUL 2>&1
+-if "%ERRORLEVEL%" == "0" goto execute
+-
+-echo.
+-echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+-echo.
+-echo Please set the JAVA_HOME variable in your environment to match the
+-echo location of your Java installation.
+-
+-goto fail
+-
+-:findJavaFromJavaHome
+-set JAVA_HOME=%JAVA_HOME:"=%
+-set JAVA_EXE=%JAVA_HOME%/bin/java.exe
+-
+-if exist "%JAVA_EXE%" goto execute
+-
+-echo.
+-echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME%
+-echo.
+-echo Please set the JAVA_HOME variable in your environment to match the
+-echo location of your Java installation.
+-
+-goto fail
+-
+-:execute
+-@rem Setup the command line
+-
+-set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
+-
+-
+-@rem Execute Gradle
+-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
+-
+-:end
+-@rem End local scope for the variables with windows NT shell
+-if "%ERRORLEVEL%"=="0" goto mainEnd
+-
+-:fail
+-rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
+-rem the _cmd.exe /c_ return code!
+-if  not "" == "%GRADLE_EXIT_CONSOLE%" exit 1
+-exit /b 1
+-
+-:mainEnd
+-if "%OS%"=="Windows_NT" endlocal
+-
+-:omega
++@rem
++@rem Copyright 2015 the original author or authors.
++@rem
++@rem Licensed under the Apache License, Version 2.0 (the "License");
++@rem you may not use this file except in compliance with the License.
++@rem You may obtain a copy of the License at
++@rem
++@rem      https://www.apache.org/licenses/LICENSE-2.0
++@rem
++@rem Unless required by applicable law or agreed to in writing, software
++@rem distributed under the License is distributed on an "AS IS" BASIS,
++@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++@rem See the License for the specific language governing permissions and
++@rem limitations under the License.
++@rem
++
++@if "%DEBUG%" == "" @echo off
++@rem ##########################################################################
++@rem
++@rem  Gradle startup script for Windows
++@rem
++@rem ##########################################################################
++
++@rem Set local scope for the variables with windows NT shell
++if "%OS%"=="Windows_NT" setlocal
++
++set DIRNAME=%~dp0
++if "%DIRNAME%" == "" set DIRNAME=.
++set APP_BASE_NAME=%~n0
++set APP_HOME=%DIRNAME%
++
++@rem Resolve any "." and ".." in APP_HOME to make it shorter.
++for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
++
++@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
++set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
++
++@rem Find java.exe
++if defined JAVA_HOME goto findJavaFromJavaHome
++
++set JAVA_EXE=java.exe
++%JAVA_EXE% -version >NUL 2>&1
++if "%ERRORLEVEL%" == "0" goto execute
++
++echo.
++echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
++echo.
++echo Please set the JAVA_HOME variable in your environment to match the
++echo location of your Java installation.
++
++goto fail
++
++:findJavaFromJavaHome
++set JAVA_HOME=%JAVA_HOME:"=%
++set JAVA_EXE=%JAVA_HOME%/bin/java.exe
++
++if exist "%JAVA_EXE%" goto execute
++
++echo.
++echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME%
++echo.
++echo Please set the JAVA_HOME variable in your environment to match the
++echo location of your Java installation.
++
++goto fail
++
++:execute
++@rem Setup the command line
++
++set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
++
++
++@rem Execute Gradle
++"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
++
++:end
++@rem End local scope for the variables with windows NT shell
++if "%ERRORLEVEL%"=="0" goto mainEnd
++
++:fail
++rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
++rem the _cmd.exe /c_ return code!
++if  not "" == "%GRADLE_EXIT_CONSOLE%" exit 1
++exit /b 1
++
++:mainEnd
++if "%OS%"=="Windows_NT" endlocal
++
++:omega
+diff --git a/myplugin/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
+similarity index 88%
+rename from myplugin/grails-app/conf/application.yml
+rename to myapp/grails-app/conf/application.yml
+index accbad87..69d99c18 100644
+--- a/myplugin/grails-app/conf/application.yml
++++ b/myapp/grails-app/conf/application.yml
+@@ -1,8 +1,8 @@
+ ---
+ grails:
+-    profile: rest-api-plugin
++    profile: rest-api
+     codegen:
+-        defaultPackage: myplugin
++        defaultPackage: myapp
+     gorm:
+         reactor:
+             # Whether to translate GORM events into Reactor events
+@@ -30,19 +30,9 @@ spring:
+                 - '**/*.gson'
+                 - 'logback.groovy'
+                 - '*.properties'
+-environments:
+-    development:
+-        management:
+-            endpoints:
+-                enabled-by-default: true
+-                web:
+-                    base-path: '/actuator'
+-                    exposure:
+-                        include: '*'
+-    production:
+-        management:
+-            endpoints:
+-                enabled-by-default: false
++management:
++    endpoints:
++        enabled-by-default: false
+ 
+ ---
+ grails:
+diff --git a/myapp/grails-app/conf/logback.groovy b/myapp/grails-app/conf/logback.groovy
+new file mode 100644
+index 00000000..b835215c
+--- /dev/null
++++ b/myapp/grails-app/conf/logback.groovy
+@@ -0,0 +1,37 @@
++import grails.util.BuildSettings
++import grails.util.Environment
++import org.springframework.boot.logging.logback.ColorConverter
++import org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter
++
++import java.nio.charset.StandardCharsets
++
++conversionRule 'clr', ColorConverter
++conversionRule 'wex', WhitespaceThrowableProxyConverter
++
++// See http://logback.qos.ch/manual/groovy.html for details on configuration
++appender('STDOUT', ConsoleAppender) {
++    encoder(PatternLayoutEncoder) {
++        charset = StandardCharsets.UTF_8
++
++        pattern =
++                '%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} ' + // Date
++                        '%clr(%5p) ' + // Log level
++                        '%clr(---){faint} %clr([%15.15t]){faint} ' + // Thread
++                        '%clr(%-40.40logger{39}){cyan} %clr(:){faint} ' + // Logger
++                        '%m%n%wex' // Message
++    }
++}
++
++def targetDir = BuildSettings.TARGET_DIR
++if (Environment.isDevelopmentMode() && targetDir != null) {
++    appender("FULL_STACKTRACE", FileAppender) {
++        file = "${targetDir}/stacktrace.log"
++        append = true
++        encoder(PatternLayoutEncoder) {
++            charset = StandardCharsets.UTF_8
++            pattern = "%level %logger - %msg%n"
++        }
++    }
++    logger("StackTrace", ERROR, ['FULL_STACKTRACE'], false)
++}
++root(ERROR, ['STDOUT'])
+diff --git a/myplugin/grails-app/conf/spring/resources.groovy b/myapp/grails-app/conf/spring/resources.groovy
+similarity index 100%
+rename from myplugin/grails-app/conf/spring/resources.groovy
+rename to myapp/grails-app/conf/spring/resources.groovy
+diff --git a/myapp/grails-app/controllers/myapp/ApplicationController.groovy b/myapp/grails-app/controllers/myapp/ApplicationController.groovy
+new file mode 100644
+index 00000000..d40d868e
+--- /dev/null
++++ b/myapp/grails-app/controllers/myapp/ApplicationController.groovy
+@@ -0,0 +1,14 @@
++package myapp
++
++import grails.core.GrailsApplication
++import grails.plugins.*
++
++class ApplicationController implements PluginManagerAware {
++
++    GrailsApplication grailsApplication
++    GrailsPluginManager pluginManager
++
++    def index() {
++        [grailsApplication: grailsApplication, pluginManager: pluginManager]
++    }
++}
+diff --git a/myapp/grails-app/controllers/myapp/UrlMappings.groovy b/myapp/grails-app/controllers/myapp/UrlMappings.groovy
+new file mode 100644
+index 00000000..34bcc508
+--- /dev/null
++++ b/myapp/grails-app/controllers/myapp/UrlMappings.groovy
+@@ -0,0 +1,17 @@
++package myapp
++
++class UrlMappings {
++
++    static mappings = {
++        delete "/$controller/$id(.$format)?"(action:"delete")
++        get "/$controller(.$format)?"(action:"index")
++        get "/$controller/$id(.$format)?"(action:"show")
++        post "/$controller(.$format)?"(action:"save")
++        put "/$controller/$id(.$format)?"(action:"update")
++        patch "/$controller/$id(.$format)?"(action:"patch")
++
++        "/"(controller: 'application', action:'index')
++        "500"(view: '/error')
++        "404"(view: '/notFound')
++    }
++}
+diff --git a/myapp/grails-app/i18n/messages.properties b/myapp/grails-app/i18n/messages.properties
+new file mode 100644
+index 00000000..b0451362
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages.properties
+@@ -0,0 +1,56 @@
++default.doesnt.match.message=Property [{0}] of class [{1}] with value [{2}] does not match the required pattern [{3}]
++default.invalid.url.message=Property [{0}] of class [{1}] with value [{2}] is not a valid URL
++default.invalid.creditCard.message=Property [{0}] of class [{1}] with value [{2}] is not a valid credit card number
++default.invalid.email.message=Property [{0}] of class [{1}] with value [{2}] is not a valid e-mail address
++default.invalid.range.message=Property [{0}] of class [{1}] with value [{2}] does not fall within the valid range from [{3}] to [{4}]
++default.invalid.size.message=Property [{0}] of class [{1}] with value [{2}] does not fall within the valid size range from [{3}] to [{4}]
++default.invalid.max.message=Property [{0}] of class [{1}] with value [{2}] exceeds maximum value [{3}]
++default.invalid.min.message=Property [{0}] of class [{1}] with value [{2}] is less than minimum value [{3}]
++default.invalid.max.size.message=Property [{0}] of class [{1}] with value [{2}] exceeds the maximum size of [{3}]
++default.invalid.min.size.message=Property [{0}] of class [{1}] with value [{2}] is less than the minimum size of [{3}]
++default.invalid.validator.message=Property [{0}] of class [{1}] with value [{2}] does not pass custom validation
++default.not.inlist.message=Property [{0}] of class [{1}] with value [{2}] is not contained within the list [{3}]
++default.blank.message=Property [{0}] of class [{1}] cannot be blank
++default.not.equal.message=Property [{0}] of class [{1}] with value [{2}] cannot equal [{3}]
++default.null.message=Property [{0}] of class [{1}] cannot be null
++default.not.unique.message=Property [{0}] of class [{1}] with value [{2}] must be unique
++
++default.paginate.prev=Previous
++default.paginate.next=Next
++default.boolean.true=True
++default.boolean.false=False
++default.date.format=yyyy-MM-dd HH:mm:ss z
++default.number.format=0
++
++default.created.message={0} {1} created
++default.updated.message={0} {1} updated
++default.deleted.message={0} {1} deleted
++default.not.deleted.message={0} {1} could not be deleted
++default.not.found.message={0} not found with id {1}
++default.optimistic.locking.failure=Another user has updated this {0} while you were editing
++
++default.home.label=Home
++default.list.label={0} List
++default.add.label=Add {0}
++default.new.label=New {0}
++default.create.label=Create {0}
++default.show.label=Show {0}
++default.edit.label=Edit {0}
++
++default.button.create.label=Create
++default.button.edit.label=Edit
++default.button.update.label=Update
++default.button.delete.label=Delete
++default.button.delete.confirm.message=Are you sure?
++
++# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
++typeMismatch.java.net.URL=Property {0} must be a valid URL
++typeMismatch.java.net.URI=Property {0} must be a valid URI
++typeMismatch.java.util.Date=Property {0} must be a valid Date
++typeMismatch.java.lang.Double=Property {0} must be a valid number
++typeMismatch.java.lang.Integer=Property {0} must be a valid number
++typeMismatch.java.lang.Long=Property {0} must be a valid number
++typeMismatch.java.lang.Short=Property {0} must be a valid number
++typeMismatch.java.math.BigDecimal=Property {0} must be a valid number
++typeMismatch.java.math.BigInteger=Property {0} must be a valid number
++typeMismatch=Property {0} is type-mismatched
+diff --git a/myapp/grails-app/i18n/messages_cs.properties b/myapp/grails-app/i18n/messages_cs.properties
+new file mode 100644
+index 00000000..73455311
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_cs.properties
+@@ -0,0 +1,55 @@
++default.doesnt.match.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] neodpovídá požadovanému vzoru [{3}]
++default.invalid.url.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] není validní URL
++default.invalid.creditCard.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] není validní číslo kreditní karty
++default.invalid.email.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] není validní emailová adresa
++default.invalid.range.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] není v povoleném rozmezí od [{3}] do [{4}]
++default.invalid.size.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] není v povoleném rozmezí od [{3}] do [{4}]
++default.invalid.max.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] překračuje maximální povolenou hodnotu [{3}]
++default.invalid.min.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] je menší než minimální povolená hodnota [{3}]
++default.invalid.max.size.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] překračuje maximální velikost [{3}]
++default.invalid.min.size.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] je menší než minimální velikost [{3}]
++default.invalid.validator.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] neprošla validací
++default.not.inlist.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] není obsažena v seznamu [{3}]
++default.blank.message=Položka [{0}] třídy [{1}] nemůže být prázdná
++default.not.equal.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] nemůže být stejná jako [{3}]
++default.null.message=Položka [{0}] třídy [{1}] nemůže být prázdná
++default.not.unique.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] musí být unikátní
++
++default.paginate.prev=Předcházející
++default.paginate.next=Následující
++default.boolean.true=Pravda
++default.boolean.false=Nepravda
++default.date.format=dd. MM. yyyy HH:mm:ss z
++default.number.format=0
++
++default.created.message={0} {1} vytvořeno
++default.updated.message={0} {1} aktualizováno
++default.deleted.message={0} {1} smazáno
++default.not.deleted.message={0} {1} nelze smazat
++default.not.found.message={0} nenalezen s id {1}
++default.optimistic.locking.failure=Jiný uživatel aktualizoval záznam {0}, právě když byl vámi editován
++
++default.home.label=Domů
++default.list.label={0} Seznam
++default.add.label=Přidat {0}
++default.new.label=Nový {0}
++default.create.label=Vytvořit {0}
++default.show.label=Ukázat {0}
++default.edit.label=Editovat {0}
++
++default.button.create.label=Vytvoř
++default.button.edit.label=Edituj
++default.button.update.label=Aktualizuj
++default.button.delete.label=Smaž
++default.button.delete.confirm.message=Jste si jistý?
++
++# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
++typeMismatch.java.net.URL=Položka {0} musí být validní URL
++typeMismatch.java.net.URI=Položka {0} musí být validní URI
++typeMismatch.java.util.Date=Položka {0} musí být validní datum
++typeMismatch.java.lang.Double=Položka {0} musí být validní desetinné číslo
++typeMismatch.java.lang.Integer=Položka {0} musí být validní číslo
++typeMismatch.java.lang.Long=Položka {0} musí být validní číslo
++typeMismatch.java.lang.Short=Položka {0} musí být validní číslo
++typeMismatch.java.math.BigDecimal=Položka {0} musí být validní číslo
++typeMismatch.java.math.BigInteger=Položka {0} musí být validní číslo
+diff --git a/myapp/grails-app/i18n/messages_da.properties b/myapp/grails-app/i18n/messages_da.properties
+new file mode 100644
+index 00000000..858b2290
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_da.properties
+@@ -0,0 +1,56 @@
++default.doesnt.match.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] overholder ikke mønsteret [{3}]
++default.invalid.url.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] er ikke en gyldig URL
++default.invalid.creditCard.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] er ikke et gyldigt kreditkortnummer
++default.invalid.email.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] er ikke en gyldig e-mail adresse
++default.invalid.range.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] ligger ikke inden for intervallet fra  [{3}] til [{4}]
++default.invalid.size.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] ligger ikke inden for størrelsen fra [{3}] til [{4}]
++default.invalid.max.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] overstiger den maksimale værdi [{3}]
++default.invalid.min.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] er under den minimale værdi [{3}]
++default.invalid.max.size.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] overstiger den maksimale størrelse på [{3}]
++default.invalid.min.size.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] er under den minimale størrelse på [{3}]
++default.invalid.validator.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] overholder ikke den brugerdefinerede validering
++default.not.inlist.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] findes ikke i listen [{3}]
++default.blank.message=Feltet [{0}] i klassen [{1}] kan ikke være tom
++default.not.equal.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] må ikke være [{3}]
++default.null.message=Feltet [{0}] i klassen [{1}] kan ikke være null
++default.not.unique.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] skal være unik
++
++default.paginate.prev=Forrige
++default.paginate.next=Næste
++default.boolean.true=Sand
++default.boolean.false=Falsk
++default.date.format=yyyy-MM-dd HH:mm:ss z
++default.number.format=0
++
++default.created.message={0} {1} oprettet
++default.updated.message={0} {1} opdateret
++default.deleted.message={0} {1} slettet
++default.not.deleted.message={0} {1} kunne ikke slettes
++default.not.found.message={0} med id {1} er ikke fundet
++default.optimistic.locking.failure=En anden bruger har opdateret denne {0} imens du har lavet rettelser
++
++default.home.label=Hjem
++default.list.label={0} Liste
++default.add.label=Tilføj {0}
++default.new.label=Ny {0}
++default.create.label=Opret {0}
++default.show.label=Vis {0}
++default.edit.label=Ret {0}
++
++default.button.create.label=Opret
++default.button.edit.label=Ret
++default.button.update.label=Opdater
++default.button.delete.label=Slet
++default.button.delete.confirm.message=Er du sikker?
++
++# Databindingsfejl. Brug "typeMismatch.$className.$propertyName for at passe til en given klasse (f.eks typeMismatch.Book.author)
++typeMismatch.java.net.URL=Feltet {0} skal være en valid URL
++typeMismatch.java.net.URI=Feltet {0} skal være en valid URI
++typeMismatch.java.util.Date=Feltet {0} skal være en valid Dato
++typeMismatch.java.lang.Double=Feltet {0} skal være et valid tal
++typeMismatch.java.lang.Integer=Feltet {0} skal være et valid tal
++typeMismatch.java.lang.Long=Feltet {0} skal være et valid tal
++typeMismatch.java.lang.Short=Feltet {0} skal være et valid tal
++typeMismatch.java.math.BigDecimal=Feltet {0} skal være et valid tal
++typeMismatch.java.math.BigInteger=Feltet {0} skal være et valid tal
++
+diff --git a/myapp/grails-app/i18n/messages_de.properties b/myapp/grails-app/i18n/messages_de.properties
+new file mode 100644
+index 00000000..0f7bfe92
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_de.properties
+@@ -0,0 +1,55 @@
++default.doesnt.match.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] entspricht nicht dem vorgegebenen Muster [{3}]
++default.invalid.url.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist keine gültige URL
++default.invalid.creditCard.message=Das Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist keine gültige Kreditkartennummer
++default.invalid.email.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist keine gültige E-Mail Adresse
++default.invalid.range.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist nicht im Wertebereich von [{3}] bis [{4}]
++default.invalid.size.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist nicht im Wertebereich von [{3}] bis [{4}]
++default.invalid.max.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist größer als der Höchstwert von [{3}]
++default.invalid.min.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist kleiner als der Mindestwert von [{3}]
++default.invalid.max.size.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] übersteigt den Höchstwert von [{3}]
++default.invalid.min.size.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] unterschreitet den Mindestwert von [{3}]
++default.invalid.validator.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist ungültig
++default.not.inlist.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist nicht in der Liste [{3}] enthalten.
++default.blank.message=Die Eigenschaft [{0}] des Typs [{1}] darf nicht leer sein
++default.not.equal.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] darf nicht gleich [{3}] sein
++default.null.message=Die Eigenschaft [{0}] des Typs [{1}] darf nicht null sein
++default.not.unique.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] darf nur einmal vorkommen
++
++default.paginate.prev=Vorherige
++default.paginate.next=Nächste
++default.boolean.true=Wahr
++default.boolean.false=Falsch
++default.date.format=dd.MM.yyyy HH:mm:ss z
++default.number.format=0
++
++default.created.message={0} {1} wurde angelegt
++default.updated.message={0} {1} wurde geändert
++default.deleted.message={0} {1} wurde gelöscht
++default.not.deleted.message={0} {1} konnte nicht gelöscht werden
++default.not.found.message={0} mit der id {1} wurde nicht gefunden
++default.optimistic.locking.failure=Ein anderer Benutzer hat das {0} Object geändert während Sie es bearbeitet haben
++
++default.home.label=Home
++default.list.label={0} Liste
++default.add.label={0} hinzufügen
++default.new.label={0} anlegen
++default.create.label={0} anlegen
++default.show.label={0} anzeigen
++default.edit.label={0} bearbeiten
++
++default.button.create.label=Anlegen
++default.button.edit.label=Bearbeiten
++default.button.update.label=Aktualisieren
++default.button.delete.label=Löschen
++default.button.delete.confirm.message=Sind Sie sicher?
++
++# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
++typeMismatch.java.net.URL=Die Eigenschaft {0} muss eine gültige URL sein
++typeMismatch.java.net.URI=Die Eigenschaft {0} muss eine gültige URI sein
++typeMismatch.java.util.Date=Die Eigenschaft {0} muss ein gültiges Datum sein
++typeMismatch.java.lang.Double=Die Eigenschaft {0} muss eine gültige Zahl sein
++typeMismatch.java.lang.Integer=Die Eigenschaft {0} muss eine gültige Zahl sein
++typeMismatch.java.lang.Long=Die Eigenschaft {0} muss eine gültige Zahl sein
++typeMismatch.java.lang.Short=Die Eigenschaft {0} muss eine gültige Zahl sein
++typeMismatch.java.math.BigDecimal=Die Eigenschaft {0} muss eine gültige Zahl sein
++typeMismatch.java.math.BigInteger=Die Eigenschaft {0} muss eine gültige Zahl sein
+diff --git a/myapp/grails-app/i18n/messages_es.properties b/myapp/grails-app/i18n/messages_es.properties
+new file mode 100644
+index 00000000..f0ede539
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_es.properties
+@@ -0,0 +1,55 @@
++default.doesnt.match.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no corresponde al patrón [{3}]
++default.invalid.url.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no es una URL válida
++default.invalid.creditCard.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no es un número de tarjeta de crédito válida
++default.invalid.email.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no es una dirección de correo electrónico válida
++default.invalid.range.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no entra en el rango válido de [{3}] a [{4}]
++default.invalid.size.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no entra en el tamaño válido de [{3}] a [{4}]
++default.invalid.max.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] excede el valor máximo [{3}]
++default.invalid.min.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] es menos que el valor mínimo [{3}]
++default.invalid.max.size.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] excede el tamaño máximo de [{3}]
++default.invalid.min.size.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] es menor que el tamaño mínimo de [{3}]
++default.invalid.validator.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no es válido
++default.not.inlist.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no esta contenido dentro de la lista [{3}]
++default.blank.message=La propiedad [{0}] de la clase [{1}] no puede ser vacía
++default.not.equal.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no puede igualar a [{3}]
++default.null.message=La propiedad [{0}] de la clase [{1}] no puede ser nulo
++default.not.unique.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] debe ser única
++
++default.paginate.prev=Anterior
++default.paginate.next=Siguiente
++default.boolean.true=Verdadero
++default.boolean.false=Falso
++default.date.format=yyyy-MM-dd HH:mm:ss z
++default.number.format=0
++
++default.created.message={0} {1} creado
++default.updated.message={0} {1} actualizado
++default.deleted.message={0} {1} eliminado
++default.not.deleted.message={0} {1} no puede eliminarse
++default.not.found.message=No se encuentra {0} con id {1}
++default.optimistic.locking.failure=Mientras usted editaba, otro usuario ha actualizado su {0}
++
++default.home.label=Principal
++default.list.label={0} Lista
++default.add.label=Agregar {0}
++default.new.label=Nuevo {0}
++default.create.label=Crear {0}
++default.show.label=Mostrar {0}
++default.edit.label=Editar {0}
++
++default.button.create.label=Crear
++default.button.edit.label=Editar
++default.button.update.label=Actualizar
++default.button.delete.label=Eliminar
++default.button.delete.confirm.message=¿Está usted seguro?
++
++# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
++typeMismatch.java.net.URL=La propiedad {0} debe ser una URL válida
++typeMismatch.java.net.URI=La propiedad {0} debe ser una URI válida
++typeMismatch.java.util.Date=La propiedad {0} debe ser una fecha válida
++typeMismatch.java.lang.Double=La propiedad {0} debe ser un número válido
++typeMismatch.java.lang.Integer=La propiedad {0} debe ser un número válido
++typeMismatch.java.lang.Long=La propiedad {0} debe ser un número válido
++typeMismatch.java.lang.Short=La propiedad {0} debe ser un número válido
++typeMismatch.java.math.BigDecimal=La propiedad {0} debe ser un número válido
++typeMismatch.java.math.BigInteger=La propiedad {0} debe ser un número válido
+\ No newline at end of file
+diff --git a/myapp/grails-app/i18n/messages_fr.properties b/myapp/grails-app/i18n/messages_fr.properties
+new file mode 100644
+index 00000000..55721641
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_fr.properties
+@@ -0,0 +1,19 @@
++default.doesnt.match.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] ne correspond pas au pattern [{3}]
++default.invalid.url.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] n'est pas une URL valide
++default.invalid.creditCard.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] n'est pas un numéro de carte de crédit valide
++default.invalid.email.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] n'est pas une adresse e-mail valide
++default.invalid.range.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] n'est pas contenue dans l'intervalle [{3}] à [{4}]
++default.invalid.size.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] n'est pas contenue dans l'intervalle [{3}] à [{4}]
++default.invalid.max.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] est supérieure à la valeur maximum [{3}]
++default.invalid.min.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] est inférieure à la valeur minimum [{3}]
++default.invalid.max.size.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] est supérieure à la valeur maximum [{3}]
++default.invalid.min.size.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] est inférieure à la valeur minimum [{3}]
++default.invalid.validator.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] n'est pas valide
++default.not.inlist.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] ne fait pas partie de la liste [{3}]
++default.blank.message=La propriété [{0}] de la classe [{1}] ne peut pas être vide
++default.not.equal.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] ne peut pas être égale à [{3}]
++default.null.message=La propriété [{0}] de la classe [{1}] ne peut pas être nulle
++default.not.unique.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] doit être unique
++
++default.paginate.prev=Précédent
++default.paginate.next=Suivant
+diff --git a/myapp/grails-app/i18n/messages_it.properties b/myapp/grails-app/i18n/messages_it.properties
+new file mode 100644
+index 00000000..a90f1c72
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_it.properties
+@@ -0,0 +1,55 @@
++default.doesnt.match.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non corrisponde al pattern [{3}]
++default.invalid.url.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non è un URL valido
++default.invalid.creditCard.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non è un numero di carta di credito valido
++default.invalid.email.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non è un indirizzo email valido
++default.invalid.range.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non rientra nell'intervallo valido da [{3}] a [{4}]
++default.invalid.size.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non rientra nell'intervallo di dimensioni valide da [{3}] a [{4}]
++default.invalid.max.message=La proprietà [{0}] della classe [{1}] con valore [{2}] è maggiore di [{3}]
++default.invalid.min.message=La proprietà [{0}] della classe [{1}] con valore [{2}] è minore di [{3}]
++default.invalid.max.size.message=La proprietà [{0}] della classe [{1}] con valore [{2}] è maggiore di [{3}]
++default.invalid.min.size.message=La proprietà [{0}] della classe [{1}] con valore [{2}] è minore di [{3}]
++default.invalid.validator.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non è valida
++default.not.inlist.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non è contenuta nella lista [{3}]
++default.blank.message=La proprietà [{0}] della classe [{1}] non può essere vuota
++default.not.equal.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non può essere uguale a [{3}]
++default.null.message=La proprietà [{0}] della classe [{1}] non può essere null
++default.not.unique.message=La proprietà [{0}] della classe [{1}] con valore [{2}] deve essere unica
++
++default.paginate.prev=Precedente
++default.paginate.next=Successivo
++default.boolean.true=Vero
++default.boolean.false=Falso
++default.date.format=dd/MM/yyyy HH:mm:ss z
++default.number.format=0
++
++default.created.message={0} {1} creato
++default.updated.message={0} {1} aggiornato
++default.deleted.message={0} {1} eliminato
++default.not.deleted.message={0} {1} non può essere eliminato
++default.not.found.message={0} non trovato con id {1}
++default.optimistic.locking.failure=Un altro utente ha aggiornato questo {0} mentre si era in modifica
++
++default.home.label=Home
++default.list.label={0} Elenco
++default.add.label=Aggiungi {0}
++default.new.label=Nuovo {0}
++default.create.label=Crea {0}
++default.show.label=Mostra {0}
++default.edit.label=Modifica {0}
++
++default.button.create.label=Crea
++default.button.edit.label=Modifica
++default.button.update.label=Aggiorna
++default.button.delete.label=Elimina
++default.button.delete.confirm.message=Si è sicuri?
++
++# Data binding errors. Usa "typeMismatch.$className.$propertyName per la personalizzazione (es typeMismatch.Book.author)
++typeMismatch.java.net.URL=La proprietà {0} deve essere un URL valido
++typeMismatch.java.net.URI=La proprietà {0} deve essere un URI valido
++typeMismatch.java.util.Date=La proprietà {0} deve essere una data valida
++typeMismatch.java.lang.Double=La proprietà {0} deve essere un numero valido
++typeMismatch.java.lang.Integer=La proprietà {0} deve essere un numero valido
++typeMismatch.java.lang.Long=La proprietà {0} deve essere un numero valido
++typeMismatch.java.lang.Short=La proprietà {0} deve essere un numero valido
++typeMismatch.java.math.BigDecimal=La proprietà {0} deve essere un numero valido
++typeMismatch.java.math.BigInteger=La proprietà {0} deve essere un numero valido
+diff --git a/myapp/grails-app/i18n/messages_ja.properties b/myapp/grails-app/i18n/messages_ja.properties
+new file mode 100644
+index 00000000..d9e9b783
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_ja.properties
+@@ -0,0 +1,55 @@
++default.doesnt.match.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、[{3}]パターンと一致していません。
++default.invalid.url.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、有効なURLではありません。
++default.invalid.creditCard.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、有効なクレジットカード番号ではありません。
++default.invalid.email.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、有効なメールアドレスではありません。
++default.invalid.range.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、[{3}]から[{4}]範囲内を指定してください。
++default.invalid.size.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、[{3}]から[{4}]以内を指定してください。
++default.invalid.max.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、最大値[{3}]より大きいです。
++default.invalid.min.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、最小値[{3}]より小さいです。
++default.invalid.max.size.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、最大値[{3}]より大きいです。
++default.invalid.min.size.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、最小値[{3}]より小さいです。
++default.invalid.validator.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、カスタムバリデーションを通過できません。
++default.not.inlist.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、[{3}]リスト内に存在しません。
++default.blank.message=[{1}]クラスのプロパティ[{0}]の空白は許可されません。
++default.not.equal.message=クラス[{1}]プロパティ[{0}]の値[{2}]に[{3}]は許可されません。
++default.null.message=[{1}]クラスのプロパティ[{0}]にnullは許可されません。
++default.not.unique.message=クラス[{1}]プロパティ[{0}]の値[{2}]は既に使用されています。
++
++default.paginate.prev=戻る
++default.paginate.next=次へ
++default.boolean.true=はい
++default.boolean.false=いいえ
++default.date.format=yyyy/MM/dd HH:mm:ss z
++default.number.format=0
++
++default.created.message={0}(id:{1})を作成しました。
++default.updated.message={0}(id:{1})を更新しました。
++default.deleted.message={0}(id:{1})を削除しました。
++default.not.deleted.message={0}(id:{1})は削除できませんでした。
++default.not.found.message={0}(id:{1})は見つかりませんでした。
++default.optimistic.locking.failure=この{0}は編集中に他のユーザによって先に更新されています。
++
++default.home.label=ホーム
++default.list.label={0}リスト
++default.add.label={0}を追加
++default.new.label={0}を新規作成
++default.create.label={0}を作成
++default.show.label={0}詳細
++default.edit.label={0}を編集
++
++default.button.create.label=作成
++default.button.edit.label=編集
++default.button.update.label=更新
++default.button.delete.label=削除
++default.button.delete.confirm.message=本当に削除してよろしいですか?
++
++# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
++typeMismatch.java.net.URL={0}は有効なURLでなければなりません。
++typeMismatch.java.net.URI={0}は有効なURIでなければなりません。
++typeMismatch.java.util.Date={0}は有効な日付でなければなりません。
++typeMismatch.java.lang.Double={0}は有効な数値でなければなりません。
++typeMismatch.java.lang.Integer={0}は有効な数値でなければなりません。
++typeMismatch.java.lang.Long={0}は有効な数値でなければなりません。
++typeMismatch.java.lang.Short={0}は有効な数値でなければなりません。
++typeMismatch.java.math.BigDecimal={0}は有効な数値でなければなりません。
++typeMismatch.java.math.BigInteger={0}は有効な数値でなければなりません。
+diff --git a/myapp/grails-app/i18n/messages_nb.properties b/myapp/grails-app/i18n/messages_nb.properties
+new file mode 100644
+index 00000000..47a8a1ab
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_nb.properties
+@@ -0,0 +1,56 @@
++default.doesnt.match.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] overholder ikke mønsteret [{3}]
++default.invalid.url.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] er ikke en gyldig URL
++default.invalid.creditCard.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] er ikke et gyldig kredittkortnummer
++default.invalid.email.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] er ikke en gyldig epostadresse
++default.invalid.range.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] er ikke innenfor intervallet [{3}] til [{4}]
++default.invalid.size.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] er ikke innenfor intervallet [{3}] til [{4}]
++default.invalid.max.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] overstiger maksimumsverdien på [{3}]
++default.invalid.min.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] er under minimumsverdien på [{3}]
++default.invalid.max.size.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] overstiger maksimumslengden på [{3}]
++default.invalid.min.size.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] er kortere enn minimumslengden på [{3}]
++default.invalid.validator.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] overholder ikke den brukerdefinerte valideringen
++default.not.inlist.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] finnes ikke i listen [{3}]
++default.blank.message=Feltet [{0}] i klassen [{1}] kan ikke være tom
++default.not.equal.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] kan ikke være [{3}]
++default.null.message=Feltet [{0}] i klassen [{1}] kan ikke være null
++default.not.unique.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] må være unik
++
++default.paginate.prev=Forrige
++default.paginate.next=Neste
++default.boolean.true=Ja
++default.boolean.false=Nei
++default.date.format=dd.MM.yyyy HH:mm:ss z
++default.number.format=0
++
++default.created.message={0} {1} opprettet
++default.updated.message={0} {1} oppdatert
++default.deleted.message={0} {1} slettet
++default.not.deleted.message={0} {1} kunne ikke slettes
++default.not.found.message={0} med id {1} ble ikke funnet
++default.optimistic.locking.failure=En annen bruker har oppdatert denne {0} mens du redigerte
++
++default.home.label=Hjem
++default.list.label={0}liste
++default.add.label=Legg til {0}
++default.new.label=Ny {0}
++default.create.label=Opprett {0}
++default.show.label=Vis {0}
++default.edit.label=Endre {0}
++
++default.button.create.label=Opprett
++default.button.edit.label=Endre
++default.button.update.label=Oppdater
++default.button.delete.label=Slett
++default.button.delete.confirm.message=Er du sikker?
++
++# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
++typeMismatch.java.net.URL=Feltet {0} må være en gyldig URL
++typeMismatch.java.net.URI=Feltet {0} må være en gyldig URI
++typeMismatch.java.util.Date=Feltet {0} må være en gyldig dato
++typeMismatch.java.lang.Double=Feltet {0} må være et gyldig tall
++typeMismatch.java.lang.Integer=Feltet {0} må være et gyldig heltall
++typeMismatch.java.lang.Long=Feltet {0} må være et gyldig heltall
++typeMismatch.java.lang.Short=Feltet {0} må være et gyldig heltall
++typeMismatch.java.math.BigDecimal=Feltet {0} må være et gyldig tall
++typeMismatch.java.math.BigInteger=Feltet {0} må være et gyldig heltall
++
+diff --git a/myapp/grails-app/i18n/messages_nl.properties b/myapp/grails-app/i18n/messages_nl.properties
+new file mode 100644
+index 00000000..cd5cc94e
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_nl.properties
+@@ -0,0 +1,55 @@
++default.doesnt.match.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] komt niet overeen met het vereiste patroon [{3}]
++default.invalid.url.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] is geen geldige URL
++default.invalid.creditCard.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] is geen geldig credit card nummer
++default.invalid.email.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] is geen geldig e-mailadres
++default.invalid.range.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] valt niet in de geldige waardenreeks van [{3}] tot [{4}]
++default.invalid.size.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] valt niet in de geldige grootte van [{3}] tot [{4}]
++default.invalid.max.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] overschrijdt de maximumwaarde [{3}]
++default.invalid.min.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] is minder dan de minimumwaarde [{3}]
++default.invalid.max.size.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] overschrijdt de maximumgrootte van [{3}]
++default.invalid.min.size.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] is minder dan minimumgrootte van [{3}]
++default.invalid.validator.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] is niet geldig
++default.not.inlist.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] komt niet voor in de lijst [{3}]
++default.blank.message=Attribuut [{0}] van entiteit [{1}] mag niet leeg zijn
++default.not.equal.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] mag niet gelijk zijn aan [{3}]
++default.null.message=Attribuut [{0}] van entiteit [{1}] mag niet leeg zijn
++default.not.unique.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] moet uniek zijn
++
++default.paginate.prev=Vorige
++default.paginate.next=Volgende
++default.boolean.true=Ja
++default.boolean.false=Nee
++default.date.format=dd-MM-yyyy HH:mm:ss z
++default.number.format=0
++
++default.created.message={0} {1} ingevoerd
++default.updated.message={0} {1} gewijzigd
++default.deleted.message={0} {1} verwijderd
++default.not.deleted.message={0} {1} kon niet worden verwijderd
++default.not.found.message={0} met id {1} kon niet worden gevonden
++default.optimistic.locking.failure=Een andere gebruiker heeft deze {0} al gewijzigd
++
++default.home.label=Home
++default.list.label={0} Overzicht
++default.add.label=Toevoegen {0}
++default.new.label=Invoeren {0}
++default.create.label=Invoeren {0}
++default.show.label=Details {0}
++default.edit.label=Wijzigen {0}
++
++default.button.create.label=Invoeren
++default.button.edit.label=Wijzigen
++default.button.update.label=Opslaan
++default.button.delete.label=Verwijderen
++default.button.delete.confirm.message=Weet je het zeker?
++
++# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
++typeMismatch.java.net.URL=Attribuut {0} is geen geldige URL
++typeMismatch.java.net.URI=Attribuut {0} is geen geldige URI
++typeMismatch.java.util.Date=Attribuut {0} is geen geldige datum
++typeMismatch.java.lang.Double=Attribuut {0} is geen geldig nummer
++typeMismatch.java.lang.Integer=Attribuut {0} is geen geldig nummer
++typeMismatch.java.lang.Long=Attribuut {0} is geen geldig nummer
++typeMismatch.java.lang.Short=Attribuut {0} is geen geldig nummer
++typeMismatch.java.math.BigDecimal=Attribuut {0} is geen geldig nummer
++typeMismatch.java.math.BigInteger=Attribuut {0} is geen geldig nummer
+diff --git a/myapp/grails-app/i18n/messages_pl.properties b/myapp/grails-app/i18n/messages_pl.properties
+new file mode 100644
+index 00000000..959296ce
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_pl.properties
+@@ -0,0 +1,59 @@
++#
++# Translated by Matthias Hryniszak - padcom@gmail.com
++#
++
++default.doesnt.match.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] nie pasuje do wymaganego wzorca [{3}]
++default.invalid.url.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] jest niepoprawnym adresem URL
++default.invalid.creditCard.message=Właściwość [{0}] klasy [{1}] with value [{2}] nie jest poprawnym numerem karty kredytowej
++default.invalid.email.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] nie jest poprawnym adresem e-mail
++default.invalid.range.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] nie zawiera się zakładanym zakresie od [{3}] do [{4}]
++default.invalid.size.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] nie zawiera się w zakładanym zakresie rozmiarów od [{3}] do [{4}]
++default.invalid.max.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] przekracza maksymalną wartość [{3}]
++default.invalid.min.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] jest mniejsza niż minimalna wartość [{3}]
++default.invalid.max.size.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] przekracza maksymalny rozmiar [{3}]
++default.invalid.min.size.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] jest mniejsza niż minimalny rozmiar [{3}]
++default.invalid.validator.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] nie spełnia założonych niestandardowych warunków
++default.not.inlist.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] nie zawiera się w liście [{3}]
++default.blank.message=Właściwość [{0}] klasy [{1}] nie może być pusta
++default.not.equal.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] nie może równać się [{3}]
++default.null.message=Właściwość [{0}] klasy [{1}] nie może być null
++default.not.unique.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] musi być unikalna
++
++default.paginate.prev=Poprzedni
++default.paginate.next=Następny
++default.boolean.true=Prawda
++default.boolean.false=Fałsz
++default.date.format=yyyy-MM-dd HH:mm:ss z
++default.number.format=0
++
++default.created.message=Utworzono {0} {1}
++default.updated.message=Zaktualizowano {0} {1}
++default.deleted.message=Usunięto {0} {1}
++default.not.deleted.message={0} {1} nie mógł zostać usunięty
++default.not.found.message=Nie znaleziono {0} o id {1}
++default.optimistic.locking.failure=Inny użytkownik zaktualizował ten obiekt {0} w trakcie twoich zmian
++
++default.home.label=Strona domowa
++default.list.label=Lista {0}
++default.add.label=Dodaj {0}
++default.new.label=Utwórz {0}
++default.create.label=Utwórz {0}
++default.show.label=Pokaż {0}
++default.edit.label=Edytuj {0}
++
++default.button.create.label=Utwórz
++default.button.edit.label=Edytuj
++default.button.update.label=Zaktualizuj
++default.button.delete.label=Usuń
++default.button.delete.confirm.message=Czy jesteś pewien?
++
++# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
++typeMismatch.java.net.URL=Właściwość {0} musi być poprawnym adresem URL
++typeMismatch.java.net.URI=Właściwość {0} musi być poprawnym adresem URI
++typeMismatch.java.util.Date=Właściwość {0} musi być poprawną datą
++typeMismatch.java.lang.Double=Właściwość {0} musi być poprawnyą liczbą
++typeMismatch.java.lang.Integer=Właściwość {0} musi być poprawnyą liczbą
++typeMismatch.java.lang.Long=Właściwość {0} musi być poprawnyą liczbą
++typeMismatch.java.lang.Short=Właściwość {0} musi być poprawnyą liczbą
++typeMismatch.java.math.BigDecimal=Właściwość {0} musi być poprawnyą liczbą
++typeMismatch.java.math.BigInteger=Właściwość {0} musi być poprawnyą liczbą
+diff --git a/myapp/grails-app/i18n/messages_pt_BR.properties b/myapp/grails-app/i18n/messages_pt_BR.properties
+new file mode 100644
+index 00000000..b5044e23
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_pt_BR.properties
+@@ -0,0 +1,59 @@
++#
++# Translated by Lucas Teixeira - lucastex@gmail.com
++#
++
++default.doesnt.match.message=O campo [{0}] da classe [{1}] com o valor [{2}] não atende ao padrão definido [{3}]
++default.invalid.url.message=O campo [{0}] da classe [{1}] com o valor [{2}] não é uma URL válida
++default.invalid.creditCard.message=O campo [{0}] da classe [{1}] com o valor [{2}] não é um número válido de cartão de crédito
++default.invalid.email.message=O campo [{0}] da classe [{1}] com o valor [{2}] não é um endereço de email válido.
++default.invalid.range.message=O campo [{0}] da classe [{1}] com o valor [{2}] não está entre a faixa de valores válida de [{3}] até [{4}]
++default.invalid.size.message=O campo [{0}] da classe [{1}] com o valor [{2}] não está na faixa de tamanho válida de [{3}] até [{4}]
++default.invalid.max.message=O campo [{0}] da classe [{1}] com o valor [{2}] ultrapassa o valor máximo [{3}]
++default.invalid.min.message=O campo [{0}] da classe [{1}] com o valor [{2}] não atinge o valor mínimo [{3}]
++default.invalid.max.size.message=O campo [{0}] da classe [{1}] com o valor [{2}] ultrapassa o tamanho máximo de [{3}]
++default.invalid.min.size.message=O campo [{0}] da classe [{1}] com o valor [{2}] não atinge o tamanho mínimo de [{3}]
++default.invalid.validator.message=O campo [{0}] da classe [{1}] com o valor [{2}] não passou na validação
++default.not.inlist.message=O campo [{0}] da classe [{1}] com o valor [{2}] não é um valor dentre os permitidos na lista [{3}]
++default.blank.message=O campo [{0}] da classe [{1}] não pode ficar em branco
++default.not.equal.message=O campo [{0}] da classe [{1}] com o valor [{2}] não pode ser igual a [{3}]
++default.null.message=O campo [{0}] da classe [{1}] não pode ser vazio
++default.not.unique.message=O campo [{0}] da classe [{1}] com o valor [{2}] deve ser único
++
++default.paginate.prev=Anterior
++default.paginate.next=Próximo
++default.boolean.true=Sim
++default.boolean.false=Não
++default.date.format=dd/MM/yyyy HH:mm:ss z
++default.number.format=0
++
++default.created.message={0} {1} criado
++default.updated.message={0} {1} atualizado
++default.deleted.message={0} {1} removido
++default.not.deleted.message={0} {1} não pode ser removido
++default.not.found.message={0} não foi encontrado com o id {1}
++default.optimistic.locking.failure=Outro usuário atualizou este [{0}] enquanto você tentou salvá-lo
++
++default.home.label=Principal
++default.list.label={0} Listagem
++default.add.label=Adicionar {0}
++default.new.label=Novo {0}
++default.create.label=Criar {0}
++default.show.label=Ver {0}
++default.edit.label=Editar {0}
++
++default.button.create.label=Criar
++default.button.edit.label=Editar
++default.button.update.label=Alterar
++default.button.delete.label=Remover
++default.button.delete.confirm.message=Tem certeza?
++
++# Mensagens de erro em atribuição de valores. Use "typeMismatch.$className.$propertyName" para customizar (eg typeMismatch.Book.author)
++typeMismatch.java.net.URL=O campo {0} deve ser uma URL válida.
++typeMismatch.java.net.URI=O campo {0} deve ser uma URI válida.
++typeMismatch.java.util.Date=O campo {0} deve ser uma data válida
++typeMismatch.java.lang.Double=O campo {0} deve ser um número válido.
++typeMismatch.java.lang.Integer=O campo {0} deve ser um número válido.
++typeMismatch.java.lang.Long=O campo {0} deve ser um número válido.
++typeMismatch.java.lang.Short=O campo {0} deve ser um número válido.
++typeMismatch.java.math.BigDecimal=O campo {0} deve ser um número válido.
++typeMismatch.java.math.BigInteger=O campo {0} deve ser um número válido.
+diff --git a/myapp/grails-app/i18n/messages_pt_PT.properties b/myapp/grails-app/i18n/messages_pt_PT.properties
+new file mode 100644
+index 00000000..a3860706
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_pt_PT.properties
+@@ -0,0 +1,34 @@
++#
++# translation by miguel.ping@gmail.com, based on pt_BR translation by Lucas Teixeira - lucastex@gmail.com
++#
++
++default.doesnt.match.message=O campo [{0}] da classe [{1}] com o valor [{2}] não corresponde ao padrão definido [{3}]
++default.invalid.url.message=O campo [{0}] da classe [{1}] com o valor [{2}] não é um URL válido
++default.invalid.creditCard.message=O campo [{0}] da classe [{1}] com o valor [{2}] não é um número válido de cartão de crédito
++default.invalid.email.message=O campo [{0}] da classe [{1}] com o valor [{2}] não é um endereço de email válido.
++default.invalid.range.message=O campo [{0}] da classe [{1}] com o valor [{2}] não está dentro dos limites de valores válidos de [{3}] a [{4}]
++default.invalid.size.message=O campo [{0}] da classe [{1}] com o valor [{2}] está fora dos limites de tamanho válido de [{3}] a [{4}]
++default.invalid.max.message=O campo [{0}] da classe [{1}] com o valor [{2}] ultrapassa o valor máximo [{3}]
++default.invalid.min.message=O campo [{0}] da classe [{1}] com o valor [{2}] não atinge o valor mínimo [{3}]
++default.invalid.max.size.message=O campo [{0}] da classe [{1}] com o valor [{2}] ultrapassa o tamanho máximo de [{3}]
++default.invalid.min.size.message=O campo [{0}] da classe [{1}] com o valor [{2}] não atinge o tamanho mínimo de [{3}]
++default.invalid.validator.message=O campo [{0}] da classe [{1}] com o valor [{2}] não passou na validação
++default.not.inlist.message=O campo [{0}] da classe [{1}] com o valor [{2}] não se encontra nos valores permitidos da lista [{3}]
++default.blank.message=O campo [{0}] da classe [{1}] não pode ser vazio
++default.not.equal.message=O campo [{0}] da classe [{1}] com o valor [{2}] não pode ser igual a [{3}]
++default.null.message=O campo [{0}] da classe [{1}] não pode ser vazio
++default.not.unique.message=O campo [{0}] da classe [{1}] com o valor [{2}] deve ser único
++
++default.paginate.prev=Anterior
++default.paginate.next=Próximo
++
++# Mensagens de erro em atribuição de valores. Use "typeMismatch.$className.$propertyName" para personalizar(eg typeMismatch.Book.author)
++typeMismatch.java.net.URL=O campo {0} deve ser um URL válido.
++typeMismatch.java.net.URI=O campo {0} deve ser um URI válido.
++typeMismatch.java.util.Date=O campo {0} deve ser uma data válida
++typeMismatch.java.lang.Double=O campo {0} deve ser um número válido.
++typeMismatch.java.lang.Integer=O campo {0} deve ser um número válido.
++typeMismatch.java.lang.Long=O campo {0} deve ser um número valido.
++typeMismatch.java.lang.Short=O campo {0} deve ser um número válido.
++typeMismatch.java.math.BigDecimal=O campo {0} deve ser um número válido.
++typeMismatch.java.math.BigInteger=O campo {0} deve ser um número válido.
+diff --git a/myapp/grails-app/i18n/messages_ru.properties b/myapp/grails-app/i18n/messages_ru.properties
+new file mode 100644
+index 00000000..53a4bdc4
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_ru.properties
+@@ -0,0 +1,31 @@
++default.doesnt.match.message=Значение [{2}] поля [{0}] класса [{1}] не соответствует образцу [{3}]
++default.invalid.url.message=Значение [{2}] поля [{0}] класса [{1}] не является допустимым URL-адресом
++default.invalid.creditCard.message=Значение [{2}] поля [{0}] класса [{1}] не является допустимым номером кредитной карты
++default.invalid.email.message=Значение [{2}] поля [{0}] класса [{1}] не является допустимым e-mail адресом
++default.invalid.range.message=Значение [{2}] поля [{0}] класса [{1}] не попадает в допустимый интервал от [{3}] до [{4}]
++default.invalid.size.message=Размер поля [{0}] класса [{1}] (значение: [{2}]) не попадает в допустимый интервал от [{3}] до [{4}]
++default.invalid.max.message=Значение [{2}] поля [{0}] класса [{1}] больше чем максимально допустимое значение [{3}]
++default.invalid.min.message=Значение [{2}] поля [{0}] класса [{1}] меньше чем минимально допустимое значение [{3}]
++default.invalid.max.size.message=Размер поля [{0}] класса [{1}] (значение: [{2}]) больше чем максимально допустимый размер [{3}]
++default.invalid.min.size.message=Размер поля [{0}] класса [{1}] (значение: [{2}]) меньше чем минимально допустимый размер [{3}]
++default.invalid.validator.message=Значение [{2}] поля [{0}] класса [{1}] не допустимо
++default.not.inlist.message=Значение [{2}] поля [{0}] класса [{1}] не попадает в список допустимых значений [{3}]
++default.blank.message=Поле [{0}] класса [{1}] не может быть пустым
++default.not.equal.message=Значение [{2}] поля [{0}] класса [{1}] не может быть равно [{3}]
++default.null.message=Поле [{0}] класса [{1}] не может иметь значение null
++default.not.unique.message=Значение [{2}] поля [{0}] класса [{1}] должно быть уникальным
++
++default.paginate.prev=Предыдушая страница
++default.paginate.next=Следующая страница
++
++# Ошибки при присвоении данных. Для точной настройки для полей классов используйте
++# формат "typeMismatch.$className.$propertyName" (например, typeMismatch.Book.author)
++typeMismatch.java.net.URL=Значение поля {0} не является допустимым URL
++typeMismatch.java.net.URI=Значение поля {0} не является допустимым URI
++typeMismatch.java.util.Date=Значение поля {0} не является допустимой датой
++typeMismatch.java.lang.Double=Значение поля {0} не является допустимым числом
++typeMismatch.java.lang.Integer=Значение поля {0} не является допустимым числом
++typeMismatch.java.lang.Long=Значение поля {0} не является допустимым числом
++typeMismatch.java.lang.Short=Значение поля {0} не является допустимым числом
++typeMismatch.java.math.BigDecimal=Значение поля {0} не является допустимым числом
++typeMismatch.java.math.BigInteger=Значение поля {0} не является допустимым числом
+diff --git a/myapp/grails-app/i18n/messages_sk.properties b/myapp/grails-app/i18n/messages_sk.properties
+new file mode 100644
+index 00000000..73ee0dc9
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_sk.properties
+@@ -0,0 +1,56 @@
++default.doesnt.match.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] nezodpovedá požadovanému formátu [{3}]
++default.invalid.url.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] nie je platná URL adresa
++default.invalid.creditCard.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] nie je platné číslo kreditnej karty
++default.invalid.email.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] nie je platná emailová adresa
++default.invalid.range.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] nie je v povolenom rozmedzí od [{3}] do [{4}]
++default.invalid.size.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] nie je v povolenom rozmedzí od [{3}] do [{4}]
++default.invalid.max.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] prekračuje maximálnu povolenú hodnotu [{3}]
++default.invalid.min.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] je menšia ako minimálna povolená hodnota [{3}]
++default.invalid.max.size.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] prekračuje maximálnu veľkosť [{3}]
++default.invalid.min.size.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] je menšia ako minimálna veľkosť [{3}]
++default.invalid.validator.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] neprešla validáciou
++default.not.inlist.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] nie je obsiahnutá v zozname [{3}]
++default.blank.message=Položka [{0}] triedy [{1}] nemôže byť prázdna
++default.not.equal.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] nemôže byť rovnaká ako [{3}]
++default.null.message=Položka [{0}] triedy [{1}] nemôže byť prázdna
++default.not.unique.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] musí byť unikátna
++
++default.paginate.prev=Predchádzajúce
++default.paginate.next=Nasledujúce
++default.boolean.true=Pravda
++default.boolean.false=Nepravda
++default.date.format=dd. MM. yyyy HH:mm:ss z
++default.number.format=0
++
++default.created.message={0} {1} vytvorené
++default.updated.message={0} {1} aktualizované
++default.deleted.message={0} {1} vymazané
++default.not.deleted.message={0} {1} nemožno zmazať
++default.not.found.message={0} nenájdené s id {1}
++default.optimistic.locking.failure=Iný používateľ aktualizoval záznam {0}, práve keď bol vami editovaný
++
++default.home.label=Domov
++default.list.label={0} Zoznam
++default.add.label=Pridať {0}
++default.new.label=Nový {0}
++default.create.label=Vytvoriť {0}
++default.show.label=Ukázať {0}
++default.edit.label=Editovať {0}
++
++default.button.create.label=Vytvor
++default.button.edit.label=Edituj
++default.button.update.label=Aktualizuj
++default.button.delete.label=Zmaž
++default.button.delete.confirm.message=Ste si istý?
++
++# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
++typeMismatch.java.net.URL=Položka {0} musí byť platná URL adresa
++typeMismatch.java.net.URI=Položka {0} musí byť platná URI adresa
++typeMismatch.java.util.Date=Položka {0} musí byť platný dátum
++typeMismatch.java.lang.Double=Položka {0} musí byť desatinné číslo
++typeMismatch.java.lang.Integer=Položka {0} musí byť celé číslo
++typeMismatch.java.lang.Long=Položka {0} musí byť celé číslo
++typeMismatch.java.lang.Short=Položka {0} musí byť celé číslo
++typeMismatch.java.math.BigDecimal=Položka {0} musí byť desatinné číslo
++typeMismatch.java.math.BigInteger=Položka {0} musí byť celé číslo
++typeMismatch=Položka {0} má nezhodný typ
+diff --git a/myapp/grails-app/i18n/messages_sv.properties b/myapp/grails-app/i18n/messages_sv.properties
+new file mode 100644
+index 00000000..61899d79
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_sv.properties
+@@ -0,0 +1,55 @@
++default.doesnt.match.message=Attributet [{0}] för klassen [{1}] med värde [{2}] matchar inte mot uttrycket [{3}]
++default.invalid.url.message=Attributet [{0}] för klassen [{1}] med värde [{2}] är inte en giltig URL
++default.invalid.creditCard.message=Attributet [{0}] för klassen [{1}] med värde [{2}] är inte ett giltigt kreditkortsnummer
++default.invalid.email.message=Attributet [{0}] för klassen [{1}] med värde [{2}] är inte en giltig e-postadress
++default.invalid.range.message=Attributet [{0}] för klassen [{1}] med värde [{2}] är inte inom intervallet [{3}] till [{4}]
++default.invalid.size.message=Attributet [{0}] för klassen [{1}] med värde [{2}] har en storlek som inte är inom [{3}] till [{4}]
++default.invalid.max.message=Attributet [{0}] för klassen [{1}] med värde [{2}] överskrider maxvärdet [{3}]
++default.invalid.min.message=Attributet [{0}] för klassen [{1}] med värde [{2}] är mindre än minimivärdet [{3}]
++default.invalid.max.size.message=Attributet [{0}] för klassen [{1}] med värde [{2}] överskrider maxstorleken [{3}]
++default.invalid.min.size.message=Attributet [{0}] för klassen [{1}] med värde [{2}] är mindre än minimistorleken [{3}]
++default.invalid.validator.message=Attributet [{0}] för klassen [{1}] med värde [{2}] är inte giltigt enligt anpassad regel
++default.not.inlist.message=Attributet [{0}] för klassen [{1}] med värde [{2}] är inte giltigt, måste vara ett av [{3}]
++default.blank.message=Attributet [{0}] för klassen [{1}] får inte vara tomt
++default.not.equal.message=Attributet [{0}] för klassen [{1}] med värde [{2}] får inte vara lika med [{3}]
++default.null.message=Attributet [{0}] för klassen [{1}] får inte vara tomt
++default.not.unique.message=Attributet [{0}] för klassen [{1}] med värde [{2}] måste vara unikt
++
++default.paginate.prev=Föregående
++default.paginate.next=Nästa
++default.boolean.true=Sant
++default.boolean.false=Falskt
++default.date.format=yyyy-MM-dd HH:mm:ss z
++default.number.format=0
++
++default.created.message={0} {1} skapades
++default.updated.message={0} {1} uppdaterades
++default.deleted.message={0} {1} borttagen
++default.not.deleted.message={0} {1} kunde inte tas bort
++default.not.found.message={0} med id {1} kunde inte hittas
++default.optimistic.locking.failure=En annan användare har uppdaterat det här {0} objektet medan du redigerade det
++
++default.home.label=Hem
++default.list.label= {0} - Lista
++default.add.label=Lägg till {0}
++default.new.label=Skapa {0}
++default.create.label=Skapa {0}
++default.show.label=Visa {0}
++default.edit.label=Ändra {0}
++
++default.button.create.label=Skapa
++default.button.edit.label=Ändra
++default.button.update.label=Uppdatera
++default.button.delete.label=Ta bort
++default.button.delete.confirm.message=Är du säker?
++
++# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
++typeMismatch.java.net.URL=Värdet för {0} måste vara en giltig URL
++typeMismatch.java.net.URI=Värdet för {0} måste vara en giltig URI
++typeMismatch.java.util.Date=Värdet {0} måste vara ett giltigt datum
++typeMismatch.java.lang.Double=Värdet {0} måste vara ett giltigt nummer
++typeMismatch.java.lang.Integer=Värdet {0} måste vara ett giltigt heltal
++typeMismatch.java.lang.Long=Värdet {0} måste vara ett giltigt heltal
++typeMismatch.java.lang.Short=Värdet {0} måste vara ett giltigt heltal
++typeMismatch.java.math.BigDecimal=Värdet {0} måste vara ett giltigt nummer
++typeMismatch.java.math.BigInteger=Värdet {0} måste vara ett giltigt heltal
+\ No newline at end of file
+diff --git a/myapp/grails-app/i18n/messages_th.properties b/myapp/grails-app/i18n/messages_th.properties
+new file mode 100644
+index 00000000..fd0dbb68
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_th.properties
+@@ -0,0 +1,55 @@
++default.doesnt.match.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่ถูกต้องตามรูปแบบที่กำหนดไว้ใน [{3}]
++default.invalid.url.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่ถูกต้องตามรูปแบบ URL
++default.invalid.creditCard.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่ถูกต้องตามรูปแบบหมายเลขบัตรเครดิต
++default.invalid.email.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่ถูกต้องตามรูปแบบอีเมล์
++default.invalid.range.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่ได้มีค่าที่ถูกต้องในช่วงจาก [{3}] ถึง [{4}]
++default.invalid.size.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่ได้มีขนาดที่ถูกต้องในช่วงจาก [{3}] ถึง [{4}]
++default.invalid.max.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] มีค่าเกิดกว่าค่ามากสุด [{3}]
++default.invalid.min.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] มีค่าน้อยกว่าค่าต่ำสุด  [{3}]
++default.invalid.max.size.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] มีขนาดเกินกว่าขนาดมากสุดของ [{3}]
++default.invalid.min.size.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] มีขนาดต่ำกว่าขนาดต่ำสุดของ  [{3}]
++default.invalid.validator.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่ผ่านการทวนสอบค่าที่ตั้งขึ้น
++default.not.inlist.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่ได้อยู่ในรายการต่อไปนี้  [{3}]
++default.blank.message=คุณสมบัติ [{0}] ของคลาส [{1}] ไม่สามารถเป็นค่าว่างได้
++default.not.equal.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่สามารถเท่ากับ [{3}] ได้
++default.null.message=คุณสมบัติ [{0}] ของคลาส [{1}] ไม่สามารถเป็น null ได้
++default.not.unique.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] จะต้องไม่ซ้ำ (unique)
++
++default.paginate.prev=ก่อนหน้า
++default.paginate.next=ถัดไป
++default.boolean.true=จริง
++default.boolean.false=เท็จ
++default.date.format=dd-MM-yyyy HH:mm:ss z
++default.number.format=0
++
++default.created.message=สร้าง {0} {1} เรียบร้อยแล้ว
++default.updated.message=ปรับปรุง {0} {1} เรียบร้อยแล้ว
++default.deleted.message=ลบ {0} {1} เรียบร้อยแล้ว
++default.not.deleted.message=ไม่สามารถลบ {0} {1}
++default.not.found.message=ไม่พบ {0} ด้วย id {1} นี้
++default.optimistic.locking.failure=มีผู้ใช้ท่านอื่นปรับปรุง {0} ขณะที่คุณกำลังแก้ไขข้อมูลอยู่
++
++default.home.label=หน้าแรก
++default.list.label=รายการ {0}
++default.add.label=เพิ่ม {0}
++default.new.label=สร้าง {0} ใหม่
++default.create.label=สร้าง {0}
++default.show.label=แสดง {0}
++default.edit.label=แก้ไข {0}
++
++default.button.create.label=สร้าง
++default.button.edit.label=แก้ไข
++default.button.update.label=ปรับปรุง
++default.button.delete.label=ลบ
++default.button.delete.confirm.message=คุณแน่ใจหรือไม่ ?
++
++# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
++typeMismatch.java.net.URL=คุณสมบัติ '{0}' จะต้องเป็นค่า URL ที่ถูกต้อง
++typeMismatch.java.net.URI=คุณสมบัติ '{0}' จะต้องเป็นค่า URI ที่ถูกต้อง
++typeMismatch.java.util.Date=คุณสมบัติ '{0}' จะต้องมีค่าเป็นวันที่
++typeMismatch.java.lang.Double=คุณสมบัติ '{0}' จะต้องมีค่าเป็นจำนวนประเภท Double
++typeMismatch.java.lang.Integer=คุณสมบัติ '{0}' จะต้องมีค่าเป็นจำนวนประเภท Integer
++typeMismatch.java.lang.Long=คุณสมบัติ '{0}' จะต้องมีค่าเป็นจำนวนประเภท Long
++typeMismatch.java.lang.Short=คุณสมบัติ '{0}' จะต้องมีค่าเป็นจำนวนประเภท Short
++typeMismatch.java.math.BigDecimal=คุณสมบัติ '{0}' จะต้องมีค่าเป็นจำนวนประเภท BigDecimal
++typeMismatch.java.math.BigInteger=คุณสมบัติ '{0}' จะต้องมีค่าเป็นจำนวนประเภท BigInteger
+diff --git a/myapp/grails-app/i18n/messages_zh_CN.properties b/myapp/grails-app/i18n/messages_zh_CN.properties
+new file mode 100644
+index 00000000..b89bc933
+--- /dev/null
++++ b/myapp/grails-app/i18n/messages_zh_CN.properties
+@@ -0,0 +1,18 @@
++default.blank.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u4E0D\u80FD\u4E3A\u7A7A
++default.doesnt.match.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u4E0E\u5B9A\u4E49\u7684\u6A21\u5F0F [{3}]\u4E0D\u5339\u914D
++default.invalid.creditCard.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u4E0D\u662F\u4E00\u4E2A\u6709\u6548\u7684\u4FE1\u7528\u5361\u53F7
++default.invalid.email.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u4E0D\u662F\u4E00\u4E2A\u5408\u6CD5\u7684\u7535\u5B50\u90AE\u4EF6\u5730\u5740
++default.invalid.max.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u6BD4\u6700\u5927\u503C [{3}]\u8FD8\u5927
++default.invalid.max.size.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u7684\u5927\u5C0F\u6BD4\u6700\u5927\u503C [{3}]\u8FD8\u5927
++default.invalid.min.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u6BD4\u6700\u5C0F\u503C [{3}]\u8FD8\u5C0F
++default.invalid.min.size.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u7684\u5927\u5C0F\u6BD4\u6700\u5C0F\u503C [{3}]\u8FD8\u5C0F
++default.invalid.range.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u4E0D\u5728\u5408\u6CD5\u7684\u8303\u56F4\u5185( [{3}] \uFF5E [{4}] )
++default.invalid.size.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u7684\u5927\u5C0F\u4E0D\u5728\u5408\u6CD5\u7684\u8303\u56F4\u5185( [{3}] \uFF5E [{4}] )
++default.invalid.url.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u4E0D\u662F\u4E00\u4E2A\u5408\u6CD5\u7684URL
++default.invalid.validator.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u672A\u80FD\u901A\u8FC7\u81EA\u5B9A\u4E49\u7684\u9A8C\u8BC1
++default.not.equal.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u4E0E[{3}]\u4E0D\u76F8\u7B49
++default.not.inlist.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u4E0D\u5728\u5217\u8868\u7684\u53D6\u503C\u8303\u56F4\u5185
++default.not.unique.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u5FC5\u987B\u662F\u552F\u4E00\u7684
++default.null.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u4E0D\u80FD\u4E3Anull
++default.paginate.next=\u4E0B\u9875
++default.paginate.prev=\u4E0A\u9875
+diff --git a/myplugin/grails-app/init/myplugin/Application.groovy b/myapp/grails-app/init/myapp/Application.groovy
+similarity index 65%
+rename from myplugin/grails-app/init/myplugin/Application.groovy
+rename to myapp/grails-app/init/myapp/Application.groovy
+index 6d2c564c..980180d7 100644
+--- a/myplugin/grails-app/init/myplugin/Application.groovy
++++ b/myapp/grails-app/init/myapp/Application.groovy
+@@ -1,10 +1,11 @@
+-package myplugin
++package myapp
+ 
+-import grails.boot.*
++import grails.boot.GrailsApp
+ import grails.boot.config.GrailsAutoConfiguration
+-import grails.plugins.metadata.*
+ 
+-@PluginSource
++import groovy.transform.CompileStatic
++
++@CompileStatic
+ class Application extends GrailsAutoConfiguration {
+     static void main(String[] args) {
+         GrailsApp.run(Application, args)
+diff --git a/myplugin/grails-app/init/myplugin/BootStrap.groovy b/myapp/grails-app/init/myapp/BootStrap.groovy
+similarity index 83%
+rename from myplugin/grails-app/init/myplugin/BootStrap.groovy
+rename to myapp/grails-app/init/myapp/BootStrap.groovy
+index e8ad49ba..5cf149b2 100644
+--- a/myplugin/grails-app/init/myplugin/BootStrap.groovy
++++ b/myapp/grails-app/init/myapp/BootStrap.groovy
+@@ -1,4 +1,4 @@
+-package myplugin
++package myapp
+ 
+ class BootStrap {
+ 
+diff --git a/myapp/grails-app/views/application/index.gson b/myapp/grails-app/views/application/index.gson
+new file mode 100644
+index 00000000..61f96439
+--- /dev/null
++++ b/myapp/grails-app/views/application/index.gson
+@@ -0,0 +1,33 @@
++import grails.core.*
++import grails.util.*
++import grails.plugins.*
++import org.grails.core.artefact.*
++
++model {
++	GrailsApplication grailsApplication	
++	GrailsPluginManager pluginManager
++}
++
++json {
++	message "Welcome to Grails!"
++    environment Environment.current.name
++    appversion grailsApplication.metadata.getApplicationVersion()
++    grailsversion GrailsUtil.grailsVersion
++    appprofile grailsApplication.config.getProperty('grails.profile')
++    groovyversion GroovySystem.getVersion()
++    jvmversion System.getProperty('java.version')
++    reloadingagentenabled Environment.reloadingAgentEnabled
++    artefacts (
++        controllers: grailsApplication.getArtefactInfo(ControllerArtefactHandler.TYPE).classesByName.size(),
++        domains: grailsApplication.getArtefactInfo(DomainClassArtefactHandler.TYPE).classesByName.size(),
++        services: grailsApplication.getArtefactInfo(ServiceArtefactHandler.TYPE).classesByName.size()
++    )
++    controllers grailsApplication.getArtefacts(ControllerArtefactHandler.TYPE), { GrailsClass c ->
++        name c.fullName
++        logicalPropertyName c.logicalPropertyName
++    }
++    plugins pluginManager.allPlugins, { GrailsPlugin plugin ->
++    	name plugin.name
++    	version plugin.version
++    }
++}
+diff --git a/myapp/grails-app/views/error.gson b/myapp/grails-app/views/error.gson
+new file mode 100644
+index 00000000..94488283
+--- /dev/null
++++ b/myapp/grails-app/views/error.gson
+@@ -0,0 +1,6 @@
++response.status 500
++
++json {    
++    message "Internal server error"
++    error 500
++}
+\ No newline at end of file
+diff --git a/myapp/grails-app/views/errors/_errors.gson b/myapp/grails-app/views/errors/_errors.gson
+new file mode 100644
+index 00000000..c1ae732d
+--- /dev/null
++++ b/myapp/grails-app/views/errors/_errors.gson
+@@ -0,0 +1,42 @@
++import org.springframework.validation.*
++
++/**
++ * Renders validation errors according to vnd.error: https://github.com/blongden/vnd.error
++ */
++model {
++    Errors errors
++}
++
++response.status UNPROCESSABLE_ENTITY
++
++json {
++    Errors errorsObject = (Errors)this.errors
++    def allErrors = errorsObject.allErrors
++    int errorCount = allErrors.size()
++    def resourcePath = g.link(resource:request.uri, absolute:false)
++    def resourceLink = g.link(resource:request.uri, absolute:true)
++    if(errorCount == 1) {
++        def error = allErrors.iterator().next()
++        message messageSource.getMessage(error, locale)
++        path resourcePath
++        _links {
++            self {
++                href resourceLink
++            }
++        }
++    }
++    else {
++        total errorCount
++        _embedded {
++            errors(allErrors) { ObjectError error ->
++                message messageSource.getMessage(error, locale)
++                path resourcePath
++                _links {
++                    self {
++                        href resourceLink
++                    }
++                }
++            }
++        }
++    }
++}
+diff --git a/myapp/grails-app/views/notFound.gson b/myapp/grails-app/views/notFound.gson
+new file mode 100644
+index 00000000..1a710b26
+--- /dev/null
++++ b/myapp/grails-app/views/notFound.gson
+@@ -0,0 +1,6 @@
++response.status 404
++
++json {
++	message "Not Found"
++	error 404
++}
+\ No newline at end of file
+diff --git a/myapp/grails-app/views/object/_object.gson b/myapp/grails-app/views/object/_object.gson
+new file mode 100644
+index 00000000..114568f7
+--- /dev/null
++++ b/myapp/grails-app/views/object/_object.gson
+@@ -0,0 +1,5 @@
++import groovy.transform.*
++
++@Field Object object
++
++json g.render(object)
+diff --git a/myplugin/grails-wrapper.jar b/myapp/grails-wrapper.jar
+similarity index 100%
+rename from myplugin/grails-wrapper.jar
+rename to myapp/grails-wrapper.jar
+diff --git a/myplugin/grailsw b/myapp/grailsw
+similarity index 100%
+rename from myplugin/grailsw
+rename to myapp/grailsw
+diff --git a/myplugin/grailsw.bat b/myapp/grailsw.bat
+similarity index 100%
+rename from myplugin/grailsw.bat
+rename to myapp/grailsw.bat
+diff --git a/myapp/settings.gradle b/myapp/settings.gradle
+new file mode 100644
+index 00000000..15256adc
+--- /dev/null
++++ b/myapp/settings.gradle
+@@ -0,0 +1 @@
++rootProject.name = '@info.app.name@'
+diff --git a/myplugin/grails-app/conf/logback.xml b/myplugin/grails-app/conf/logback.xml
+deleted file mode 100644
+index 3128faa4..00000000
+--- a/myplugin/grails-app/conf/logback.xml
++++ /dev/null
+@@ -1,17 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<configuration>
+-
+-    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+-    <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+-
+-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+-        <encoder>
+-            <charset>UTF-8</charset>
+-            <pattern>%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wex</pattern>
+-        </encoder>
+-    </appender>
+-
+-    <root level="error">
+-        <appender-ref ref="STDOUT" />
+-    </root>
+-</configuration>
+diff --git a/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy b/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
+deleted file mode 100644
+index 5b6d02ee..00000000
+--- a/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
++++ /dev/null
+@@ -1,8 +0,0 @@
+-package myplugin
+-
+-class UrlMappings {
+-
+-    static mappings = {
+-        // provide plugin url mappings here
+-    }
+-}
+diff --git a/myplugin/settings.gradle b/myplugin/settings.gradle
+deleted file mode 100644
+index 8d5eb670..00000000
+--- a/myplugin/settings.gradle
++++ /dev/null
+@@ -1 +0,0 @@
+-rootProject.name = 'myplugin'
+diff --git a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+deleted file mode 100644
+index 62751318..00000000
+--- a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
++++ /dev/null
+@@ -1,69 +0,0 @@
+-package myplugin
+-
+-import grails.plugins.*
+-
+-class MypluginGrailsPlugin extends Plugin {
+-
+-    // the version or versions of Grails the plugin is designed for
+-    def grailsVersion = "5.2.4 > *"
+-    // resources that are excluded from plugin packaging
+-    def pluginExcludes = [
+-        "grails-app/views/error.gsp"
+-    ]
+-
+-    // TODO Fill in these fields
+-    def title = "Myplugin" // Headline display name of the plugin
+-    def author = "Your name"
+-    def authorEmail = ""
+-    def description = '''\
+-Brief summary/description of the plugin.
+-'''
+-
+-    // URL to the plugin's documentation
+-    def documentation = "http://grails.org/plugin/myplugin"
+-
+-    // Extra (optional) plugin metadata
+-
+-    // License: one of 'APACHE', 'GPL2', 'GPL3'
+-//    def license = "APACHE"
+-
+-    // Details of company behind the plugin (if there is one)
+-//    def organization = [ name: "My Company", url: "http://www.my-company.com/" ]
+-
+-    // Any additional developers beyond the author specified above.
+-//    def developers = [ [ name: "Joe Bloggs", email: "joe@bloggs.net" ]]
+-
+-    // Location of the plugin's issue tracker.
+-//    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPMYPLUGIN" ]
+-
+-    // Online location of the plugin's browseable source code.
+-//    def scm = [ url: "http://svn.codehaus.org/grails-plugins/" ]
+-
+-    Closure doWithSpring() { {->
+-            // TODO Implement runtime spring config (optional)
+-        }
+-    }
+-
+-    void doWithDynamicMethods() {
+-        // TODO Implement registering dynamic methods to classes (optional)
+-    }
+-
+-    void doWithApplicationContext() {
+-        // TODO Implement post initialization spring config (optional)
+-    }
+-
+-    void onChange(Map<String, Object> event) {
+-        // TODO Implement code that is executed when any artefact that this plugin is
+-        // watching is modified and reloaded. The event contains: event.source,
+-        // event.application, event.manager, event.ctx, and event.plugin.
+-    }
+-
+-    void onConfigChange(Map<String, Object> event) {
+-        // TODO Implement code that is executed when the project configuration changes.
+-        // The event is the same as for 'onChange'.
+-    }
+-
+-    void onShutdown(Map<String, Object> event) {
+-        // TODO Implement code that is executed when the application shuts down (optional)
+-    }
+-}

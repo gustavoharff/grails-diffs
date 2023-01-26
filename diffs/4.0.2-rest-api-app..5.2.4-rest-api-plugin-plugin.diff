@@ -1,0 +1,2983 @@
+diff --git a/myapp/build.gradle b/myapp/build.gradle
+deleted file mode 100644
+index e2cb3f70..00000000
+--- a/myapp/build.gradle
++++ /dev/null
+@@ -1,84 +0,0 @@
+-buildscript {
+-    repositories {
+-        maven { url "https://repo.grails.org/grails/core" }
+-    }
+-    dependencies {
+-        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+-        classpath "org.grails.plugins:hibernate5:7.0.0"
+-        classpath "org.grails.plugins:views-gradle:2.0.0.RC2"
+-    }
+-}
+-
+-version "0.1"
+-group "myapp"
+-
+-apply plugin:"eclipse"
+-apply plugin:"idea"
+-apply plugin:"war"
+-apply plugin:"org.grails.grails-web"
+-apply plugin:"org.grails.plugins.views-json"
+-
+-repositories {
+-    maven { url "https://repo.grails.org/grails/core" }
+-}
+-
+-configurations {
+-    developmentOnly
+-    runtimeClasspath {
+-        extendsFrom developmentOnly
+-    }
+-}
+-
+-dependencies {
+-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+-    compile "org.springframework.boot:spring-boot-starter-logging"
+-    compile "org.springframework.boot:spring-boot-autoconfigure"
+-    compile "org.grails:grails-core"
+-    compile "org.springframework.boot:spring-boot-starter-actuator"
+-    compile "org.springframework.boot:spring-boot-starter-tomcat"
+-    compile "org.grails:grails-plugin-url-mappings"
+-    compile "org.grails:grails-plugin-rest"
+-    compile "org.grails:grails-plugin-codecs"
+-    compile "org.grails:grails-plugin-interceptors"
+-    compile "org.grails:grails-plugin-services"
+-    compile "org.grails:grails-plugin-datasource"
+-    compile "org.grails:grails-plugin-databinding"
+-    compile "org.grails:grails-web-boot"
+-    compile "org.grails:grails-logging"
+-    compile "org.grails.plugins:cache"
+-    compile "org.grails.plugins:async"
+-    compile "org.grails.plugins:events"
+-    compile "org.grails.plugins:hibernate5"
+-    compile "org.hibernate:hibernate-core:5.4.0.Final"
+-    compile "org.grails.plugins:views-json"
+-    compile "org.grails.plugins:views-json-templates"
+-    compileOnly "io.micronaut:micronaut-inject-groovy"
+-    console "org.grails:grails-console"
+-    profile "org.grails.profiles:rest-api"
+-    runtime "org.glassfish.web:el-impl:2.1.2-b03"
+-    runtime "com.h2database:h2"
+-    runtime "org.apache.tomcat:tomcat-jdbc"
+-    runtime "javax.xml.bind:jaxb-api:2.3.0"
+-    testCompile "org.grails:grails-gorm-testing-support"
+-    testCompile "org.mockito:mockito-core"
+-    testCompile "io.micronaut:micronaut-http-client"
+-    testCompile "org.grails:grails-web-testing-support"
+-}
+-
+-bootRun {
+-    ignoreExitValue true
+-    jvmArgs(
+-        '-Dspring.output.ansi.enabled=always', 
+-        '-noverify', 
+-        '-XX:TieredStopAtLevel=1',
+-        '-Xmx1024m')
+-    sourceResources sourceSets.main
+-    String springProfilesActive = 'spring.profiles.active'
+-    systemProperty springProfilesActive, System.getProperty(springProfilesActive)
+-}
+-
+-tasks.withType(GroovyCompile) {
+-    configure(groovyOptions) {
+-        forkOptions.jvmArgs = ['-Xmx1024m']
+-    }
+-}
+diff --git a/myapp/grails-app/conf/logback.groovy b/myapp/grails-app/conf/logback.groovy
+deleted file mode 100644
+index b835215c..00000000
+--- a/myapp/grails-app/conf/logback.groovy
++++ /dev/null
+@@ -1,37 +0,0 @@
+-import grails.util.BuildSettings
+-import grails.util.Environment
+-import org.springframework.boot.logging.logback.ColorConverter
+-import org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter
+-
+-import java.nio.charset.StandardCharsets
+-
+-conversionRule 'clr', ColorConverter
+-conversionRule 'wex', WhitespaceThrowableProxyConverter
+-
+-// See http://logback.qos.ch/manual/groovy.html for details on configuration
+-appender('STDOUT', ConsoleAppender) {
+-    encoder(PatternLayoutEncoder) {
+-        charset = StandardCharsets.UTF_8
+-
+-        pattern =
+-                '%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} ' + // Date
+-                        '%clr(%5p) ' + // Log level
+-                        '%clr(---){faint} %clr([%15.15t]){faint} ' + // Thread
+-                        '%clr(%-40.40logger{39}){cyan} %clr(:){faint} ' + // Logger
+-                        '%m%n%wex' // Message
+-    }
+-}
+-
+-def targetDir = BuildSettings.TARGET_DIR
+-if (Environment.isDevelopmentMode() && targetDir != null) {
+-    appender("FULL_STACKTRACE", FileAppender) {
+-        file = "${targetDir}/stacktrace.log"
+-        append = true
+-        encoder(PatternLayoutEncoder) {
+-            charset = StandardCharsets.UTF_8
+-            pattern = "%level %logger - %msg%n"
+-        }
+-    }
+-    logger("StackTrace", ERROR, ['FULL_STACKTRACE'], false)
+-}
+-root(ERROR, ['STDOUT'])
+diff --git a/myapp/grails-app/controllers/myapp/ApplicationController.groovy b/myapp/grails-app/controllers/myapp/ApplicationController.groovy
+deleted file mode 100644
+index d40d868e..00000000
+--- a/myapp/grails-app/controllers/myapp/ApplicationController.groovy
++++ /dev/null
+@@ -1,14 +0,0 @@
+-package myapp
+-
+-import grails.core.GrailsApplication
+-import grails.plugins.*
+-
+-class ApplicationController implements PluginManagerAware {
+-
+-    GrailsApplication grailsApplication
+-    GrailsPluginManager pluginManager
+-
+-    def index() {
+-        [grailsApplication: grailsApplication, pluginManager: pluginManager]
+-    }
+-}
+diff --git a/myapp/grails-app/controllers/myapp/UrlMappings.groovy b/myapp/grails-app/controllers/myapp/UrlMappings.groovy
+deleted file mode 100644
+index 34bcc508..00000000
+--- a/myapp/grails-app/controllers/myapp/UrlMappings.groovy
++++ /dev/null
+@@ -1,17 +0,0 @@
+-package myapp
+-
+-class UrlMappings {
+-
+-    static mappings = {
+-        delete "/$controller/$id(.$format)?"(action:"delete")
+-        get "/$controller(.$format)?"(action:"index")
+-        get "/$controller/$id(.$format)?"(action:"show")
+-        post "/$controller(.$format)?"(action:"save")
+-        put "/$controller/$id(.$format)?"(action:"update")
+-        patch "/$controller/$id(.$format)?"(action:"patch")
+-
+-        "/"(controller: 'application', action:'index')
+-        "500"(view: '/error')
+-        "404"(view: '/notFound')
+-    }
+-}
+diff --git a/myapp/grails-app/i18n/messages.properties b/myapp/grails-app/i18n/messages.properties
+deleted file mode 100644
+index b0451362..00000000
+--- a/myapp/grails-app/i18n/messages.properties
++++ /dev/null
+@@ -1,56 +0,0 @@
+-default.doesnt.match.message=Property [{0}] of class [{1}] with value [{2}] does not match the required pattern [{3}]
+-default.invalid.url.message=Property [{0}] of class [{1}] with value [{2}] is not a valid URL
+-default.invalid.creditCard.message=Property [{0}] of class [{1}] with value [{2}] is not a valid credit card number
+-default.invalid.email.message=Property [{0}] of class [{1}] with value [{2}] is not a valid e-mail address
+-default.invalid.range.message=Property [{0}] of class [{1}] with value [{2}] does not fall within the valid range from [{3}] to [{4}]
+-default.invalid.size.message=Property [{0}] of class [{1}] with value [{2}] does not fall within the valid size range from [{3}] to [{4}]
+-default.invalid.max.message=Property [{0}] of class [{1}] with value [{2}] exceeds maximum value [{3}]
+-default.invalid.min.message=Property [{0}] of class [{1}] with value [{2}] is less than minimum value [{3}]
+-default.invalid.max.size.message=Property [{0}] of class [{1}] with value [{2}] exceeds the maximum size of [{3}]
+-default.invalid.min.size.message=Property [{0}] of class [{1}] with value [{2}] is less than the minimum size of [{3}]
+-default.invalid.validator.message=Property [{0}] of class [{1}] with value [{2}] does not pass custom validation
+-default.not.inlist.message=Property [{0}] of class [{1}] with value [{2}] is not contained within the list [{3}]
+-default.blank.message=Property [{0}] of class [{1}] cannot be blank
+-default.not.equal.message=Property [{0}] of class [{1}] with value [{2}] cannot equal [{3}]
+-default.null.message=Property [{0}] of class [{1}] cannot be null
+-default.not.unique.message=Property [{0}] of class [{1}] with value [{2}] must be unique
+-
+-default.paginate.prev=Previous
+-default.paginate.next=Next
+-default.boolean.true=True
+-default.boolean.false=False
+-default.date.format=yyyy-MM-dd HH:mm:ss z
+-default.number.format=0
+-
+-default.created.message={0} {1} created
+-default.updated.message={0} {1} updated
+-default.deleted.message={0} {1} deleted
+-default.not.deleted.message={0} {1} could not be deleted
+-default.not.found.message={0} not found with id {1}
+-default.optimistic.locking.failure=Another user has updated this {0} while you were editing
+-
+-default.home.label=Home
+-default.list.label={0} List
+-default.add.label=Add {0}
+-default.new.label=New {0}
+-default.create.label=Create {0}
+-default.show.label=Show {0}
+-default.edit.label=Edit {0}
+-
+-default.button.create.label=Create
+-default.button.edit.label=Edit
+-default.button.update.label=Update
+-default.button.delete.label=Delete
+-default.button.delete.confirm.message=Are you sure?
+-
+-# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
+-typeMismatch.java.net.URL=Property {0} must be a valid URL
+-typeMismatch.java.net.URI=Property {0} must be a valid URI
+-typeMismatch.java.util.Date=Property {0} must be a valid Date
+-typeMismatch.java.lang.Double=Property {0} must be a valid number
+-typeMismatch.java.lang.Integer=Property {0} must be a valid number
+-typeMismatch.java.lang.Long=Property {0} must be a valid number
+-typeMismatch.java.lang.Short=Property {0} must be a valid number
+-typeMismatch.java.math.BigDecimal=Property {0} must be a valid number
+-typeMismatch.java.math.BigInteger=Property {0} must be a valid number
+-typeMismatch=Property {0} is type-mismatched
+diff --git a/myapp/grails-app/i18n/messages_cs.properties b/myapp/grails-app/i18n/messages_cs.properties
+deleted file mode 100644
+index 73455311..00000000
+--- a/myapp/grails-app/i18n/messages_cs.properties
++++ /dev/null
+@@ -1,55 +0,0 @@
+-default.doesnt.match.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] neodpovídá požadovanému vzoru [{3}]
+-default.invalid.url.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] není validní URL
+-default.invalid.creditCard.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] není validní číslo kreditní karty
+-default.invalid.email.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] není validní emailová adresa
+-default.invalid.range.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] není v povoleném rozmezí od [{3}] do [{4}]
+-default.invalid.size.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] není v povoleném rozmezí od [{3}] do [{4}]
+-default.invalid.max.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] překračuje maximální povolenou hodnotu [{3}]
+-default.invalid.min.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] je menší než minimální povolená hodnota [{3}]
+-default.invalid.max.size.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] překračuje maximální velikost [{3}]
+-default.invalid.min.size.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] je menší než minimální velikost [{3}]
+-default.invalid.validator.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] neprošla validací
+-default.not.inlist.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] není obsažena v seznamu [{3}]
+-default.blank.message=Položka [{0}] třídy [{1}] nemůže být prázdná
+-default.not.equal.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] nemůže být stejná jako [{3}]
+-default.null.message=Položka [{0}] třídy [{1}] nemůže být prázdná
+-default.not.unique.message=Položka [{0}] třídy [{1}] o hodnotě [{2}] musí být unikátní
+-
+-default.paginate.prev=Předcházející
+-default.paginate.next=Následující
+-default.boolean.true=Pravda
+-default.boolean.false=Nepravda
+-default.date.format=dd. MM. yyyy HH:mm:ss z
+-default.number.format=0
+-
+-default.created.message={0} {1} vytvořeno
+-default.updated.message={0} {1} aktualizováno
+-default.deleted.message={0} {1} smazáno
+-default.not.deleted.message={0} {1} nelze smazat
+-default.not.found.message={0} nenalezen s id {1}
+-default.optimistic.locking.failure=Jiný uživatel aktualizoval záznam {0}, právě když byl vámi editován
+-
+-default.home.label=Domů
+-default.list.label={0} Seznam
+-default.add.label=Přidat {0}
+-default.new.label=Nový {0}
+-default.create.label=Vytvořit {0}
+-default.show.label=Ukázat {0}
+-default.edit.label=Editovat {0}
+-
+-default.button.create.label=Vytvoř
+-default.button.edit.label=Edituj
+-default.button.update.label=Aktualizuj
+-default.button.delete.label=Smaž
+-default.button.delete.confirm.message=Jste si jistý?
+-
+-# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
+-typeMismatch.java.net.URL=Položka {0} musí být validní URL
+-typeMismatch.java.net.URI=Položka {0} musí být validní URI
+-typeMismatch.java.util.Date=Položka {0} musí být validní datum
+-typeMismatch.java.lang.Double=Položka {0} musí být validní desetinné číslo
+-typeMismatch.java.lang.Integer=Položka {0} musí být validní číslo
+-typeMismatch.java.lang.Long=Položka {0} musí být validní číslo
+-typeMismatch.java.lang.Short=Položka {0} musí být validní číslo
+-typeMismatch.java.math.BigDecimal=Položka {0} musí být validní číslo
+-typeMismatch.java.math.BigInteger=Položka {0} musí být validní číslo
+diff --git a/myapp/grails-app/i18n/messages_da.properties b/myapp/grails-app/i18n/messages_da.properties
+deleted file mode 100644
+index 858b2290..00000000
+--- a/myapp/grails-app/i18n/messages_da.properties
++++ /dev/null
+@@ -1,56 +0,0 @@
+-default.doesnt.match.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] overholder ikke mønsteret [{3}]
+-default.invalid.url.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] er ikke en gyldig URL
+-default.invalid.creditCard.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] er ikke et gyldigt kreditkortnummer
+-default.invalid.email.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] er ikke en gyldig e-mail adresse
+-default.invalid.range.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] ligger ikke inden for intervallet fra  [{3}] til [{4}]
+-default.invalid.size.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] ligger ikke inden for størrelsen fra [{3}] til [{4}]
+-default.invalid.max.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] overstiger den maksimale værdi [{3}]
+-default.invalid.min.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] er under den minimale værdi [{3}]
+-default.invalid.max.size.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] overstiger den maksimale størrelse på [{3}]
+-default.invalid.min.size.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] er under den minimale størrelse på [{3}]
+-default.invalid.validator.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] overholder ikke den brugerdefinerede validering
+-default.not.inlist.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] findes ikke i listen [{3}]
+-default.blank.message=Feltet [{0}] i klassen [{1}] kan ikke være tom
+-default.not.equal.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] må ikke være [{3}]
+-default.null.message=Feltet [{0}] i klassen [{1}] kan ikke være null
+-default.not.unique.message=Feltet [{0}] i klassen [{1}] som har værdien [{2}] skal være unik
+-
+-default.paginate.prev=Forrige
+-default.paginate.next=Næste
+-default.boolean.true=Sand
+-default.boolean.false=Falsk
+-default.date.format=yyyy-MM-dd HH:mm:ss z
+-default.number.format=0
+-
+-default.created.message={0} {1} oprettet
+-default.updated.message={0} {1} opdateret
+-default.deleted.message={0} {1} slettet
+-default.not.deleted.message={0} {1} kunne ikke slettes
+-default.not.found.message={0} med id {1} er ikke fundet
+-default.optimistic.locking.failure=En anden bruger har opdateret denne {0} imens du har lavet rettelser
+-
+-default.home.label=Hjem
+-default.list.label={0} Liste
+-default.add.label=Tilføj {0}
+-default.new.label=Ny {0}
+-default.create.label=Opret {0}
+-default.show.label=Vis {0}
+-default.edit.label=Ret {0}
+-
+-default.button.create.label=Opret
+-default.button.edit.label=Ret
+-default.button.update.label=Opdater
+-default.button.delete.label=Slet
+-default.button.delete.confirm.message=Er du sikker?
+-
+-# Databindingsfejl. Brug "typeMismatch.$className.$propertyName for at passe til en given klasse (f.eks typeMismatch.Book.author)
+-typeMismatch.java.net.URL=Feltet {0} skal være en valid URL
+-typeMismatch.java.net.URI=Feltet {0} skal være en valid URI
+-typeMismatch.java.util.Date=Feltet {0} skal være en valid Dato
+-typeMismatch.java.lang.Double=Feltet {0} skal være et valid tal
+-typeMismatch.java.lang.Integer=Feltet {0} skal være et valid tal
+-typeMismatch.java.lang.Long=Feltet {0} skal være et valid tal
+-typeMismatch.java.lang.Short=Feltet {0} skal være et valid tal
+-typeMismatch.java.math.BigDecimal=Feltet {0} skal være et valid tal
+-typeMismatch.java.math.BigInteger=Feltet {0} skal være et valid tal
+-
+diff --git a/myapp/grails-app/i18n/messages_de.properties b/myapp/grails-app/i18n/messages_de.properties
+deleted file mode 100644
+index 0f7bfe92..00000000
+--- a/myapp/grails-app/i18n/messages_de.properties
++++ /dev/null
+@@ -1,55 +0,0 @@
+-default.doesnt.match.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] entspricht nicht dem vorgegebenen Muster [{3}]
+-default.invalid.url.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist keine gültige URL
+-default.invalid.creditCard.message=Das Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist keine gültige Kreditkartennummer
+-default.invalid.email.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist keine gültige E-Mail Adresse
+-default.invalid.range.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist nicht im Wertebereich von [{3}] bis [{4}]
+-default.invalid.size.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist nicht im Wertebereich von [{3}] bis [{4}]
+-default.invalid.max.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist größer als der Höchstwert von [{3}]
+-default.invalid.min.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist kleiner als der Mindestwert von [{3}]
+-default.invalid.max.size.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] übersteigt den Höchstwert von [{3}]
+-default.invalid.min.size.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] unterschreitet den Mindestwert von [{3}]
+-default.invalid.validator.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist ungültig
+-default.not.inlist.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] ist nicht in der Liste [{3}] enthalten.
+-default.blank.message=Die Eigenschaft [{0}] des Typs [{1}] darf nicht leer sein
+-default.not.equal.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] darf nicht gleich [{3}] sein
+-default.null.message=Die Eigenschaft [{0}] des Typs [{1}] darf nicht null sein
+-default.not.unique.message=Die Eigenschaft [{0}] des Typs [{1}] mit dem Wert [{2}] darf nur einmal vorkommen
+-
+-default.paginate.prev=Vorherige
+-default.paginate.next=Nächste
+-default.boolean.true=Wahr
+-default.boolean.false=Falsch
+-default.date.format=dd.MM.yyyy HH:mm:ss z
+-default.number.format=0
+-
+-default.created.message={0} {1} wurde angelegt
+-default.updated.message={0} {1} wurde geändert
+-default.deleted.message={0} {1} wurde gelöscht
+-default.not.deleted.message={0} {1} konnte nicht gelöscht werden
+-default.not.found.message={0} mit der id {1} wurde nicht gefunden
+-default.optimistic.locking.failure=Ein anderer Benutzer hat das {0} Object geändert während Sie es bearbeitet haben
+-
+-default.home.label=Home
+-default.list.label={0} Liste
+-default.add.label={0} hinzufügen
+-default.new.label={0} anlegen
+-default.create.label={0} anlegen
+-default.show.label={0} anzeigen
+-default.edit.label={0} bearbeiten
+-
+-default.button.create.label=Anlegen
+-default.button.edit.label=Bearbeiten
+-default.button.update.label=Aktualisieren
+-default.button.delete.label=Löschen
+-default.button.delete.confirm.message=Sind Sie sicher?
+-
+-# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
+-typeMismatch.java.net.URL=Die Eigenschaft {0} muss eine gültige URL sein
+-typeMismatch.java.net.URI=Die Eigenschaft {0} muss eine gültige URI sein
+-typeMismatch.java.util.Date=Die Eigenschaft {0} muss ein gültiges Datum sein
+-typeMismatch.java.lang.Double=Die Eigenschaft {0} muss eine gültige Zahl sein
+-typeMismatch.java.lang.Integer=Die Eigenschaft {0} muss eine gültige Zahl sein
+-typeMismatch.java.lang.Long=Die Eigenschaft {0} muss eine gültige Zahl sein
+-typeMismatch.java.lang.Short=Die Eigenschaft {0} muss eine gültige Zahl sein
+-typeMismatch.java.math.BigDecimal=Die Eigenschaft {0} muss eine gültige Zahl sein
+-typeMismatch.java.math.BigInteger=Die Eigenschaft {0} muss eine gültige Zahl sein
+diff --git a/myapp/grails-app/i18n/messages_es.properties b/myapp/grails-app/i18n/messages_es.properties
+deleted file mode 100644
+index f0ede539..00000000
+--- a/myapp/grails-app/i18n/messages_es.properties
++++ /dev/null
+@@ -1,55 +0,0 @@
+-default.doesnt.match.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no corresponde al patrón [{3}]
+-default.invalid.url.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no es una URL válida
+-default.invalid.creditCard.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no es un número de tarjeta de crédito válida
+-default.invalid.email.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no es una dirección de correo electrónico válida
+-default.invalid.range.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no entra en el rango válido de [{3}] a [{4}]
+-default.invalid.size.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no entra en el tamaño válido de [{3}] a [{4}]
+-default.invalid.max.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] excede el valor máximo [{3}]
+-default.invalid.min.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] es menos que el valor mínimo [{3}]
+-default.invalid.max.size.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] excede el tamaño máximo de [{3}]
+-default.invalid.min.size.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] es menor que el tamaño mínimo de [{3}]
+-default.invalid.validator.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no es válido
+-default.not.inlist.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no esta contenido dentro de la lista [{3}]
+-default.blank.message=La propiedad [{0}] de la clase [{1}] no puede ser vacía
+-default.not.equal.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] no puede igualar a [{3}]
+-default.null.message=La propiedad [{0}] de la clase [{1}] no puede ser nulo
+-default.not.unique.message=La propiedad [{0}] de la clase [{1}] con valor [{2}] debe ser única
+-
+-default.paginate.prev=Anterior
+-default.paginate.next=Siguiente
+-default.boolean.true=Verdadero
+-default.boolean.false=Falso
+-default.date.format=yyyy-MM-dd HH:mm:ss z
+-default.number.format=0
+-
+-default.created.message={0} {1} creado
+-default.updated.message={0} {1} actualizado
+-default.deleted.message={0} {1} eliminado
+-default.not.deleted.message={0} {1} no puede eliminarse
+-default.not.found.message=No se encuentra {0} con id {1}
+-default.optimistic.locking.failure=Mientras usted editaba, otro usuario ha actualizado su {0}
+-
+-default.home.label=Principal
+-default.list.label={0} Lista
+-default.add.label=Agregar {0}
+-default.new.label=Nuevo {0}
+-default.create.label=Crear {0}
+-default.show.label=Mostrar {0}
+-default.edit.label=Editar {0}
+-
+-default.button.create.label=Crear
+-default.button.edit.label=Editar
+-default.button.update.label=Actualizar
+-default.button.delete.label=Eliminar
+-default.button.delete.confirm.message=¿Está usted seguro?
+-
+-# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
+-typeMismatch.java.net.URL=La propiedad {0} debe ser una URL válida
+-typeMismatch.java.net.URI=La propiedad {0} debe ser una URI válida
+-typeMismatch.java.util.Date=La propiedad {0} debe ser una fecha válida
+-typeMismatch.java.lang.Double=La propiedad {0} debe ser un número válido
+-typeMismatch.java.lang.Integer=La propiedad {0} debe ser un número válido
+-typeMismatch.java.lang.Long=La propiedad {0} debe ser un número válido
+-typeMismatch.java.lang.Short=La propiedad {0} debe ser un número válido
+-typeMismatch.java.math.BigDecimal=La propiedad {0} debe ser un número válido
+-typeMismatch.java.math.BigInteger=La propiedad {0} debe ser un número válido
+\ No newline at end of file
+diff --git a/myapp/grails-app/i18n/messages_fr.properties b/myapp/grails-app/i18n/messages_fr.properties
+deleted file mode 100644
+index 55721641..00000000
+--- a/myapp/grails-app/i18n/messages_fr.properties
++++ /dev/null
+@@ -1,19 +0,0 @@
+-default.doesnt.match.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] ne correspond pas au pattern [{3}]
+-default.invalid.url.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] n'est pas une URL valide
+-default.invalid.creditCard.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] n'est pas un numéro de carte de crédit valide
+-default.invalid.email.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] n'est pas une adresse e-mail valide
+-default.invalid.range.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] n'est pas contenue dans l'intervalle [{3}] à [{4}]
+-default.invalid.size.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] n'est pas contenue dans l'intervalle [{3}] à [{4}]
+-default.invalid.max.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] est supérieure à la valeur maximum [{3}]
+-default.invalid.min.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] est inférieure à la valeur minimum [{3}]
+-default.invalid.max.size.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] est supérieure à la valeur maximum [{3}]
+-default.invalid.min.size.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] est inférieure à la valeur minimum [{3}]
+-default.invalid.validator.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] n'est pas valide
+-default.not.inlist.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] ne fait pas partie de la liste [{3}]
+-default.blank.message=La propriété [{0}] de la classe [{1}] ne peut pas être vide
+-default.not.equal.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] ne peut pas être égale à [{3}]
+-default.null.message=La propriété [{0}] de la classe [{1}] ne peut pas être nulle
+-default.not.unique.message=La propriété [{0}] de la classe [{1}] avec la valeur [{2}] doit être unique
+-
+-default.paginate.prev=Précédent
+-default.paginate.next=Suivant
+diff --git a/myapp/grails-app/i18n/messages_it.properties b/myapp/grails-app/i18n/messages_it.properties
+deleted file mode 100644
+index a90f1c72..00000000
+--- a/myapp/grails-app/i18n/messages_it.properties
++++ /dev/null
+@@ -1,55 +0,0 @@
+-default.doesnt.match.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non corrisponde al pattern [{3}]
+-default.invalid.url.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non è un URL valido
+-default.invalid.creditCard.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non è un numero di carta di credito valido
+-default.invalid.email.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non è un indirizzo email valido
+-default.invalid.range.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non rientra nell'intervallo valido da [{3}] a [{4}]
+-default.invalid.size.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non rientra nell'intervallo di dimensioni valide da [{3}] a [{4}]
+-default.invalid.max.message=La proprietà [{0}] della classe [{1}] con valore [{2}] è maggiore di [{3}]
+-default.invalid.min.message=La proprietà [{0}] della classe [{1}] con valore [{2}] è minore di [{3}]
+-default.invalid.max.size.message=La proprietà [{0}] della classe [{1}] con valore [{2}] è maggiore di [{3}]
+-default.invalid.min.size.message=La proprietà [{0}] della classe [{1}] con valore [{2}] è minore di [{3}]
+-default.invalid.validator.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non è valida
+-default.not.inlist.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non è contenuta nella lista [{3}]
+-default.blank.message=La proprietà [{0}] della classe [{1}] non può essere vuota
+-default.not.equal.message=La proprietà [{0}] della classe [{1}] con valore [{2}] non può essere uguale a [{3}]
+-default.null.message=La proprietà [{0}] della classe [{1}] non può essere null
+-default.not.unique.message=La proprietà [{0}] della classe [{1}] con valore [{2}] deve essere unica
+-
+-default.paginate.prev=Precedente
+-default.paginate.next=Successivo
+-default.boolean.true=Vero
+-default.boolean.false=Falso
+-default.date.format=dd/MM/yyyy HH:mm:ss z
+-default.number.format=0
+-
+-default.created.message={0} {1} creato
+-default.updated.message={0} {1} aggiornato
+-default.deleted.message={0} {1} eliminato
+-default.not.deleted.message={0} {1} non può essere eliminato
+-default.not.found.message={0} non trovato con id {1}
+-default.optimistic.locking.failure=Un altro utente ha aggiornato questo {0} mentre si era in modifica
+-
+-default.home.label=Home
+-default.list.label={0} Elenco
+-default.add.label=Aggiungi {0}
+-default.new.label=Nuovo {0}
+-default.create.label=Crea {0}
+-default.show.label=Mostra {0}
+-default.edit.label=Modifica {0}
+-
+-default.button.create.label=Crea
+-default.button.edit.label=Modifica
+-default.button.update.label=Aggiorna
+-default.button.delete.label=Elimina
+-default.button.delete.confirm.message=Si è sicuri?
+-
+-# Data binding errors. Usa "typeMismatch.$className.$propertyName per la personalizzazione (es typeMismatch.Book.author)
+-typeMismatch.java.net.URL=La proprietà {0} deve essere un URL valido
+-typeMismatch.java.net.URI=La proprietà {0} deve essere un URI valido
+-typeMismatch.java.util.Date=La proprietà {0} deve essere una data valida
+-typeMismatch.java.lang.Double=La proprietà {0} deve essere un numero valido
+-typeMismatch.java.lang.Integer=La proprietà {0} deve essere un numero valido
+-typeMismatch.java.lang.Long=La proprietà {0} deve essere un numero valido
+-typeMismatch.java.lang.Short=La proprietà {0} deve essere un numero valido
+-typeMismatch.java.math.BigDecimal=La proprietà {0} deve essere un numero valido
+-typeMismatch.java.math.BigInteger=La proprietà {0} deve essere un numero valido
+diff --git a/myapp/grails-app/i18n/messages_ja.properties b/myapp/grails-app/i18n/messages_ja.properties
+deleted file mode 100644
+index d9e9b783..00000000
+--- a/myapp/grails-app/i18n/messages_ja.properties
++++ /dev/null
+@@ -1,55 +0,0 @@
+-default.doesnt.match.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、[{3}]パターンと一致していません。
+-default.invalid.url.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、有効なURLではありません。
+-default.invalid.creditCard.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、有効なクレジットカード番号ではありません。
+-default.invalid.email.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、有効なメールアドレスではありません。
+-default.invalid.range.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、[{3}]から[{4}]範囲内を指定してください。
+-default.invalid.size.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、[{3}]から[{4}]以内を指定してください。
+-default.invalid.max.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、最大値[{3}]より大きいです。
+-default.invalid.min.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、最小値[{3}]より小さいです。
+-default.invalid.max.size.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、最大値[{3}]より大きいです。
+-default.invalid.min.size.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、最小値[{3}]より小さいです。
+-default.invalid.validator.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、カスタムバリデーションを通過できません。
+-default.not.inlist.message=クラス[{1}]プロパティ[{0}]の値[{2}]は、[{3}]リスト内に存在しません。
+-default.blank.message=[{1}]クラスのプロパティ[{0}]の空白は許可されません。
+-default.not.equal.message=クラス[{1}]プロパティ[{0}]の値[{2}]に[{3}]は許可されません。
+-default.null.message=[{1}]クラスのプロパティ[{0}]にnullは許可されません。
+-default.not.unique.message=クラス[{1}]プロパティ[{0}]の値[{2}]は既に使用されています。
+-
+-default.paginate.prev=戻る
+-default.paginate.next=次へ
+-default.boolean.true=はい
+-default.boolean.false=いいえ
+-default.date.format=yyyy/MM/dd HH:mm:ss z
+-default.number.format=0
+-
+-default.created.message={0}(id:{1})を作成しました。
+-default.updated.message={0}(id:{1})を更新しました。
+-default.deleted.message={0}(id:{1})を削除しました。
+-default.not.deleted.message={0}(id:{1})は削除できませんでした。
+-default.not.found.message={0}(id:{1})は見つかりませんでした。
+-default.optimistic.locking.failure=この{0}は編集中に他のユーザによって先に更新されています。
+-
+-default.home.label=ホーム
+-default.list.label={0}リスト
+-default.add.label={0}を追加
+-default.new.label={0}を新規作成
+-default.create.label={0}を作成
+-default.show.label={0}詳細
+-default.edit.label={0}を編集
+-
+-default.button.create.label=作成
+-default.button.edit.label=編集
+-default.button.update.label=更新
+-default.button.delete.label=削除
+-default.button.delete.confirm.message=本当に削除してよろしいですか?
+-
+-# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
+-typeMismatch.java.net.URL={0}は有効なURLでなければなりません。
+-typeMismatch.java.net.URI={0}は有効なURIでなければなりません。
+-typeMismatch.java.util.Date={0}は有効な日付でなければなりません。
+-typeMismatch.java.lang.Double={0}は有効な数値でなければなりません。
+-typeMismatch.java.lang.Integer={0}は有効な数値でなければなりません。
+-typeMismatch.java.lang.Long={0}は有効な数値でなければなりません。
+-typeMismatch.java.lang.Short={0}は有効な数値でなければなりません。
+-typeMismatch.java.math.BigDecimal={0}は有効な数値でなければなりません。
+-typeMismatch.java.math.BigInteger={0}は有効な数値でなければなりません。
+diff --git a/myapp/grails-app/i18n/messages_nb.properties b/myapp/grails-app/i18n/messages_nb.properties
+deleted file mode 100644
+index 47a8a1ab..00000000
+--- a/myapp/grails-app/i18n/messages_nb.properties
++++ /dev/null
+@@ -1,56 +0,0 @@
+-default.doesnt.match.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] overholder ikke mønsteret [{3}]
+-default.invalid.url.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] er ikke en gyldig URL
+-default.invalid.creditCard.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] er ikke et gyldig kredittkortnummer
+-default.invalid.email.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] er ikke en gyldig epostadresse
+-default.invalid.range.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] er ikke innenfor intervallet [{3}] til [{4}]
+-default.invalid.size.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] er ikke innenfor intervallet [{3}] til [{4}]
+-default.invalid.max.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] overstiger maksimumsverdien på [{3}]
+-default.invalid.min.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] er under minimumsverdien på [{3}]
+-default.invalid.max.size.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] overstiger maksimumslengden på [{3}]
+-default.invalid.min.size.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] er kortere enn minimumslengden på [{3}]
+-default.invalid.validator.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] overholder ikke den brukerdefinerte valideringen
+-default.not.inlist.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] finnes ikke i listen [{3}]
+-default.blank.message=Feltet [{0}] i klassen [{1}] kan ikke være tom
+-default.not.equal.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] kan ikke være [{3}]
+-default.null.message=Feltet [{0}] i klassen [{1}] kan ikke være null
+-default.not.unique.message=Feltet [{0}] i klassen [{1}] med verdien [{2}] må være unik
+-
+-default.paginate.prev=Forrige
+-default.paginate.next=Neste
+-default.boolean.true=Ja
+-default.boolean.false=Nei
+-default.date.format=dd.MM.yyyy HH:mm:ss z
+-default.number.format=0
+-
+-default.created.message={0} {1} opprettet
+-default.updated.message={0} {1} oppdatert
+-default.deleted.message={0} {1} slettet
+-default.not.deleted.message={0} {1} kunne ikke slettes
+-default.not.found.message={0} med id {1} ble ikke funnet
+-default.optimistic.locking.failure=En annen bruker har oppdatert denne {0} mens du redigerte
+-
+-default.home.label=Hjem
+-default.list.label={0}liste
+-default.add.label=Legg til {0}
+-default.new.label=Ny {0}
+-default.create.label=Opprett {0}
+-default.show.label=Vis {0}
+-default.edit.label=Endre {0}
+-
+-default.button.create.label=Opprett
+-default.button.edit.label=Endre
+-default.button.update.label=Oppdater
+-default.button.delete.label=Slett
+-default.button.delete.confirm.message=Er du sikker?
+-
+-# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
+-typeMismatch.java.net.URL=Feltet {0} må være en gyldig URL
+-typeMismatch.java.net.URI=Feltet {0} må være en gyldig URI
+-typeMismatch.java.util.Date=Feltet {0} må være en gyldig dato
+-typeMismatch.java.lang.Double=Feltet {0} må være et gyldig tall
+-typeMismatch.java.lang.Integer=Feltet {0} må være et gyldig heltall
+-typeMismatch.java.lang.Long=Feltet {0} må være et gyldig heltall
+-typeMismatch.java.lang.Short=Feltet {0} må være et gyldig heltall
+-typeMismatch.java.math.BigDecimal=Feltet {0} må være et gyldig tall
+-typeMismatch.java.math.BigInteger=Feltet {0} må være et gyldig heltall
+-
+diff --git a/myapp/grails-app/i18n/messages_nl.properties b/myapp/grails-app/i18n/messages_nl.properties
+deleted file mode 100644
+index cd5cc94e..00000000
+--- a/myapp/grails-app/i18n/messages_nl.properties
++++ /dev/null
+@@ -1,55 +0,0 @@
+-default.doesnt.match.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] komt niet overeen met het vereiste patroon [{3}]
+-default.invalid.url.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] is geen geldige URL
+-default.invalid.creditCard.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] is geen geldig credit card nummer
+-default.invalid.email.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] is geen geldig e-mailadres
+-default.invalid.range.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] valt niet in de geldige waardenreeks van [{3}] tot [{4}]
+-default.invalid.size.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] valt niet in de geldige grootte van [{3}] tot [{4}]
+-default.invalid.max.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] overschrijdt de maximumwaarde [{3}]
+-default.invalid.min.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] is minder dan de minimumwaarde [{3}]
+-default.invalid.max.size.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] overschrijdt de maximumgrootte van [{3}]
+-default.invalid.min.size.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] is minder dan minimumgrootte van [{3}]
+-default.invalid.validator.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] is niet geldig
+-default.not.inlist.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] komt niet voor in de lijst [{3}]
+-default.blank.message=Attribuut [{0}] van entiteit [{1}] mag niet leeg zijn
+-default.not.equal.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] mag niet gelijk zijn aan [{3}]
+-default.null.message=Attribuut [{0}] van entiteit [{1}] mag niet leeg zijn
+-default.not.unique.message=Attribuut [{0}] van entiteit [{1}] met waarde [{2}] moet uniek zijn
+-
+-default.paginate.prev=Vorige
+-default.paginate.next=Volgende
+-default.boolean.true=Ja
+-default.boolean.false=Nee
+-default.date.format=dd-MM-yyyy HH:mm:ss z
+-default.number.format=0
+-
+-default.created.message={0} {1} ingevoerd
+-default.updated.message={0} {1} gewijzigd
+-default.deleted.message={0} {1} verwijderd
+-default.not.deleted.message={0} {1} kon niet worden verwijderd
+-default.not.found.message={0} met id {1} kon niet worden gevonden
+-default.optimistic.locking.failure=Een andere gebruiker heeft deze {0} al gewijzigd
+-
+-default.home.label=Home
+-default.list.label={0} Overzicht
+-default.add.label=Toevoegen {0}
+-default.new.label=Invoeren {0}
+-default.create.label=Invoeren {0}
+-default.show.label=Details {0}
+-default.edit.label=Wijzigen {0}
+-
+-default.button.create.label=Invoeren
+-default.button.edit.label=Wijzigen
+-default.button.update.label=Opslaan
+-default.button.delete.label=Verwijderen
+-default.button.delete.confirm.message=Weet je het zeker?
+-
+-# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
+-typeMismatch.java.net.URL=Attribuut {0} is geen geldige URL
+-typeMismatch.java.net.URI=Attribuut {0} is geen geldige URI
+-typeMismatch.java.util.Date=Attribuut {0} is geen geldige datum
+-typeMismatch.java.lang.Double=Attribuut {0} is geen geldig nummer
+-typeMismatch.java.lang.Integer=Attribuut {0} is geen geldig nummer
+-typeMismatch.java.lang.Long=Attribuut {0} is geen geldig nummer
+-typeMismatch.java.lang.Short=Attribuut {0} is geen geldig nummer
+-typeMismatch.java.math.BigDecimal=Attribuut {0} is geen geldig nummer
+-typeMismatch.java.math.BigInteger=Attribuut {0} is geen geldig nummer
+diff --git a/myapp/grails-app/i18n/messages_pl.properties b/myapp/grails-app/i18n/messages_pl.properties
+deleted file mode 100644
+index 959296ce..00000000
+--- a/myapp/grails-app/i18n/messages_pl.properties
++++ /dev/null
+@@ -1,59 +0,0 @@
+-#
+-# Translated by Matthias Hryniszak - padcom@gmail.com
+-#
+-
+-default.doesnt.match.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] nie pasuje do wymaganego wzorca [{3}]
+-default.invalid.url.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] jest niepoprawnym adresem URL
+-default.invalid.creditCard.message=Właściwość [{0}] klasy [{1}] with value [{2}] nie jest poprawnym numerem karty kredytowej
+-default.invalid.email.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] nie jest poprawnym adresem e-mail
+-default.invalid.range.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] nie zawiera się zakładanym zakresie od [{3}] do [{4}]
+-default.invalid.size.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] nie zawiera się w zakładanym zakresie rozmiarów od [{3}] do [{4}]
+-default.invalid.max.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] przekracza maksymalną wartość [{3}]
+-default.invalid.min.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] jest mniejsza niż minimalna wartość [{3}]
+-default.invalid.max.size.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] przekracza maksymalny rozmiar [{3}]
+-default.invalid.min.size.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] jest mniejsza niż minimalny rozmiar [{3}]
+-default.invalid.validator.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] nie spełnia założonych niestandardowych warunków
+-default.not.inlist.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] nie zawiera się w liście [{3}]
+-default.blank.message=Właściwość [{0}] klasy [{1}] nie może być pusta
+-default.not.equal.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] nie może równać się [{3}]
+-default.null.message=Właściwość [{0}] klasy [{1}] nie może być null
+-default.not.unique.message=Właściwość [{0}] klasy [{1}] o wartości [{2}] musi być unikalna
+-
+-default.paginate.prev=Poprzedni
+-default.paginate.next=Następny
+-default.boolean.true=Prawda
+-default.boolean.false=Fałsz
+-default.date.format=yyyy-MM-dd HH:mm:ss z
+-default.number.format=0
+-
+-default.created.message=Utworzono {0} {1}
+-default.updated.message=Zaktualizowano {0} {1}
+-default.deleted.message=Usunięto {0} {1}
+-default.not.deleted.message={0} {1} nie mógł zostać usunięty
+-default.not.found.message=Nie znaleziono {0} o id {1}
+-default.optimistic.locking.failure=Inny użytkownik zaktualizował ten obiekt {0} w trakcie twoich zmian
+-
+-default.home.label=Strona domowa
+-default.list.label=Lista {0}
+-default.add.label=Dodaj {0}
+-default.new.label=Utwórz {0}
+-default.create.label=Utwórz {0}
+-default.show.label=Pokaż {0}
+-default.edit.label=Edytuj {0}
+-
+-default.button.create.label=Utwórz
+-default.button.edit.label=Edytuj
+-default.button.update.label=Zaktualizuj
+-default.button.delete.label=Usuń
+-default.button.delete.confirm.message=Czy jesteś pewien?
+-
+-# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
+-typeMismatch.java.net.URL=Właściwość {0} musi być poprawnym adresem URL
+-typeMismatch.java.net.URI=Właściwość {0} musi być poprawnym adresem URI
+-typeMismatch.java.util.Date=Właściwość {0} musi być poprawną datą
+-typeMismatch.java.lang.Double=Właściwość {0} musi być poprawnyą liczbą
+-typeMismatch.java.lang.Integer=Właściwość {0} musi być poprawnyą liczbą
+-typeMismatch.java.lang.Long=Właściwość {0} musi być poprawnyą liczbą
+-typeMismatch.java.lang.Short=Właściwość {0} musi być poprawnyą liczbą
+-typeMismatch.java.math.BigDecimal=Właściwość {0} musi być poprawnyą liczbą
+-typeMismatch.java.math.BigInteger=Właściwość {0} musi być poprawnyą liczbą
+diff --git a/myapp/grails-app/i18n/messages_pt_BR.properties b/myapp/grails-app/i18n/messages_pt_BR.properties
+deleted file mode 100644
+index b5044e23..00000000
+--- a/myapp/grails-app/i18n/messages_pt_BR.properties
++++ /dev/null
+@@ -1,59 +0,0 @@
+-#
+-# Translated by Lucas Teixeira - lucastex@gmail.com
+-#
+-
+-default.doesnt.match.message=O campo [{0}] da classe [{1}] com o valor [{2}] não atende ao padrão definido [{3}]
+-default.invalid.url.message=O campo [{0}] da classe [{1}] com o valor [{2}] não é uma URL válida
+-default.invalid.creditCard.message=O campo [{0}] da classe [{1}] com o valor [{2}] não é um número válido de cartão de crédito
+-default.invalid.email.message=O campo [{0}] da classe [{1}] com o valor [{2}] não é um endereço de email válido.
+-default.invalid.range.message=O campo [{0}] da classe [{1}] com o valor [{2}] não está entre a faixa de valores válida de [{3}] até [{4}]
+-default.invalid.size.message=O campo [{0}] da classe [{1}] com o valor [{2}] não está na faixa de tamanho válida de [{3}] até [{4}]
+-default.invalid.max.message=O campo [{0}] da classe [{1}] com o valor [{2}] ultrapassa o valor máximo [{3}]
+-default.invalid.min.message=O campo [{0}] da classe [{1}] com o valor [{2}] não atinge o valor mínimo [{3}]
+-default.invalid.max.size.message=O campo [{0}] da classe [{1}] com o valor [{2}] ultrapassa o tamanho máximo de [{3}]
+-default.invalid.min.size.message=O campo [{0}] da classe [{1}] com o valor [{2}] não atinge o tamanho mínimo de [{3}]
+-default.invalid.validator.message=O campo [{0}] da classe [{1}] com o valor [{2}] não passou na validação
+-default.not.inlist.message=O campo [{0}] da classe [{1}] com o valor [{2}] não é um valor dentre os permitidos na lista [{3}]
+-default.blank.message=O campo [{0}] da classe [{1}] não pode ficar em branco
+-default.not.equal.message=O campo [{0}] da classe [{1}] com o valor [{2}] não pode ser igual a [{3}]
+-default.null.message=O campo [{0}] da classe [{1}] não pode ser vazio
+-default.not.unique.message=O campo [{0}] da classe [{1}] com o valor [{2}] deve ser único
+-
+-default.paginate.prev=Anterior
+-default.paginate.next=Próximo
+-default.boolean.true=Sim
+-default.boolean.false=Não
+-default.date.format=dd/MM/yyyy HH:mm:ss z
+-default.number.format=0
+-
+-default.created.message={0} {1} criado
+-default.updated.message={0} {1} atualizado
+-default.deleted.message={0} {1} removido
+-default.not.deleted.message={0} {1} não pode ser removido
+-default.not.found.message={0} não foi encontrado com o id {1}
+-default.optimistic.locking.failure=Outro usuário atualizou este [{0}] enquanto você tentou salvá-lo
+-
+-default.home.label=Principal
+-default.list.label={0} Listagem
+-default.add.label=Adicionar {0}
+-default.new.label=Novo {0}
+-default.create.label=Criar {0}
+-default.show.label=Ver {0}
+-default.edit.label=Editar {0}
+-
+-default.button.create.label=Criar
+-default.button.edit.label=Editar
+-default.button.update.label=Alterar
+-default.button.delete.label=Remover
+-default.button.delete.confirm.message=Tem certeza?
+-
+-# Mensagens de erro em atribuição de valores. Use "typeMismatch.$className.$propertyName" para customizar (eg typeMismatch.Book.author)
+-typeMismatch.java.net.URL=O campo {0} deve ser uma URL válida.
+-typeMismatch.java.net.URI=O campo {0} deve ser uma URI válida.
+-typeMismatch.java.util.Date=O campo {0} deve ser uma data válida
+-typeMismatch.java.lang.Double=O campo {0} deve ser um número válido.
+-typeMismatch.java.lang.Integer=O campo {0} deve ser um número válido.
+-typeMismatch.java.lang.Long=O campo {0} deve ser um número válido.
+-typeMismatch.java.lang.Short=O campo {0} deve ser um número válido.
+-typeMismatch.java.math.BigDecimal=O campo {0} deve ser um número válido.
+-typeMismatch.java.math.BigInteger=O campo {0} deve ser um número válido.
+diff --git a/myapp/grails-app/i18n/messages_pt_PT.properties b/myapp/grails-app/i18n/messages_pt_PT.properties
+deleted file mode 100644
+index a3860706..00000000
+--- a/myapp/grails-app/i18n/messages_pt_PT.properties
++++ /dev/null
+@@ -1,34 +0,0 @@
+-#
+-# translation by miguel.ping@gmail.com, based on pt_BR translation by Lucas Teixeira - lucastex@gmail.com
+-#
+-
+-default.doesnt.match.message=O campo [{0}] da classe [{1}] com o valor [{2}] não corresponde ao padrão definido [{3}]
+-default.invalid.url.message=O campo [{0}] da classe [{1}] com o valor [{2}] não é um URL válido
+-default.invalid.creditCard.message=O campo [{0}] da classe [{1}] com o valor [{2}] não é um número válido de cartão de crédito
+-default.invalid.email.message=O campo [{0}] da classe [{1}] com o valor [{2}] não é um endereço de email válido.
+-default.invalid.range.message=O campo [{0}] da classe [{1}] com o valor [{2}] não está dentro dos limites de valores válidos de [{3}] a [{4}]
+-default.invalid.size.message=O campo [{0}] da classe [{1}] com o valor [{2}] está fora dos limites de tamanho válido de [{3}] a [{4}]
+-default.invalid.max.message=O campo [{0}] da classe [{1}] com o valor [{2}] ultrapassa o valor máximo [{3}]
+-default.invalid.min.message=O campo [{0}] da classe [{1}] com o valor [{2}] não atinge o valor mínimo [{3}]
+-default.invalid.max.size.message=O campo [{0}] da classe [{1}] com o valor [{2}] ultrapassa o tamanho máximo de [{3}]
+-default.invalid.min.size.message=O campo [{0}] da classe [{1}] com o valor [{2}] não atinge o tamanho mínimo de [{3}]
+-default.invalid.validator.message=O campo [{0}] da classe [{1}] com o valor [{2}] não passou na validação
+-default.not.inlist.message=O campo [{0}] da classe [{1}] com o valor [{2}] não se encontra nos valores permitidos da lista [{3}]
+-default.blank.message=O campo [{0}] da classe [{1}] não pode ser vazio
+-default.not.equal.message=O campo [{0}] da classe [{1}] com o valor [{2}] não pode ser igual a [{3}]
+-default.null.message=O campo [{0}] da classe [{1}] não pode ser vazio
+-default.not.unique.message=O campo [{0}] da classe [{1}] com o valor [{2}] deve ser único
+-
+-default.paginate.prev=Anterior
+-default.paginate.next=Próximo
+-
+-# Mensagens de erro em atribuição de valores. Use "typeMismatch.$className.$propertyName" para personalizar(eg typeMismatch.Book.author)
+-typeMismatch.java.net.URL=O campo {0} deve ser um URL válido.
+-typeMismatch.java.net.URI=O campo {0} deve ser um URI válido.
+-typeMismatch.java.util.Date=O campo {0} deve ser uma data válida
+-typeMismatch.java.lang.Double=O campo {0} deve ser um número válido.
+-typeMismatch.java.lang.Integer=O campo {0} deve ser um número válido.
+-typeMismatch.java.lang.Long=O campo {0} deve ser um número valido.
+-typeMismatch.java.lang.Short=O campo {0} deve ser um número válido.
+-typeMismatch.java.math.BigDecimal=O campo {0} deve ser um número válido.
+-typeMismatch.java.math.BigInteger=O campo {0} deve ser um número válido.
+diff --git a/myapp/grails-app/i18n/messages_ru.properties b/myapp/grails-app/i18n/messages_ru.properties
+deleted file mode 100644
+index 53a4bdc4..00000000
+--- a/myapp/grails-app/i18n/messages_ru.properties
++++ /dev/null
+@@ -1,31 +0,0 @@
+-default.doesnt.match.message=Значение [{2}] поля [{0}] класса [{1}] не соответствует образцу [{3}]
+-default.invalid.url.message=Значение [{2}] поля [{0}] класса [{1}] не является допустимым URL-адресом
+-default.invalid.creditCard.message=Значение [{2}] поля [{0}] класса [{1}] не является допустимым номером кредитной карты
+-default.invalid.email.message=Значение [{2}] поля [{0}] класса [{1}] не является допустимым e-mail адресом
+-default.invalid.range.message=Значение [{2}] поля [{0}] класса [{1}] не попадает в допустимый интервал от [{3}] до [{4}]
+-default.invalid.size.message=Размер поля [{0}] класса [{1}] (значение: [{2}]) не попадает в допустимый интервал от [{3}] до [{4}]
+-default.invalid.max.message=Значение [{2}] поля [{0}] класса [{1}] больше чем максимально допустимое значение [{3}]
+-default.invalid.min.message=Значение [{2}] поля [{0}] класса [{1}] меньше чем минимально допустимое значение [{3}]
+-default.invalid.max.size.message=Размер поля [{0}] класса [{1}] (значение: [{2}]) больше чем максимально допустимый размер [{3}]
+-default.invalid.min.size.message=Размер поля [{0}] класса [{1}] (значение: [{2}]) меньше чем минимально допустимый размер [{3}]
+-default.invalid.validator.message=Значение [{2}] поля [{0}] класса [{1}] не допустимо
+-default.not.inlist.message=Значение [{2}] поля [{0}] класса [{1}] не попадает в список допустимых значений [{3}]
+-default.blank.message=Поле [{0}] класса [{1}] не может быть пустым
+-default.not.equal.message=Значение [{2}] поля [{0}] класса [{1}] не может быть равно [{3}]
+-default.null.message=Поле [{0}] класса [{1}] не может иметь значение null
+-default.not.unique.message=Значение [{2}] поля [{0}] класса [{1}] должно быть уникальным
+-
+-default.paginate.prev=Предыдушая страница
+-default.paginate.next=Следующая страница
+-
+-# Ошибки при присвоении данных. Для точной настройки для полей классов используйте
+-# формат "typeMismatch.$className.$propertyName" (например, typeMismatch.Book.author)
+-typeMismatch.java.net.URL=Значение поля {0} не является допустимым URL
+-typeMismatch.java.net.URI=Значение поля {0} не является допустимым URI
+-typeMismatch.java.util.Date=Значение поля {0} не является допустимой датой
+-typeMismatch.java.lang.Double=Значение поля {0} не является допустимым числом
+-typeMismatch.java.lang.Integer=Значение поля {0} не является допустимым числом
+-typeMismatch.java.lang.Long=Значение поля {0} не является допустимым числом
+-typeMismatch.java.lang.Short=Значение поля {0} не является допустимым числом
+-typeMismatch.java.math.BigDecimal=Значение поля {0} не является допустимым числом
+-typeMismatch.java.math.BigInteger=Значение поля {0} не является допустимым числом
+diff --git a/myapp/grails-app/i18n/messages_sk.properties b/myapp/grails-app/i18n/messages_sk.properties
+deleted file mode 100644
+index 73ee0dc9..00000000
+--- a/myapp/grails-app/i18n/messages_sk.properties
++++ /dev/null
+@@ -1,56 +0,0 @@
+-default.doesnt.match.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] nezodpovedá požadovanému formátu [{3}]
+-default.invalid.url.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] nie je platná URL adresa
+-default.invalid.creditCard.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] nie je platné číslo kreditnej karty
+-default.invalid.email.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] nie je platná emailová adresa
+-default.invalid.range.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] nie je v povolenom rozmedzí od [{3}] do [{4}]
+-default.invalid.size.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] nie je v povolenom rozmedzí od [{3}] do [{4}]
+-default.invalid.max.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] prekračuje maximálnu povolenú hodnotu [{3}]
+-default.invalid.min.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] je menšia ako minimálna povolená hodnota [{3}]
+-default.invalid.max.size.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] prekračuje maximálnu veľkosť [{3}]
+-default.invalid.min.size.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] je menšia ako minimálna veľkosť [{3}]
+-default.invalid.validator.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] neprešla validáciou
+-default.not.inlist.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] nie je obsiahnutá v zozname [{3}]
+-default.blank.message=Položka [{0}] triedy [{1}] nemôže byť prázdna
+-default.not.equal.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] nemôže byť rovnaká ako [{3}]
+-default.null.message=Položka [{0}] triedy [{1}] nemôže byť prázdna
+-default.not.unique.message=Položka [{0}] triedy [{1}] s hodnotou [{2}] musí byť unikátna
+-
+-default.paginate.prev=Predchádzajúce
+-default.paginate.next=Nasledujúce
+-default.boolean.true=Pravda
+-default.boolean.false=Nepravda
+-default.date.format=dd. MM. yyyy HH:mm:ss z
+-default.number.format=0
+-
+-default.created.message={0} {1} vytvorené
+-default.updated.message={0} {1} aktualizované
+-default.deleted.message={0} {1} vymazané
+-default.not.deleted.message={0} {1} nemožno zmazať
+-default.not.found.message={0} nenájdené s id {1}
+-default.optimistic.locking.failure=Iný používateľ aktualizoval záznam {0}, práve keď bol vami editovaný
+-
+-default.home.label=Domov
+-default.list.label={0} Zoznam
+-default.add.label=Pridať {0}
+-default.new.label=Nový {0}
+-default.create.label=Vytvoriť {0}
+-default.show.label=Ukázať {0}
+-default.edit.label=Editovať {0}
+-
+-default.button.create.label=Vytvor
+-default.button.edit.label=Edituj
+-default.button.update.label=Aktualizuj
+-default.button.delete.label=Zmaž
+-default.button.delete.confirm.message=Ste si istý?
+-
+-# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
+-typeMismatch.java.net.URL=Položka {0} musí byť platná URL adresa
+-typeMismatch.java.net.URI=Položka {0} musí byť platná URI adresa
+-typeMismatch.java.util.Date=Položka {0} musí byť platný dátum
+-typeMismatch.java.lang.Double=Položka {0} musí byť desatinné číslo
+-typeMismatch.java.lang.Integer=Položka {0} musí byť celé číslo
+-typeMismatch.java.lang.Long=Položka {0} musí byť celé číslo
+-typeMismatch.java.lang.Short=Položka {0} musí byť celé číslo
+-typeMismatch.java.math.BigDecimal=Položka {0} musí byť desatinné číslo
+-typeMismatch.java.math.BigInteger=Položka {0} musí byť celé číslo
+-typeMismatch=Položka {0} má nezhodný typ
+diff --git a/myapp/grails-app/i18n/messages_sv.properties b/myapp/grails-app/i18n/messages_sv.properties
+deleted file mode 100644
+index 61899d79..00000000
+--- a/myapp/grails-app/i18n/messages_sv.properties
++++ /dev/null
+@@ -1,55 +0,0 @@
+-default.doesnt.match.message=Attributet [{0}] för klassen [{1}] med värde [{2}] matchar inte mot uttrycket [{3}]
+-default.invalid.url.message=Attributet [{0}] för klassen [{1}] med värde [{2}] är inte en giltig URL
+-default.invalid.creditCard.message=Attributet [{0}] för klassen [{1}] med värde [{2}] är inte ett giltigt kreditkortsnummer
+-default.invalid.email.message=Attributet [{0}] för klassen [{1}] med värde [{2}] är inte en giltig e-postadress
+-default.invalid.range.message=Attributet [{0}] för klassen [{1}] med värde [{2}] är inte inom intervallet [{3}] till [{4}]
+-default.invalid.size.message=Attributet [{0}] för klassen [{1}] med värde [{2}] har en storlek som inte är inom [{3}] till [{4}]
+-default.invalid.max.message=Attributet [{0}] för klassen [{1}] med värde [{2}] överskrider maxvärdet [{3}]
+-default.invalid.min.message=Attributet [{0}] för klassen [{1}] med värde [{2}] är mindre än minimivärdet [{3}]
+-default.invalid.max.size.message=Attributet [{0}] för klassen [{1}] med värde [{2}] överskrider maxstorleken [{3}]
+-default.invalid.min.size.message=Attributet [{0}] för klassen [{1}] med värde [{2}] är mindre än minimistorleken [{3}]
+-default.invalid.validator.message=Attributet [{0}] för klassen [{1}] med värde [{2}] är inte giltigt enligt anpassad regel
+-default.not.inlist.message=Attributet [{0}] för klassen [{1}] med värde [{2}] är inte giltigt, måste vara ett av [{3}]
+-default.blank.message=Attributet [{0}] för klassen [{1}] får inte vara tomt
+-default.not.equal.message=Attributet [{0}] för klassen [{1}] med värde [{2}] får inte vara lika med [{3}]
+-default.null.message=Attributet [{0}] för klassen [{1}] får inte vara tomt
+-default.not.unique.message=Attributet [{0}] för klassen [{1}] med värde [{2}] måste vara unikt
+-
+-default.paginate.prev=Föregående
+-default.paginate.next=Nästa
+-default.boolean.true=Sant
+-default.boolean.false=Falskt
+-default.date.format=yyyy-MM-dd HH:mm:ss z
+-default.number.format=0
+-
+-default.created.message={0} {1} skapades
+-default.updated.message={0} {1} uppdaterades
+-default.deleted.message={0} {1} borttagen
+-default.not.deleted.message={0} {1} kunde inte tas bort
+-default.not.found.message={0} med id {1} kunde inte hittas
+-default.optimistic.locking.failure=En annan användare har uppdaterat det här {0} objektet medan du redigerade det
+-
+-default.home.label=Hem
+-default.list.label= {0} - Lista
+-default.add.label=Lägg till {0}
+-default.new.label=Skapa {0}
+-default.create.label=Skapa {0}
+-default.show.label=Visa {0}
+-default.edit.label=Ändra {0}
+-
+-default.button.create.label=Skapa
+-default.button.edit.label=Ändra
+-default.button.update.label=Uppdatera
+-default.button.delete.label=Ta bort
+-default.button.delete.confirm.message=Är du säker?
+-
+-# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
+-typeMismatch.java.net.URL=Värdet för {0} måste vara en giltig URL
+-typeMismatch.java.net.URI=Värdet för {0} måste vara en giltig URI
+-typeMismatch.java.util.Date=Värdet {0} måste vara ett giltigt datum
+-typeMismatch.java.lang.Double=Värdet {0} måste vara ett giltigt nummer
+-typeMismatch.java.lang.Integer=Värdet {0} måste vara ett giltigt heltal
+-typeMismatch.java.lang.Long=Värdet {0} måste vara ett giltigt heltal
+-typeMismatch.java.lang.Short=Värdet {0} måste vara ett giltigt heltal
+-typeMismatch.java.math.BigDecimal=Värdet {0} måste vara ett giltigt nummer
+-typeMismatch.java.math.BigInteger=Värdet {0} måste vara ett giltigt heltal
+\ No newline at end of file
+diff --git a/myapp/grails-app/i18n/messages_th.properties b/myapp/grails-app/i18n/messages_th.properties
+deleted file mode 100644
+index fd0dbb68..00000000
+--- a/myapp/grails-app/i18n/messages_th.properties
++++ /dev/null
+@@ -1,55 +0,0 @@
+-default.doesnt.match.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่ถูกต้องตามรูปแบบที่กำหนดไว้ใน [{3}]
+-default.invalid.url.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่ถูกต้องตามรูปแบบ URL
+-default.invalid.creditCard.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่ถูกต้องตามรูปแบบหมายเลขบัตรเครดิต
+-default.invalid.email.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่ถูกต้องตามรูปแบบอีเมล์
+-default.invalid.range.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่ได้มีค่าที่ถูกต้องในช่วงจาก [{3}] ถึง [{4}]
+-default.invalid.size.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่ได้มีขนาดที่ถูกต้องในช่วงจาก [{3}] ถึง [{4}]
+-default.invalid.max.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] มีค่าเกิดกว่าค่ามากสุด [{3}]
+-default.invalid.min.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] มีค่าน้อยกว่าค่าต่ำสุด  [{3}]
+-default.invalid.max.size.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] มีขนาดเกินกว่าขนาดมากสุดของ [{3}]
+-default.invalid.min.size.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] มีขนาดต่ำกว่าขนาดต่ำสุดของ  [{3}]
+-default.invalid.validator.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่ผ่านการทวนสอบค่าที่ตั้งขึ้น
+-default.not.inlist.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่ได้อยู่ในรายการต่อไปนี้  [{3}]
+-default.blank.message=คุณสมบัติ [{0}] ของคลาส [{1}] ไม่สามารถเป็นค่าว่างได้
+-default.not.equal.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] ไม่สามารถเท่ากับ [{3}] ได้
+-default.null.message=คุณสมบัติ [{0}] ของคลาส [{1}] ไม่สามารถเป็น null ได้
+-default.not.unique.message=คุณสมบัติ [{0}] ของคลาส [{1}] ซึ่งมีค่าเป็น [{2}] จะต้องไม่ซ้ำ (unique)
+-
+-default.paginate.prev=ก่อนหน้า
+-default.paginate.next=ถัดไป
+-default.boolean.true=จริง
+-default.boolean.false=เท็จ
+-default.date.format=dd-MM-yyyy HH:mm:ss z
+-default.number.format=0
+-
+-default.created.message=สร้าง {0} {1} เรียบร้อยแล้ว
+-default.updated.message=ปรับปรุง {0} {1} เรียบร้อยแล้ว
+-default.deleted.message=ลบ {0} {1} เรียบร้อยแล้ว
+-default.not.deleted.message=ไม่สามารถลบ {0} {1}
+-default.not.found.message=ไม่พบ {0} ด้วย id {1} นี้
+-default.optimistic.locking.failure=มีผู้ใช้ท่านอื่นปรับปรุง {0} ขณะที่คุณกำลังแก้ไขข้อมูลอยู่
+-
+-default.home.label=หน้าแรก
+-default.list.label=รายการ {0}
+-default.add.label=เพิ่ม {0}
+-default.new.label=สร้าง {0} ใหม่
+-default.create.label=สร้าง {0}
+-default.show.label=แสดง {0}
+-default.edit.label=แก้ไข {0}
+-
+-default.button.create.label=สร้าง
+-default.button.edit.label=แก้ไข
+-default.button.update.label=ปรับปรุง
+-default.button.delete.label=ลบ
+-default.button.delete.confirm.message=คุณแน่ใจหรือไม่ ?
+-
+-# Data binding errors. Use "typeMismatch.$className.$propertyName to customize (eg typeMismatch.Book.author)
+-typeMismatch.java.net.URL=คุณสมบัติ '{0}' จะต้องเป็นค่า URL ที่ถูกต้อง
+-typeMismatch.java.net.URI=คุณสมบัติ '{0}' จะต้องเป็นค่า URI ที่ถูกต้อง
+-typeMismatch.java.util.Date=คุณสมบัติ '{0}' จะต้องมีค่าเป็นวันที่
+-typeMismatch.java.lang.Double=คุณสมบัติ '{0}' จะต้องมีค่าเป็นจำนวนประเภท Double
+-typeMismatch.java.lang.Integer=คุณสมบัติ '{0}' จะต้องมีค่าเป็นจำนวนประเภท Integer
+-typeMismatch.java.lang.Long=คุณสมบัติ '{0}' จะต้องมีค่าเป็นจำนวนประเภท Long
+-typeMismatch.java.lang.Short=คุณสมบัติ '{0}' จะต้องมีค่าเป็นจำนวนประเภท Short
+-typeMismatch.java.math.BigDecimal=คุณสมบัติ '{0}' จะต้องมีค่าเป็นจำนวนประเภท BigDecimal
+-typeMismatch.java.math.BigInteger=คุณสมบัติ '{0}' จะต้องมีค่าเป็นจำนวนประเภท BigInteger
+diff --git a/myapp/grails-app/i18n/messages_zh_CN.properties b/myapp/grails-app/i18n/messages_zh_CN.properties
+deleted file mode 100644
+index b89bc933..00000000
+--- a/myapp/grails-app/i18n/messages_zh_CN.properties
++++ /dev/null
+@@ -1,18 +0,0 @@
+-default.blank.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u4E0D\u80FD\u4E3A\u7A7A
+-default.doesnt.match.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u4E0E\u5B9A\u4E49\u7684\u6A21\u5F0F [{3}]\u4E0D\u5339\u914D
+-default.invalid.creditCard.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u4E0D\u662F\u4E00\u4E2A\u6709\u6548\u7684\u4FE1\u7528\u5361\u53F7
+-default.invalid.email.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u4E0D\u662F\u4E00\u4E2A\u5408\u6CD5\u7684\u7535\u5B50\u90AE\u4EF6\u5730\u5740
+-default.invalid.max.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u6BD4\u6700\u5927\u503C [{3}]\u8FD8\u5927
+-default.invalid.max.size.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u7684\u5927\u5C0F\u6BD4\u6700\u5927\u503C [{3}]\u8FD8\u5927
+-default.invalid.min.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u6BD4\u6700\u5C0F\u503C [{3}]\u8FD8\u5C0F
+-default.invalid.min.size.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u7684\u5927\u5C0F\u6BD4\u6700\u5C0F\u503C [{3}]\u8FD8\u5C0F
+-default.invalid.range.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u4E0D\u5728\u5408\u6CD5\u7684\u8303\u56F4\u5185( [{3}] \uFF5E [{4}] )
+-default.invalid.size.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u7684\u5927\u5C0F\u4E0D\u5728\u5408\u6CD5\u7684\u8303\u56F4\u5185( [{3}] \uFF5E [{4}] )
+-default.invalid.url.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u4E0D\u662F\u4E00\u4E2A\u5408\u6CD5\u7684URL
+-default.invalid.validator.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u672A\u80FD\u901A\u8FC7\u81EA\u5B9A\u4E49\u7684\u9A8C\u8BC1
+-default.not.equal.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u4E0E[{3}]\u4E0D\u76F8\u7B49
+-default.not.inlist.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u4E0D\u5728\u5217\u8868\u7684\u53D6\u503C\u8303\u56F4\u5185
+-default.not.unique.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u7684\u503C[{2}]\u5FC5\u987B\u662F\u552F\u4E00\u7684
+-default.null.message=[{1}]\u7C7B\u7684\u5C5E\u6027[{0}]\u4E0D\u80FD\u4E3Anull
+-default.paginate.next=\u4E0B\u9875
+-default.paginate.prev=\u4E0A\u9875
+diff --git a/myapp/grails-app/views/application/index.gson b/myapp/grails-app/views/application/index.gson
+deleted file mode 100644
+index 61f96439..00000000
+--- a/myapp/grails-app/views/application/index.gson
++++ /dev/null
+@@ -1,33 +0,0 @@
+-import grails.core.*
+-import grails.util.*
+-import grails.plugins.*
+-import org.grails.core.artefact.*
+-
+-model {
+-	GrailsApplication grailsApplication	
+-	GrailsPluginManager pluginManager
+-}
+-
+-json {
+-	message "Welcome to Grails!"
+-    environment Environment.current.name
+-    appversion grailsApplication.metadata.getApplicationVersion()
+-    grailsversion GrailsUtil.grailsVersion
+-    appprofile grailsApplication.config.getProperty('grails.profile')
+-    groovyversion GroovySystem.getVersion()
+-    jvmversion System.getProperty('java.version')
+-    reloadingagentenabled Environment.reloadingAgentEnabled
+-    artefacts (
+-        controllers: grailsApplication.getArtefactInfo(ControllerArtefactHandler.TYPE).classesByName.size(),
+-        domains: grailsApplication.getArtefactInfo(DomainClassArtefactHandler.TYPE).classesByName.size(),
+-        services: grailsApplication.getArtefactInfo(ServiceArtefactHandler.TYPE).classesByName.size()
+-    )
+-    controllers grailsApplication.getArtefacts(ControllerArtefactHandler.TYPE), { GrailsClass c ->
+-        name c.fullName
+-        logicalPropertyName c.logicalPropertyName
+-    }
+-    plugins pluginManager.allPlugins, { GrailsPlugin plugin ->
+-    	name plugin.name
+-    	version plugin.version
+-    }
+-}
+diff --git a/myapp/grails-app/views/error.gson b/myapp/grails-app/views/error.gson
+deleted file mode 100644
+index 94488283..00000000
+--- a/myapp/grails-app/views/error.gson
++++ /dev/null
+@@ -1,6 +0,0 @@
+-response.status 500
+-
+-json {    
+-    message "Internal server error"
+-    error 500
+-}
+\ No newline at end of file
+diff --git a/myapp/grails-app/views/errors/_errors.gson b/myapp/grails-app/views/errors/_errors.gson
+deleted file mode 100644
+index c1ae732d..00000000
+--- a/myapp/grails-app/views/errors/_errors.gson
++++ /dev/null
+@@ -1,42 +0,0 @@
+-import org.springframework.validation.*
+-
+-/**
+- * Renders validation errors according to vnd.error: https://github.com/blongden/vnd.error
+- */
+-model {
+-    Errors errors
+-}
+-
+-response.status UNPROCESSABLE_ENTITY
+-
+-json {
+-    Errors errorsObject = (Errors)this.errors
+-    def allErrors = errorsObject.allErrors
+-    int errorCount = allErrors.size()
+-    def resourcePath = g.link(resource:request.uri, absolute:false)
+-    def resourceLink = g.link(resource:request.uri, absolute:true)
+-    if(errorCount == 1) {
+-        def error = allErrors.iterator().next()
+-        message messageSource.getMessage(error, locale)
+-        path resourcePath
+-        _links {
+-            self {
+-                href resourceLink
+-            }
+-        }
+-    }
+-    else {
+-        total errorCount
+-        _embedded {
+-            errors(allErrors) { ObjectError error ->
+-                message messageSource.getMessage(error, locale)
+-                path resourcePath
+-                _links {
+-                    self {
+-                        href resourceLink
+-                    }
+-                }
+-            }
+-        }
+-    }
+-}
+diff --git a/myapp/grails-app/views/notFound.gson b/myapp/grails-app/views/notFound.gson
+deleted file mode 100644
+index 1a710b26..00000000
+--- a/myapp/grails-app/views/notFound.gson
++++ /dev/null
+@@ -1,6 +0,0 @@
+-response.status 404
+-
+-json {
+-	message "Not Found"
+-	error 404
+-}
+\ No newline at end of file
+diff --git a/myapp/grails-app/views/object/_object.gson b/myapp/grails-app/views/object/_object.gson
+deleted file mode 100644
+index 114568f7..00000000
+--- a/myapp/grails-app/views/object/_object.gson
++++ /dev/null
+@@ -1,5 +0,0 @@
+-import groovy.transform.*
+-
+-@Field Object object
+-
+-json g.render(object)
+diff --git a/myapp/grails-wrapper.jar b/myapp/grails-wrapper.jar
+deleted file mode 100644
+index b9bd249f589660cf867961102cb1760974e60dcb..0000000000000000000000000000000000000000
+GIT binary patch
+literal 0
+HcmV?d00001
+
+literal 4821
+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
+BR)7Ei
+
+diff --git a/myapp/.gitignore b/myplugin/.gitignore
+similarity index 100%
+rename from myapp/.gitignore
+rename to myplugin/.gitignore
+diff --git a/myplugin/build.gradle b/myplugin/build.gradle
+new file mode 100644
+index 00000000..43a41903
+--- /dev/null
++++ b/myplugin/build.gradle
+@@ -0,0 +1,95 @@
++buildscript {
++    repositories {
++        maven { url "https://repo.grails.org/grails/core" }
++    }
++    dependencies {
++        classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
++        classpath "org.grails.plugins:hibernate5:7.3.0"
++        classpath "org.grails.plugins:views-gradle:2.3.2"
++    }
++}
++
++version "0.1"
++group "myplugin"
++
++apply plugin:"eclipse"
++apply plugin:"idea"
++apply plugin:"org.grails.grails-plugin"
++apply plugin:"org.grails.grails-plugin-publish"
++apply plugin:"org.grails.plugins.views-json"
++
++repositories {
++    maven { url "https://repo.grails.org/grails/core" }
++}
++
++configurations {
++    developmentOnly
++    runtimeClasspath {
++        extendsFrom developmentOnly
++    }
++}
++
++dependencies {
++    developmentOnly("org.springframework.boot:spring-boot-devtools")
++    compileOnly "io.micronaut:micronaut-inject-groovy"
++    console "org.grails:grails-console"
++    implementation "org.springframework.boot:spring-boot-starter-logging"
++    implementation "org.springframework.boot:spring-boot-starter-validation"
++    implementation "org.springframework.boot:spring-boot-autoconfigure"
++    implementation "org.grails:grails-core"
++    implementation "org.springframework.boot:spring-boot-starter-actuator"
++    implementation "org.springframework.boot:spring-boot-starter-tomcat"
++    implementation "org.grails:grails-plugin-url-mappings"
++    implementation "org.grails:grails-plugin-rest"
++    implementation "org.grails:grails-plugin-codecs"
++    implementation "org.grails:grails-plugin-interceptors"
++    implementation "org.grails:grails-plugin-services"
++    implementation "org.grails:grails-plugin-datasource"
++    implementation "org.grails:grails-plugin-databinding"
++    implementation "org.grails:grails-web-boot"
++    implementation "org.grails:grails-logging"
++    implementation "org.grails.plugins:cache"
++    implementation "org.grails.plugins:async"
++    implementation "org.grails.plugins:hibernate5"
++    implementation "org.hibernate:hibernate-core:5.6.9.Final"
++    implementation "org.grails.plugins:views-json"
++    implementation "org.grails.plugins:views-json-templates"
++    profile "org.grails.profiles:rest-api-plugin"
++    provided "org.springframework.boot:spring-boot-starter-tomcat"
++    runtimeOnly "org.glassfish.web:el-impl:2.2.1-b05"
++    runtimeOnly "com.h2database:h2"
++    runtimeOnly "org.apache.tomcat:tomcat-jdbc"
++    runtimeOnly "javax.xml.bind:jaxb-api:2.3.1"
++    testImplementation "io.micronaut:micronaut-inject-groovy"
++    testImplementation "org.grails:grails-gorm-testing-support"
++    testImplementation "org.mockito:mockito-core"
++    testImplementation "io.micronaut:micronaut-http-client"
++    testImplementation "org.grails:grails-web-testing-support"
++    testImplementation "org.grails:views-json-testing-support"
++    testImplementation "org.hibernate.validator:hibernate-validator:6.1.7.Final"
++    testImplementation "io.micronaut:micronaut-http-client:2.5.11"
++}
++
++bootRun {
++    ignoreExitValue true
++    jvmArgs(
++        '-Dspring.output.ansi.enabled=always', 
++        '-noverify', 
++        '-XX:TieredStopAtLevel=1',
++        '-Xmx1024m')
++    sourceResources sourceSets.main
++    String springProfilesActive = 'spring.profiles.active'
++    systemProperty springProfilesActive, System.getProperty(springProfilesActive)
++}
++
++tasks.withType(GroovyCompile) {
++    configure(groovyOptions) {
++        forkOptions.jvmArgs = ['-Xmx1024m']
++    }
++}
++
++tasks.withType(Test) {
++    useJUnitPlatform()
++}
++// enable if you wish to package this plugin as a standalone application
++bootJar.enabled = false
+diff --git a/myapp/gradle.properties b/myplugin/gradle.properties
+similarity index 51%
+rename from myapp/gradle.properties
+rename to myplugin/gradle.properties
+index 04c3976f..2cc0d8a5 100644
+--- a/myapp/gradle.properties
++++ b/myplugin/gradle.properties
+@@ -1,5 +1,7 @@
+-grailsVersion=4.0.2
+-gorm.version=7.0.3.RELEASE
++grailsVersion=5.2.4
++grailsGradlePluginVersion=5.2.3
++groovyVersion=3.0.11
++gorm.version=7.3.2
+ org.gradle.daemon=true
+ org.gradle.parallel=true
+ org.gradle.jvmargs=-Dfile.encoding=UTF-8 -Xmx1024M
+diff --git a/myapp/gradle/wrapper/gradle-wrapper.jar b/myplugin/gradle/wrapper/gradle-wrapper.jar
+similarity index 51%
+rename from myapp/gradle/wrapper/gradle-wrapper.jar
+rename to myplugin/gradle/wrapper/gradle-wrapper.jar
+index 87b738cbd051603d91cc39de6cb000dd98fe6b02..e708b1c023ec8b20f512888fe07c5bd3ff77bb8f 100644
+GIT binary patch
+delta 26193
+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
+G?SBA$$wig`
+
+delta 22560
+zcmZ6yV|Snp6Rev_CbpeS>||owwr$(IC$^nTY}=UFwr$(k&w1DRviDm38@j8ns_LHt
+zOQ`{?rTGD0zG}7t1`Yyp1`Ps2mzZaaktp{A4WKu+F?4p0R?}8TRY&`ZNjEXT12+~3
+zj0j{$p$~6bQmbv0>iYGA?uU)YI>IPXl$_bz=z#P!ruQdg_fwI)ZiO#&WA)nN@>k?n
+zB%kGT`ltX(Kn3kmI`jL*`tzml)4{d*KYnlr7=FsIy?}rpGGiXnL!#hat%W;G)s$&{
+zsz99#4HQv<0YrmQ+mipe(48CPk%@_E6y-@@XB0TNc^&2cklescOq33!9gMrQQ5#vx
+zI=+W`ueXPO$d<op-6Rc1PypN%5~sOF2zM`%6e%Wlp=5`^Ty>P;?W&b!I`{osy<~#L
+z(A4=+{uS0<7k$!(YC&Jz#EKlFuFFHfC@}ww-=%XT_ZDE=fu5>o=F&gb-oEc-{+CDx
+zSv$lyyl4XdGdr8jwIXe*J;o4y*f-p;gaMnJ@cC{wi&%7JT`XPjR#>l2I%)jM%s52u
+z`=R_w;mLE|=@ra<Zh<B_stS_>dcQk(aPy&0r+8NaE0xk(exSC5sF?yKZ}1h)9Z<gn
+z71j?7=vSA?cAx*kwtQkkeXhle!?bqwwzCL$a7R{u?O^s=RZgrE>ZRu!xv#fgQ4<x5
+zFK;l?2#(Tgx~tf@y?Lb2DzzpP)?y55P<2Xas*uZu<y4%hmZCDO*n^5G=LlWKezNUH
+z4P5ic@9V+Gc2`ZK9IaJZp{#fj0BFT`MoLQ^6jdD&pQ%jG(v$S_lQf4D+Aq2ybyRqI
+zgvYdRWWuydm2Qdnj83-D^tHQ%8!KM0aufzZ9}<gocLT)HbM`Fa?6WY=Jm)nq+I)-m
+zoPF~4q<us!J`2SH3&oU$Tf$JrzT+cmZs8ZbnJ;t}ouW~;DUtdIB|EGz0G4q#)<o)S
+zr%Bzz3`7}NA1n3gY0D7wFj$Di9*t@k#I>E<F$1Z=mKV9gC*J;@?@nE~_m*?vcEL<>
+z_)#~yCN`;+Cd{Maur-nTTQ8Ytc1-W`>h#t8bfU@Z6esXY6dEV?_u9QXrF&60o<=Q?
+zmb8v#*HCR1=7in}C}LY<fDA%h*m|OdONRo+?XV)o0j+a5qwh^A-Y2*t(RN5we-C_@
+zOLlGfc<^>$$*>9B0AEWXn|*zS*0xTv+hRrp?mXK!wf)VefZ<z@<+VIAL0eR1p|h0{
+zPFx#83Ri@{%1XzPzSxAgttj0@h@&F%bYtRi=;yUva=fgh`)NcRFr4kivqhRq(=04S
+zC$Jv31aTsE&^(2Cn#d!tZFY+Zib@i<Wc-j)Oi^I&VF7=kzIM^$s6~?Pz%Msb{sx03
+z5|F)6g+)xqWCm79kr;&-U1>Ocfg0pAM;PanH;dE9DpG$QXMLg}e4N&ZKt{h<%S<o2
+zh~pL=yuW*5H+MA#1m|zA;ygu(?jef>SkSY`TzlIO6#YZ;rk(H;MhujYyG!8qm(zNu
+zeEHGmh}8cu%OCBh(`QI4&~MwPm5UnxfzIFSb!WsLg^Y+aOsVvfROlb>TqA7!Ao$+_
+zX|zL@s*)Qfe+)kPee^jl<&r*r@8l^x5=s6QXBhHvthiY^pkVnOar7kN^cnW|k?G`b
+zx%iVzW%Ez-F>0adQ;L&Gc=6{dLje9ZJ-!4rk69_!<wP8h;51$iI>G8BlAv^V$5>=<
+zSD!%gqU89Sr#DZhk$=YuKXf_w^E6p)W?s4sI)Me0SE^Qi?hCFL!^NVoAP*Pyr-p^B
+zJreWfY%h-jY6r4cNLmy-7WWOq=`8CL*Zv2P7!7p`KYVyqh6@S;BJ&djgynzRvKtCI
+zk$M>mNLJRBM-@clZJ@K!ZPrk?6+I9Z*vNN_)Sq2Qi^D-lw31Lj>7SpGTVoxUW6sig
+zi<OxX(GRlNL%b2kzD^2&XAyliG(XyMp5k@4J6gWJ=KrxVYz&E-=DK6FG^7J_k6>p+
+z6g-HQGVzoWXu9DR_s8CNa0ox-*4z;9>=+Ij;Qu!mM?0Qj(5eA#eB0jDL9&3`jjA|M
+zF+v^N+zK<<MksS8wvxXQlHk4B)NB`~5vp2UWaOYfRHtwl)}j^gdoV)fF}K=-4n<J>
+z)=ar{C-`C@{-CL-0hBDHtbGPo<XS=%cO;m}Oyl7``S}A3(I_u)H#Z@=0}l3Uq_2Vu
+zm~U!QH%a4$9NDoMYc7v?oO#IRlS7X}#I%%27~;&vBFEKYhn1bbUQbbAyK1BSl`H*`
+z$#KNgLmJ7ZrkimErhJeWEe;p_-60cl5niVpo*pmDY~nQ#HvDMNus&y$YS=d+Dk*eE
+z-(Rnf{l@}*=uzp*CTw>UX@_5lxy0B65E^$1tY9tTNSAnfy<`%$lL)`8PrrExV`G%B
+z847+ysh#*G$nZz*M->ZLR25#&n-nfA_FL?80HGta86PhQk4_P5IIWZK9Zf`r&J`re
+zb>{)mP^aTGpU4?5JzmeN6Y()J{0haYyvvsi$~)Lx8;K=oG2>#YpH#)-^I*t3`xwEG
+zx9*86u43;-T;313>IW(91uufs-JJ}7QzZaIK^p8Q3<wAm6bJ~2AP8$SPi7AS2*_Xj
+z#9U+wAWIY4M`u{`8<@N5E?J!4eQfKlm%GqdvgD4z9}h>B?lu`us7yW>bKB#Ql%HFx
+z&^^4=UYC**mVz%L3o2lloGlbs7ogf{d>o5jBma3O;P0fIdq}A;rErB|q4mt)5b9P`
+zC2_9LVt<rrf7J2K-0-^5qW1>(C+lwM*V6tn5OC6KUa``Vm$9sJe_s9y&-%`Z`VV`+
+zezyhQhcE1xA4S;q;5GOyoS!}`kn8cKzzU!ZAbiyMGhn?W{z}=G4}{vC4)7q*SDDvW
+zn#{?3iTt${`%h(3AN!^L?aLKude=VSMcYS|6;Kzo1nl<+175^G68!<TTQ8){TLwR%
+z6nOj-UITGk^U`AV!Tm)NW`3JP{w1yWrG5FpD*Bq?Uqj>jCC>U?k@2lO$*yuAV%1%i
+zVNaE1mm$>fCMr|*yJ!wcAL;#8Q~BdV>JP0^X|^Q0q$-jw3QG}Jn6**5lCeY;@nX7?
+z{TLINJQfPfn3JaAm{ij_wXhm){ZJB6OJxnOX+HM$E5sy_3RkvG^b$9ZynZxETefX7
+zX|mXc@z71VIb$xDZN*HYfJhd!f+pT!W2!YvijzvPbXry~n=|f-JSzwjx2da;rWE&r
+zb8Fta{CHy~@5@5n9&xpOdL8q!xiu@zBGSu_ma$G=VLn}^kcWF0e)YD|SgHZYZLazE
+zEb*OZ@t||8Xh$4ZEp=!u=sLW!+aLNiE!rVRSpE}70%jl)6&2yI>RhfJ)fTmy7sGvx
+zzU}FualhI1Trz@@<EpL%?=7{9XjpbI0b200G4roOmP$Ey%H7|fwUVL@KFGvWl-oky
+zrItTg+>lo>WJX(lg5v!sIJ9hlFQe&tT+ebkUO|HEW?j&HVm6NB#t(1OE6QUs@ynOE
+z%b^7h@dwXD#y6l}iCTH^AR)t-{is`$c`240b-ymW@tjr${_<%IVo(M3@nRO1;^Oo#
+z>yd_B<xWb-MK|=YHSWdrm}EHFI>PW?Op3vZv9T0uu{0G;gUN)XXPpQjr)GPqMc$J)
+zUNF^|aj^H+IZ+*S+zQPtcQ|L~(_6i%qn0VhdF2mHky-}#A>rktV=6P4j&PPJA^*rN
+z^^CJ7XYaWwXVjNzLVM4-lrBR<G;wTvKn!e6BB;N%Myyp+A&;*~a1=<XQY)m(cn7G0
+zJA2J<xvUk;<9kQUqcZ~Z`kHB%QWNqxb4C&sM7AL|>?WZ^+-3G-1nv-<X$JeC`u5r<
+z@?4~5Blt<OIqoZED<^#(b~L!vgJPvU;Nq~xAv&B*G>qA##ZfC%=Fio_;flIHTG*3D
+zE1f`;_;)>4MX#WTGiBydts`G_%z5N2ZC5$(v}4Ss?r~Q0v|#}GE|TLm2~pkIs|#1e
+zRXd*IRy7PqbQG%T){-#BT$1srvwU<MrjEy-1@+RkQKGyVG3(jP8aD$~hhR!p%}+W)
+zBpIBOvJ7OpTBy{ka^@8VqQa~A0TFBmq(f+0>gJG~8aizJs=43^Wwd|P$dm^Mz^*70
+zd9Y-QHx<Q`v77<!oRumoLfF*XQY(Un9b(hoeot7-MV$dM*zMTilWxiBOuH;KgFF`Y
+z13788eUgABvK`C&J?Bs-lUO2m&3g4Ux>X8yZKv3amK*xc{yzDAbJ{lbD-waj^Fm?F
+zI%YK;S=xT13Ce7xcR~f(P_itinZD2)Ls$mG7<z?>77HLp+erdJ+eswmPDiT`M7sST
+zjcmARJq|VHL86AtS8AQ&kklAO*<rW1gx7o`&QCg@>6eCH>CKkV7j)k%9ZBkiN}+{e
+zg;L76$|s^06KM&YXCzs_(^>+vlNyNhRq79E0tLg`2-N8W=d^|c!NnD+Y2-y*)k!Se
+zt8<MJ12tereO6kNi5@k8rUc>P+2s*09IiOcBEA3&%ojNtCthhKjFf@PZa_|9J&Ad&
+zfS4&34w(Ual*BnGl32VEjKr8HY-2@2>$XwsZ4ZG_m`-|7Lowb((4a9{vvh!LbETg%
+zPOGaHf@`j>wR%QCjrTB15|%$URs%&@Ejtx9WdI0%Rj65NR<h}A67EkTgElOKIPMJ<
+z_?J6Hm!1;p)TYwu=4>cxi{S&2pc(As6hSnCw49Js8}S(k7OI`LY}uyKm#W|12}ci2
+z9O2dWc&F0oN}7UY&1>P^%+7p?lyvIri$j-r1fi$agg}sa1&8e7*WgE>RYz4~G5vnu
+zRt$9NlK(CnDN18+6WK8?lOR47RXROAC3VG$jAIl22*bnW%DaC=iKo?Os%lG6Y#IbB
+zO<GCq=S6QFPnjsCUJzLFVuZ9-vr7uBXuoi<$~GcZuF^z<uU8jpX05GSPq11~h+wgi
+zyqy2Gr8(2OtK|`*rBdG2g@koahnFT=K>*Z_o_sbBZ$iR!ucAs`4`UaNWF*k)FfpCo
+zB?I7O+DD~VrI*|HB4VdVdET8AOVv|&+okU9L)?X>D$J;mVlA`S3#MzyCYRLxJ-snH
+z@dK!axlf|jPdQKl-C0MCzLMusMI+nPfy(o<`_RpgV20nWhO|e;4^8(hu%pse0D#7E
+zeC;uggQ3sT4}WN{V^y7UL>>WF=hmA|hS`c#b>>bWb??S?U0P*&#d&zW(A3yS+FcPT
+zL)U#}dM%Pw)S|GqHK<)&QB(RA!i;aFp`U=#wr;(qx-}6i&48#`?$tb~q<bGKb351|
+zpC>7pcxXD3R6`V6F{XQ$H2rVi83>+L>HjHe$Dp^tY1yH8xIR#->}1H5+ooEroLPLm
+zS0#LTM}f3WrN<?T91d-Ieh2>CU_6{O^(AdLVGN4%V5^>*uX1N8^=847uCz=(M9Rf=
+zN?FOc!k;1IxvEDf_<OlQwN&Owt{6YKzq}No<7ptNdqnnMnU1E+>DyKc6@Ux+P=+s0
+z2c>%DRastkD7!iDEMC>#;uYL4w_2ts+UBy}r+wFLGnCpR=fS9b#U%S(E^*kre)mn8
+zjG1ec06=Z1n@y&RT1U8RJ~V3FXC0jkYwQ`_feQa?i6Wd%a<pw54s+5Njw<nU(o~%i
+zdPK0*;Sz@#$?+{_ccDk80g`?1rxSWS=CbO$z{!(tRj^T=bXI~MPyBoQ{eK&AOn-rc
+zpobaL6~|FVCF03rMiUB2bP=o|mO%!66+7$mk-WesJTsZC@J-DA`nb8(UR)uaq-%)7
+zd}NEY7=mfeG}u$?Ozs+@CFw@ApXWbUwG_<vmQo46qB2a@8YtjI2CfgH-iREG_i3qd
+zGOP3I>ke^zq7AoMUvM*Ph<c!n^{&Kl;BAT<={Bz27K~`ra{XggLf{vKPU~qpj0IDp
+z!FAcJm}y+5=i5uO=f=dT2^Bf3yqZ#aBH}#pRoNA|Lw9N?^53{<i=>N|iqvZC^ANS_
+z@Yb7bXgcUA-Y+xMft17-Fb_yklP;|?%q3QHg+#&2vZ3N5&4tPJw9RLPtB%M|?#J%<
+zi-Z7K*VX{Sh5EA_;k8KqiSF1W%J=Ir*ouvyKVPdgA&3QTz`W~%d2J={@6eeWyc9&`
+zn+VOy3us6tjm0Z#8<=;qx(s^#dAlIrJcpGL1KX9<-gdWdpdP|!%!Yl@qW{WZG5f5X
+zm(>thnK0PDxhju1W^~1GF+uW#q2Uja&C_OXwMEDb71lO$d>^l{Qd85ddtRt4U)nxX
+zU8JdXEkEO(&MUh`Erqik&%I3|=khL>gx(O4@Xb(zsHrS}CCvb}fX+;&sbI43+db-d
+z%t(RL>i@z8e)oUDt!dfi#wT4e>@+{M-`$5~ATD=(<jb{B@4L2NxcaC94Me^S^Dryp
+zuf7MZp;z0}Kig6l-e;n~R>BdcT<Uql=<&n|V`g^683$&uV(Q*vn6ui`w|L>C8M1#3
+z&vS$$<`WW<9S<}9QFn}}m*0ow2xQo$?T&)HLH}C-V3gdt&TaK*BJ=$6`<qC;Vq_>%
+z(i5wcsnr?azAuiokmZ39%j^g*)!o-dkw%YLzXU`9s!4Bb9~|C-V?ICm{c}WET|1+m
+zYt@CV_4?&!)pDewe5C49rKz6ksZ@y;Jy5QNi%J`(s&690ODq!gDV{4z+ef3V;VRi{
+z`+JxHh-}syKd@<Rk1c_J{-{WVhZ`o*^n+v>=eQ@WlCoft*wBjXma?O8Xu5DdJLIs{
+zezP)PgxD(^g}kQEbkumtpRMr~bNdhZ)HSlsD~uayy>f=mkl${%*K%K%N88z&8?H?X
+zEkC+;gpd(z`ljcK?uq#%rVw}gIg$UR1ulOA(XtII>+^RwJ`5pinUpkvzViKZl0NK-
+zt(-2?cu$Dads{QU*mxGCXzn+ef)o|b1hMriX@vyyE{no0CNLG@&dB*&yaQdHf4B5|
+z;y=OhR%0=-47i}(caK@vx^<1+260QxqSVl$R%FP#uNxGo9AV%cjvU+f4Io10SV9p1
+za|cqF#=H5Gu^kP0=aW_(_jeA0YPhVhgq166<f&(qne{8g_dY+lCpdMs;5Q}?$&fAe
+z86cSka$&4@F4-_AY2WU7($Ip#Me4_jwq9`rdE^dh;F`QN;UW8ZftVLW<ElwSjbTE|
+zTxHk5cp`0uAI1Wy^r<4oyfH25VNC<@(1YXj0Xp82u+hS3MOcLUl<+3~Vk+j4z&ABV
+zV7ySXC;IdTjY4QFZ}_wiuFqfnIYt9@2;k-9#*FpLmbOaXCUdcC!Yr#uiQC`l+@ed6
+zT2QB&{LbVq%s!F;cNVuu3tb4Gv25m@WOsm#x6`H9_ZYw{wV&RRk!I7cX6gW@^yo|`
+zsC|{XQ-Am*wEv4WeLyq3O3#;BRh;n)oif!kEWLI0&DZ{!AdkURgmWj$V(t6R`HFJn
+z<mDGHq++y1*q(#q7D_O)maV)NLSV9f1-p8-j~HDl|BFS-{tSfq+jrKGkpJuC_dF>V
+z9#n&Q5ZJ6?0~MDJp@o@oqezXeu}wEjgX#^>;|It>O)^o6OIo|QhOf4!?^tuee~P0S
+z9BL$IF1`*cOx}83=;xnli}k*sx70^?qCRS`U|#;`)o6V~27xK{rUU)Kpl&f$1D$Vu
+zS=6&{Q90rl+lF$YQ5g6hBAZ?I{}3}VItU2$|G>%R3MP=H0jYzgj`JN$JHZt7C(<^W
+zn2{P5gJ-<VKn4lvHw~pIf@J<aQ{UMY!qgOu-guMFqg1C=_3}Zx-s<7O!a3Qp_jQ+7
+z*OAjRz&u`W3i@&NoY->T{oM7v{O>s%k=N-E=TDVVQ4|H$N+bo1f<r7;HgQPFm`6qc
+ziXeUOyeYsVJk+JfGaqRV-PeH513CS;=c)HM_0|VG^5;HrrvPoYLT{u)P82Lm3fBQ9
+zjR&+IwShi)NNVIRIt=}uA9l^do~mA_mVeOlh(}cbt4CIVRj1w%E?Olj2<ELAw*B4S
+zBn+rWWB}w%?u%Ci))sk4i}x)8!&X@?+BM3(I}OkpG!C;B_)P6VxK;BjJSj>Nn^2(^
+zRvk^oU@Q_b0$#nVm3+Vb<s(kxqgLZ1Okj6e{Faf?N2izKMiM-yuf&w6Fc&{3zP7Tf
+zq>XjOt@2+>)v<>7b8oZpX6PGNM+fOkKuKeRmas@<G|PjQ83)@Osi9#ca-_D_1XsQ&
+zN;?pg5pY>$>pPj%+q?uPr<!r-0GMm*hqN<=YSosR$a7#cKS@!-Ea1oQSTcrCRS{#w
+zoa%<3KyO~m%Za$;6(Y|Oi?cA(9$DrO<G>G-RU+aXN%V)6!HYkHI4a}f&QFH8d2{Vd
+zAXx2UMc;|M(imDAl+KuFx0}Tv)r^^H1^@|Se7Wf;WB4((v$gzqvu#>@W;i;HeO@{W
+zq$9<K8dZjODN&YYI>*BqHoU^|4#JVh(N=Yah8IMcp#nujByK4JM*T4#@Lk7yDFnPp
+z$jRU{OkL4f^^9i0*!-CB&3|_*eNAejj(g`sV|<}$@GR5vV7c)t{ixRsMJ&xF2LLQ=
+z<gu*-jNsg^5npsmsr4WNDGi9%<@Q^|11IQ~7TF+|VLa>{Q-{XgT_1J{4g3*!i7S}_
+zHAhlTDfQ#J<-<^CMXfv=>|}pXHv1q=DwlB+5t$a8H*c;sa>c1~JfrKjv?5uP3uM(L
+zYs<WO$R<YaJX0UJzNMZGBAS`~X28=ngN{$CCjPf@dt!$)Y=n6O(g;?EKqJn6U05D`
+z#mNv6y0~FEM<64*yJ3{CadndVt*4Lw)MO0@`G`+>h99|gQGYX)V2^A8TwMgio-|W;
+z<sQuowda%sC0`=cc}kG&x43NC3r=_S9_~wVlzrI?TX#QNdRZI-9pBima^Qu&n_~Z+
+z+V2lxIY+oNb$(bGR`0&)hs0p)Eh;pP&cqp77aNM<As6hvif5$5iM%r}$0Q)pAeOoB
+z$U9ca2);c%aN`W!L_hJq61Imy(WfuNF`TQvlZvu%!ILjJH8siHCDZdIHB_Ve0r5}u
+zmK%9vdp{(Ce+R<)Tka^h4Nw!(oJ!%}lQ-JVG5ru7)W2oN2Gnm6Ka_|5seIrfj=#i4
+zh~MZR&C?zV%1<7M$P=3d7kHV)zbxn_1Yu++s^}$SNQk05HCxoB87{(|voMVzEd>#4
+z@$iWOi+@=rG8*NrRtBu)GQ=9m2kwu8FqW;YmItlbj}Hu=!<D^8041_m721L1(u647
+z`UBM>B}u~oNz?km@;M<vTFhND<$HdsXy`DQ<{In|TIod_{xAZ}aIF2$x_QPWwPzOw
+zecaN_=^si)g@W$w1kMctF7ho!ni0+1@Oo_JgPD`@A}X<(&SfdR=;rIAHxhj&)m1bW
+zn!!V1-MTh8+4oIDz@x|bn%Oef`&F2oY0J~$d{x&?PvZP>U6Aj+MZG4a4V0{_r!#cq
+z=0F&?P@feBd=KVGXfEQ?gs;*Z#L=_BSJ~mh<5R%Cou0UTb+4zmnBnh@Yn8}5(?qxD
+z${xE<$G12~-O1CCW)RJms@zjyJIj6QKFi)}Ydidf6z9lupowG~{E<HHwL}h*nUc6#
+zQB`KL?V3F}+_a?8tR62bE!FHurv3C`s%v)4<aBPpSAzAiE{r?|V3zyR_4gEAhHr55
+z(>_g(z_yA!nT<JRSu<KT{b#}Ycl|BH@^Bxn47+)X_26E?=J5hA#(QABukGkYQ|S*^
+zgH-2XZ1d0*AYN#2w3gb2#x=>klC(Y%Xk(CK$o|M9=P0U^eOcM9IFE(7EU?Z^?9-K}
+zxY=!VZjPcAgrJo$d5tG8>nc9lGZ$+Gw_%5Qjo5bK7`cIx+T}*K8g3GeK>!PW8EbW~
+zk;X@?^P}vNfc@=n6{~YtWey<)!?6m_r<ZF7M$<75U=k4G$kqE^PT|ma1!WiV!Vl2{
+z#?R&WC-#$@L;DZYRG_AF@_nG@J<L=`{ZaDGUFNe<OsJ&gPR+pf-WwW*PP3*LN6N~;
+z;>lqt7u<<3KOpV+6YOBm?39mMRc!515)GVPrq4M}*l`(63PL#!m)B1oW$VYkk{4<z
+z$VeYkpev9dXDxG}k95p@1U*29Y6MJKV<4-0$Ox!g(LQ`$pr~uDGeMEYG5sfFHHwy!
+zV5*5So_O=#R-Zq6{%n^qAZt`#U+1z<s>Vv~SL6q?82B|uC4uK#;mb<3!4u3H=w}bp
+zQdsK-a}L$W7rutwfY>wa$lIkOEeu8}&YNNgfT<ahG#jIGoz(QN1PmL}#3be$Lz35`
+zJ{z!KiK0&JtLYg0tv1ZLY-b$iJs@l}W*;0LLE6-eAiX+R29;`^Fds#Vpgb1bh&Ddp
+zio%*@ZU5jnra&^{aJj-eqEueG>|BLsj5)50#(Y)G*Uhyv{A<J^x9&tL@-ms}$2CR-
+z7}4$6)8TUl_ZW25&<DRs+T<e67s6{6VuvOvGv>mpuE@7Eu8YyR<{BtKujsq4ic#(P
+zCS$acWT}}(ZHpam7j+(R#U<;QHtP$7F=K}vv1~JG?~=0J+BeknwvdGn7uK>8R@1=R
+zX+p%<|6|!eZ<jmSJXKCuNf~$|btAn6R=5dz`gYLV;O!&~pIsv?9$3lhj{RscMYgN5
+zD^|EQRJOUp*Ogj7y|hw~(4KVbMOA+ryUj@o#al&yj28xg?-|#r)TyX3J^c{-R--0G
+zt0b}q|K6+Rs4%)f;gBv&j>;9rJ>C{VdmLGL{VioGvoM3uy)owox3*hU>!q(Li$aH4
+zw*pN`Q6<?3JxE@s?@>ZY6EIA9!lCv%-K<l^wj_n57HSSAVz=Qpote6p%q!YjxSpUQ
+zmCFJ5rwN9RCyrbns!cV;7vleCFC@aO;v^Otqb3Hk4Z}MK>^>Spf`C9H{inJ9r?&*w
+zAQS(tLIGLouK=DYzTegb<NRb$u|Gs=Gg8saWQvLR%u+EVog_`XtX2YfULIxQ=BZi6
+z=mZz{Iv66)jT#yQR0)NsDAkIMa`~V9(lD5@nlF4mKG3uKsS7){Ok0~z!|i)-p6hqt
+z?rry{Cg9%<@gG?aYiwL$HgVI$#K}S%nN_?<Lx8y$O@pyCP0e5!sXys2htq#I4SBW0
+zspuE3Je%k$UMx`{D&yY)D)i^E<k<hF?4?!ZRRr#NH__=(dGdvYj|BWGb$*&{|2N-q
+zl%tOxo4&%WXxm2-R(Dj*fJ2E(O0T-<{hxrEvX}M<NL3%<L3ZPlftG`zmZGNX0gpeS
+z02)uFfmkmIXw|T*b=9GXi}l9DH9MW~PQ(M_XKOZ7R?^>VB#RU#&4!)F^y;4E<aBE}
+zG~W3-ah-~C6I?wjlhPb1nnI1Cy4Z}i{0eDK|Eb3PBPCAtX)Up{po-)BkW3udw=FHj
+zv*GhiIQg^8W*dBZIoL+<Dca4cq7W(r;J6g&k$kdm4IZ=t*YmUmHrq~9$*#mQbIZ>E
+z9aS2dzB5RyVN8?ZRUuN*Jq9MoJB!xd*K@5gx_9p(XqRA)!US(^j)}IQ-FnQ^laW@Q
+zD)(`nZBpAS&%nX!5`{vuBR&*i9;IL*<D?SNZX$C^U6^oe3<@?zP3`av@q#-YV7xo5
+z9Vm8nA9Db^#aRDcAIx_gWXtK560u(>F34~7usAP#|JP@Y!%m|R>9!eSsm;D<E-4vG
+zclh?_8YaP;O1INZ3|Dd%EMk2oxmE}-FEeZIu`fD!EVYMB@BU9+UO~ZLR8V!*>fYEv
+z|8Qe5F(C~$n<JY|ns%2K_c{T10OXEK*+sYiNvW$-<Fxum_DZd?3$vJmx)vwirc%`I
+zmbp1?i2w>5)>dJn>P=zD^`1A5+dc-ocCBhZ+iEA_I_rZ$Xh_ydks)HYymnJH%Lm9O
+zsQPl^`BJ{6DZF|=;w=fh{4PuX`lXDeht|~d&M=N&K#rA%7#n}0HUDq}05fIbfiMj#
+z(th85Zut_t!569NRrNDth`VqwA;1~u$U(0kwl#Mr6~`|aleIG_mGuMX-|P*HU&XHb
+zTwg_N=Eey#ZGYm~0d~!Tqx|g5^(`bguyBL(Rk-W=q1ms0qYlIV>sR{xIa-xX=%oj~
+z=(`^Cw&0PA2LksjT`mGP;MH5_ZSe^2na_U94iBV$*(bU;dX>@UUB1P^R%$XGB}*jH
+z{HWLwieU;p#(d)qbnS7Zp}7BC_<NBN8Ay`MRGsJTrw46guhEK=@>lefKx!moK7qM2
+zu$@O*KrZ-R(08p=KKgZ!+IC&$wpt{Ry4j*^f|t5H8<iGXC&xks5Ir9^Y|uQZi0cm>
+z&p=^?{V{bo(B_`MqaixYQR<!8iN%}92vhlvtMNLYsymB|XZ%&I#`>F0{{l_(L`)}f
+zk-hFl@T3xeEzlhGHYT_f3vYJBqOrj3PPU{-y{~Z<#2S0FEc-pcU=`(V!x=R-CgzWy
+z71}8&wB`94_fEqOH189?vI7NH&0L+;S5lZEVtY!XdQ4Ao{qoUVMv`MH2KHauwdYBg
+z{IcbmvYSsLmwseLR0T3;!Gimw4a_$0y5K#NC<4oeAiv&RQ`5Eu#TL4oS?xb~zNs~u
+zC1~AsKvT3(bfo6g@NAM1+&;FqRlBJOEdDe<=*V{4bX-USNuu<n>48JgZ9xcruXZ6l
+zlVQ!xV~`jI|Ef0b(;vON8~vt-m#$xN?imEb{_(CzUutvWh@+xCv6C-P3z6Dqh$`1x
+zW8|6e@I*Q=5u}TfV#iJqXYfECa!Rq~rP?OF^*}t-*&gH284&V;ypWuR*QEKBwTko0
+z+LI7}hPBWG0=$2DB8yQ{bOkPMI9VW>tAbLRX;zYIKk)d=TXCoj2jP|~8S-o)E_INc
+z7*|@I5Y)4vS=I^sQTU=AEHICEIV<sWcmvDGJ{#3PAA<IGQK|_NmyU0;>n*hZg6fj#
+z2<M@wfoE0}y?VUxECnGULM~O~SM+4`yYha~=Uit45<E@>*XU`z^qgKfJ>v@A`L1%+
+zC5awM=Fl@q_=5$`8r*Jg{0zx-;!>@711~d#z=n?cmIcfPx!itswnWw`sVoFk(QWf%
+zFN;d{R%4H0v{tH!Na&`jzeiyJ$-pG8=ed84hY12z#^!H~*uVZrT}Bd7H`kgg=AqH5
+zUpdpjPtEo$TG_-*@sV*_PEJWRJ_$KK5w&bGWj!+WtzY6_f|Kqu6iWs<8lj)W;p-v{
+zc9_B(6662<pFeIvAO;&aeq|5Gd4Tutx#FSN8!edcBGVRZYTpQ&38tki?YqU~FLXqH
+zL5}d(*G$X?c|ZhipmPw*?SUX96lul}<BQ+|#0h{AR6o@GFbrP4&QFqsIZDEd=(&C@
+zb-O=r2y-wCDZG2S9zwlY*G5GF{V+q{!CS^KT-)Te9h5jJQ(DhVWLF4Epj7;#Js;GD
+z`{^O+Mc|;O3#!aE{0HLz*7HkO3^c&dkGnOk7^Rf?p)&yd_`j`xc$HFGfDR1=#DxX~
+z<k$aync@Ez0Z>_7<fmxp9KBfqC4xH-`&l1~4;>anD!~FRp%I0)YkEY6olZ8@Nd(<w
+zMW<%nRHaR)wOnpdq^f}OE5dqFYooksO}3(WsXV9o6XP?Y`1^iq!XyC>^p51Y%RSY3
+z`i_6R>wW_h5)pY8?`uSM-LsX2q!62GlG0Ml94Hu#H;eL#aaATdrskOv`#3YUb8^m(
+zicTHcKZ52_%#gIpo>1O!0h3Q2s<@G~!x^79`5J|hcX#a0B-p`*nRc1~N$)UEK%bON
+zY#D)0?>MhA<?2k8+E$h@e(0RS(omGn9EEVF6MWp}(cK4YG9<)4d7xYf#7EK`v}vs9
+z0>s88?NqU;?Jq2z^y5cTdRIr()o%M$V!P;eT47zk-P&1biptPo%%Osrb#*9sA7R)j
+zJI4kqbbV4>DjnyU?2^o?GWGUdVQSPp0z0!Wi?!^W=B4<=ccbmfG0$jTt?9Q&36G_i
+z#djy|tPbd4tnKW~a#;M>s}cz|Wo7@K1A7>r%~H(6leTycx1RJ{)HaX}oCAi)^m}`5
+zp4kjMqUbSgWvXavV?)2+()Q<Ulw12{1*?;bmC4<xI(2tzI!=Ak*QYQ?0_?*&G22g3
+zyCwJ-5?Ue$Sum+SWXYS@@RkZx1?m0+jxyP28R*I9XG?a~)wVhv#cr?dO-&Uz09#G9
+zPDcV&$rX=nrW(OQU)5o>7z>h}?gUFGHA)P&)`~_A_<nmNgP{`yNmZ3slBJO@>6+FS
+z&f<q)S0_n%Q_K169hWl_jqaC(I0x43hm10lY-N>P)HwZR#;h7NhVZ0d9uM7oz~ZTM
+ztwq4rDeRE3zwKLufI`i~>w`umpa*MBZhx3gxq#>TV}vvHXWtKFs`)l>ed6U*X(yXz
+z*k$I`3Sz%3OB3B+mFxq;lU^=WA%b-R10~?g*0X<nD7Y@gv_VoblN`<KWPd|lZFZMd
+zV|%&&GW$(8M%fE-4jtJ1Q)^#w5=x{m5|*w2lK3zml`)vX_ix!vtE3<?KhPWtk+FZ*
+zMUP{GV;GNkF812a+LV@%$yZb-o5>6a8uJXWa8c%~m%vkh(77zbUzugN%h1Ua*28eq
+z)H}QW$}lR|H(T8J_$$!iBb?e3zC}N71atjI^Y=+4WZo7_NC`Szp;FqYw~ehA1uEo?
+zI;?ba+ChVmL-^>@L)ulOH~=Q5?#WvV^-B#>>oJXpMtk6-t&G>I|I!i6#g#5dF$CxD
+z<ZTLuzt_^x;Z5@qy@ozBOR<fOm17T!AC&s|q^i-0nDD)A)$*F`Un-xnzHPM=zF$?U
+z?9}~Vk6tV@bIH{MtnpAitk!Wm!iNL_Wt}bs>gSC5EHieib61EWM8GknHTY2Aq3aLj
+zANvq*Lh9aggq?v$^w_QIbAvGYA&2X<PpH|Ni^cEFLj!jAupvx7GX6V_QX}<94;8Ob
+ztr#qdarlt~1$>(WZ@;@5bf2-?xA7do=~@N3?9ECaq$_R?e=TBJz*~#)lp`+Q?w|{s
+zgcKRKE6zi6VCNSvdI2nGVS_*W9P)b?e#xcuSo@T33k6^47g+nz;0(b5q;`eBEbO|7
+zQQ$2@4CQJek-G#+y0GIpWKAmyki#p+_x*E4!`IV?;Ie*^ynzJONVRS5B_&UyHyPSs
+zN4E$!ohomrL1|z^`%gKX7f_?XSQ@^hMxe)A^i`mJAw1xQ*#b~O@kzg0t8#DfMzF$J
+zE$TVeYam^rvuEMP`b5Yu*b~7uhEm6uAy)IbcDT)q#cCi+(Y+!^krC|?1wP8Kb;&pJ
+z5O{4wI+QRNo1%*j!z5Xmhy`JeBnCllV@cyxEk99?gH!|(eD!eZG8}jcOF)|@O~$X5
+z$+Rig6a5+NPk<}(P#FEZ8+Y_>6rwFm%WElEF&R^E>_8Q>C)yK1XEs!w=3I-}s`Rxi
+zKI<jg;`XREn)DMnjt3LhsRXlT7U#E?3_5L7xx~>bCh~3-*F;hlaVR=YN1@Y2`Glnn
+z<9RNzU#BIk@)pV2P*u)vnA53)=J>;VsPOrkS<dh7n!v9PT0TSPk`CE~g+A02H4OHQ
+zy7hqWj5Kxfc@?jWY{gT2FZCilFO8z@c|sMhzu5|>C~qlJnDgwaUU39Ur%v54xH$@C
+zRFT~!b1kP#$!<vXSI??nKlH2aSbeJcmPdylslVgw6<)=Cz~*jegERQF!!A``#k!%1
+z3#Fl2>;N52%?K;eL&E#Xo6Cn;7IAR!k+GJWD(dZ_mI@!p@1L_|&a1gMS=8Hu?iHPp
+z*NU%tUu7)MWu2Kds;}k`5Ke;MW30Ee$WW(cX_JkIF3Je@Uc5V5>4cf5kKzw$?0Afw
+zl>G2?NKaO~^fHmed19m)$)46ItBckmopewKdO#OyILFFiR#wKcYKT%k@U1#|oTq)5
+zbN`uN0;#gq|NPsQiyAe&%Xo!&58js*L1k+kvD}4bv-nQ9Q~uD-B6xkmih73`td@Ol
+zZ*o955@P;Eehl$AG!tYp%2`M&wMBNl*gMme_ky)ip`*~&UcASGW*jjS+>_;ib&Ulq
+z8o0_zuiMBzwT%_4ojJJ^n%AvQ1+Sg^*)xW+kF-uBTEUJK=#)=P0=J(^rbh>}gdzwB
+z!q_5B``j!-LR53antz*iGESW^Ci2_fOYl^5Q)PED_AoSYc7{eZ2TpU7D*7GeQ9Ia@
+zGVWF_Lv$tXN3!=o^ize;A4KYnio1TJ7eM?4sooW6tc((CqK8hW=9jWB{lMa{zC*ox
+zBDE2#flb()^mpjH{mCa!#7$T=feq4Oa(Q{v6iiGhY6E*bt^SI6gQVc8b!h&gnGF2L
+zfKuB&`WShI#hQjx{9*vIAOz|A50E^i!}KwRo2HTLd?Eku$WcqMaoS}41WV;^pmR>?
+z#WWe1tSS8{|Jl)*7f+NIkY6srbHbj5)kOK1L^H~3{k=lbUYb;EH@Wl{HyEh6v;F`<
+zxjoCR9{ee%$9WNP-rMX@DG&+Wgg|E#Hb2NHZjj;-<=S-PPKH7QTM(iA>gp%FyIuC-
+z{S`O{9Pk@f_EW#8_$6*Dy-t4sY%o(%WHD0L_uSO~XrNwTzgaCah+Nagt|bfKGk1*V
+z49=@?6mp~G5nE4%jar`vV*vHjoCk(v{+$YyuQ+@08y>Gp@$k$G<Qy?i_Tz!rUP-*P
+zBk9O-)PD!RGh(tH+U*B=*1(E(hk6H>Pl&#l1imd<speN?9```}mYYQZ68t4>q{j}l
+zN${qoyT6`)+0hJ;#n=7cuv8T|ULuS>awRQ8zv{rTV_&z7H3KZ~!*xb|ir%CD3fg3r
+zq$hcNia8qVos}C8tJD93u)1sw9@oL-Y8rSgXWEw>6@g7)-U&BORn!AN`UwR_uUlz@
+z_#;$MKslfm5oK!1VT*wW7&?r^U%7|vW}|1Q1b4r6`)4L08H@nyBnR}dUw{WYeKL6&
+zz_Hf+3dN33{$yut18>5v+aEwKU9@0kr1K7+IsoCW%e6ZBSU8j&oh=$;*)$bN@S*hA
+zkS*Qp(VSm3I)c5&V+mRr%FCD>@v|crJBVS%SfP)B(T0oXHKi&6{P^~KY><)<+?<43
+z5ROvz)!2rKdt37&Y2aj9bxWCcve*u)A8>;gcZ$Dtc*up>7iQ`81=}L#xWS4A>A?2K
+zqv}_kVo5Yu7?fZ_2U-pNHC*doz+f{7o4H?C)J;~5&`iqb`r?0&_2rT+v<ARo!kCqU
+z{VgaapGRK>lJi{viyvUGgodjkfY#4RY1kiN_Q=ELd~M@?#&4l0>OynpDE~^CuYFVg
+zBAJD35J)1G%j=aErK2!zxpeJ9tIPW#!gZ=$8@0_#V$dGlUbpHHdomnyp55wQkr7v^
+z{nE^$OiDMy!~7hSbgUepbkwpNU1BZv)0f26uz?6~mw?O%NY8S<c;}8yHiQKY3*4)%
+zI3vK8GM=3oVSi&^m-2w07GryGv((E*E{f-S$tocBLV$eL)^1sn@<HN~98SV4m~NJE
+z3Tsz+>&o*-h3J4KmyC1mRG(XTxV{7+&n6UrDQcG_T5zMI#0T=Y{O}D-qaRSm&=uiy
+z5*qf7!CRgLC=k|;P)qE1h7GO`AMhL1cg~FzYWF$2N<-@-y+${am~B{i*M-mcaP(9<
+zW0Ud|d=F@;H^oVw(ztyvFMm4aXN4r|;Yd>ihMuwn-`%nWRu4$TizZg*Un8g6_n~Im
+z_o=45lKZUAy!*cW@CwTOJRk?3E*jiqsVA5$4apA$EPm>Vsju)p*^QMsj2O!Vqki`D
+zPU+#Ss~k9b;gJm%@g}Xy?h_PrLPFeXLSaV=wEgT%nG>M~J8qESQ`hP!deM<mpJ&|}
+z5sW<1YDZAnV2P~`^|RH`7U3_<inAd;=#01PtF&YZ_lshu*o<0qtLy}~cKB#I*oB=r
+z9vUeEIQO3uOS)6ZS<s(n1|Zf!-%k`DYAgEUt*6_Q$&<bCHd!qFd6)g9w<*X7Lg_Gt
+z<hB-{?IhV{%l;%OXL^lj=dED0I_VM|=W$ysS)AQ-IO{qyY{*lnnt0cDSY~{(;T$Q7
+zO`a7evU{MNW^@~dM!G+C?I^ZW=`R>DFV+VDVg;K&o2QH78?k3rKvAt&k~1vHUvnw>
+zvxKS?#Q(^Z+*`og4o3az7INVeErs>PR9sLog#DSc*di>s>H;xY!hJ$<fRd+d)s=J=
+zl(2)N;flEle;8G0+ZcKEgP#+vz`L#w0Y~tSY7?@Fez3aZ_GrMF>NCm@fq4^=tLWea
+z=w~SrT1OvKKKT*+R4e2iUhE@SaGO7)!Y9OxR{jwcf>=8m_@Dr4{122-&|DZ<X4is}
+zSAZGI41ZgiInxQ|B38jLv8vFKzn3V2aL@v}Z?r0Wcdoa;8B8Tb6nbKH{`azfGpdo>
+zk7IqvJ^EZ~4~u{HEQLw)21enNExrmy0ESw1q1~Ck(^G*uD>?-)<P3?`NO2_zi*8<^
+zGDO&lG$MtF4>T7Vxs_B-ae00M0d-AnYQ*+Ld;AfoQUm+JgrbaO1a9WVN!t3#0i~^t
+zlh*~YX0S2CB&x_%%XJC3w^A(?Q=Jbq+lFAj!9raaCBZ-v_RV&iM>goTCd9uoAS6e}
+z(kl_wmzo!}3{Rsj3}IKcutri+UpO{nR(fk7v3{auSSGe(JIemU9!Vzk-qDMg=(xfo
+z0!;mBPKaZK3WX8lvaroVg(ZnV%b<nM;h=Bu>X*G`wXt0A{QgDpAh#slEeGOE0_|FD
+z|Bq*nhQe(xWtjl(A3L~)U74jIfX-y!Q{;^wjzD&!!4I7ix%vA#U#X0-AUfSN28;<Q
+z&6zXKKLqhs#H(*Jg@1e$@+h#S(mtqu`i;Tq|LfVFe~3aaZU`|huz4VaxR4WtTbq~m
+zlpW-h_C9I!vO6g<m7NkVtshNkz=N193*a<dJR2e?uiHC<8IZ+#c*ttZ2U6A89+hkp
+zeR5`n&7TyqMAEz{Yx9JV;j6659e8Cu3CPTwg56^)>N2O+{&<l3o5=RlXPCt6MyiV(
+zeKvMyvPlfD!vE1BGHRHUmd*8$n;Nov%lHKsYqz!_dpu?^W!8D&AJq0|_He<1ucpWq
+zIyXz&)8aaS>MCUKN^q<l6JWjq8*x(x-|KY}34&KRz*q|$X~a}KB&xgyFS4_!fONP3
+zZ~BDVfHa5+{Jq|v`vm3S40ZLLW;x&n;sl0wulYvi(g8kt&dJQuIBUWM_tI9oj^mZB
+z_ot5LM8<3Op`7OTv*{b_TXm?WezCd?2cg`Lo!`HyK(GR{0OLMROyJ{#4g46#sqL+{
+zhQ`wKqejIdU8shtQ7O+WpM(Y6*Eb<`o&uRpz4R6?cnO~2=j!rlv<QTKf2zl1&|kWD
+z$#v<;&4UV>sayBNY*z}-iw@fkWrDxP_3xw_K*Z1wqx~Ph6^A$?g@oXe#b&N$YS2=2
+zgW|aKI7Sk3Kv6obLIGkt4|-ZQ-g3Cu6tDHUQL+(P3iR|7+H@Ysn+u|jgC^Wj!}YFy
+z@~x1vhIh>jvm=<<4?~*|o`5mf+QCSN`qa44>=MqI>{<@Q^+V$&!c%!9qn~}{2iUkv
+z6S?fCbjp8%skmti`7_;+euN}mI^*Qctn<7wBaJ5Hu%W!ZngTZTcCNAvO;Tod4F>pe
+zl@8e^!616gOutYY@hBS;??hTrUZI3L?IL;@^iGT1I2K=J!G^pj*Mu39s0lh;unEi&
+z2M2qbFY|X(Ds1m5W3SFS<k&9b<WgUc9C_Ozh3tefq60c8v5)5AbEU!EvCCV=m0)Z@
+zR-jTGg;@)7VF1J=#;mQ7yRAHBqEjX>#H20AD#W;U{+~sNamjolVsB6nd}6fUKNt8y
+z_V@%J?-7+(t#eaPUD!T@zhI(mg$!>9KH)J4gFB!2KJmGQ&8bZF!6MWkIv`xYAJq59
+zGmb-){Y1XOEeFtWsB-2hgZb1-AEA<I&@KvA3k!F3#DJNqKiDQufREU!rf+RK2`e~Z
+z)sX@r?J-s(iZ&^;D9OqT#V1WXm7Q2l4=d1!Z>lcrNHtbf4E~g9AtG6(Y2$iz_72r^
+zAym4ylyh6D^R;d9jd=T|tm6GGHW+yzol_zJolhluV0^_}On!F?<T8%_=O*P3L5v*D
+zerE(v0iVUOM4=>K*Stb)8`BSzm~L+@y)N)-;l;`MMh6b+faW<%OPWRfPE+xWIWz{^
+z+jkHn+Haae5o-5<7v$e|oDQ7XOyfki9L$!B83yq~dkm!v{YJ-*bVELJwAB(nX-hQ!
+znCjVrlbTCWmyn^KnAFjs;=f;^78;w23r$w!so+CL(wAa~Lak><B~{i>Cg&f3l2tf3
+z3Qnu-?irO}pU$&P!E`WXFw@+#>Dx_Z&P_m9I<R#xQw1{5^F=UGMuv|1s4137#f%6c
+zHGggPB%X>7d^dQjcYwm!+hHR&{{R6o0813m;s=zprEvw(zNX9?Do)k*%ez*k^Z5oI
+z>qXy|l%OIMpqgj)gty5@<79N)`%Ma7YS7?>2;aco3Z$lGgc#MJeAAeZpR%qq`#;`3
+z_bLAP+DsILVUl@hFmFj4>%DsH7YN;~Tg3tDzI{Rk6jP#=^)C`+cb|nWr7XSU9agok
+zDM0PkhzrG)#jKo(PoC&M2G<YKgUvUCU(*@k3sLucr7DMn(2r{uPnL717Uw}b1SYnU
+z8aAaW1c=iaN&qSxX;5?}SpsTaayW(LG87r@>Kf7bayjROY6?n#ye0LcAaPoT_SR%l
+z^XoK{pY}@p>t>R!d|R_C;7)e6UzHIS2-K`9v>b3il}J3n(F;Jwg8nRpNE_AxA#~<j
+zf`0$5iC@&93YXx%JvNhXb`r`nQ`1amg;)K;CiqSV6)N!Wnt=ixGbNc-^GNiVaPu#q
+z$7}Ve5m_fuaDk;*!_GsxjM>q1-s;WIGW0@|KVv*Y8<$Wxl3^J#3P-Fo=NRz{QC_Ue
+zo;B1^zcuN@xwmbPn1zQ?2P}Cq7u;Na+oeU3^Y|iNY(eVtfw<jFtQ}Y4R>rm7Wo(Q5
+zzXdXUsg*s9|Lk4u|4L-!|AWXpI_Q9<F|Il~udy_aCc$uw5k-?R<{)Dg?J5Q|i@*j%
+zC#$0MYOl8A+!DSvswawPVT@QfyeU;&iZ7J{Wm3KHs;)($0@&x2y%D#&8SQGd%sQgi
+zb$7}86{oxB^CbWG{SZIM-@$DXJSVy^V_s0yWs)Sjk+@Vt;b5|La7{E-9(+LXC+BLN
+zD0T4eh)#^apzLZlS$}av6;#YFDzcB#SLA;BZ$9+ilG}7B7az4kb5$R?qiJym6#cl}
+z=7|4N8H7WaBw@SKhCZ4}|A_n52WOT=-r6JVgKlM!|Dg}T8v1YtT<>%Qd>dhH!|uO3
+zy@;YSP;qeSYRum!nvK>?F4hCa7_{J8YxQv6#5Ji>Vv@b#k<P}6^U5@l_sY&Rsb<W|
+zH21L1r|FR}`SZ(<nO@X2+HDIw@EUE3;I^pX6$d9N4TZ<!Aps<*$7Y1-85*ToTnP=2
+zHd`9B*iS`$Ar>BH6GCT(%=R-PCxY`#S+Fn}`+?Fhps2yLi)$sa<7ohueI?G*f7FKk
+zr~U}TX)~2Iz`RqLX|l<$TkA}PNbNel6e-#-r@NH($mrE1D4QuDzW<&FUd3z9@xEV&
+zVsCQJXkXm2JfX9?B<k*RW2*?ch2jvtx~4}1gOgziRr;&5JT(ei7ZiJHu9Bj8Ef{pO
+zwkw$$a5$7!pU4kbeF3x^p6Neq;yjydju}piT&1G&C^nZtigtIK;R{seoQDe2nWbU^
+z_~gq>DwA#JSEWp!zGOdl&QeGgS6y6n{DlZRo;0%7beJRje1ym_1EB6>y4^?$Fh7MX
+zTcV@;WR0!n87mWTpZ*+*NgKK(u^6AI2VnO5ZKIAmC`JCCF0KMBsxD~bQo<5TFU!&)
+zEiEnGAt*`+(hbrLE7Bo#>5>-dloX@|q?BA(8U>LQ5vBf>-|zc={=Ivjotg8_oco-+
+z=RSANnHl#jd4wFpigCmD#)8GEk^`n;nLc821zYcIRd=$F2%l$PshAkVK6m|+n==u#
+z1o}FwE0oql!*wJ}S9(ONS0i9-`*q<12chBd77yiNpW5gBc^pniOeSigg%=M)xci5#
+zr5$ErLEPeZyR@m3lfz#Q+LPa%*#{>EMLi<V4*aQjTLckQygCE3<{OU5%?Oa`D~APz
+zEZLvX234;RpA<gVN}IxQD()Y7jC705zV{nok2N>iY%f{X5Bb2g`Fd|Og=b)a@Azy^
+zLWliJJ%9Of@3cWF|0mAWob*SW%;u+K9%<cA_FKaxN^MJ{+q|)OkG*y|H$`U!g%|ps
+z7|;g^t{WqG>MvhdY8v&?z`R&w3r}c<^*Gl8VyCDC)obfKdpH-Emf~6k>&s_e2-_@8
+zw?A3^+1YbC+;h+sg6;QBW{t+%p-OPEW}KKa=91<1y@wCG_9a@6gQ8T)-0|C_v!%xY
+z8mQsnE@VD^VB(1nydUPZeV)@v(!F>`W}XIyed`jT&2@-WKn5O8zu)+<l1q;q?*0gA
+z_o9p>R+9&(#2BFRTTIWsHuK?I1vcE1+}ZKy`$Q-R*iO!DOMth%R#JszW+om=AF{j@
+z7O|<08pK)HLa4uPZ=F|+ANcgbwfM`ao~fkq^!H-S<MujQ+V;9mw<fi?+7;}BI%Cta
+z>`Hk=B=-t=XVU0lOa(Q{2jffLa>!$0vxIHp9fMoHEXa!BpXvOW1|pjM?%IU8^XY^g
+zW|sQ}TZ9UZM_}ysDYM(<l1fMOkD8k<+}Y<7R=mT6Lpms7TV^CCXSnRG_e{uWe9usP
+z*X}e`fz(jW90YWXT#~A81V|)S<h4Z0u<@g}wq4lxvn!Z9q-!ue4KDB>P1J?FccZ9$
+zY)8?c81J%4<WidVHahNmmocjF)C2uBwkr){ZwRp%j@mW#E{z`D$&`?~=^FbfMYe%C
+zm@M`yR(MU6*-WE4-BzYU6Mx@+&BJ{HUI8jiNl(D=3pACi=Hz#_g)JL&NE!N^VW$DH
+zqNB!We`s|WqO;EV&X++pe1yV7&o!WAH%d8Zmbo*KA=oCpxt_Nv)TXfC>D@+t^T*^Y
+z1;U>UYi<rnxbKw_DPPvtRgQX%7XU`npC2F-eqJtaVlql^^^QCV9=PmzS>x7jY;sta
+zU24u8a+I7&H9U$(K?htLK7Ju$YkT<~@hXbvOj_nrezVUiAoip(b`1X6_gH8Ho4a)}
+zc5*h}bkOP&x&cYnOA*yPEIO^I{$7-9Vk6+!`aC$o?}-v$OOE4i<?`G4T_+MPotb*&
+zj7GZxOX#^ln)(L`Bl+##x|kB(HT){l!GUus<Vhpz5}EXFy(EW-KlIh9fP7LWA{ZQq
+zMUSNW3YOICI`=$UJAxkZt6U2C&C0$kILgnh%!P%}Nk&naV@-s;T2TAw(-Nv)KU|DG
+z)JdY352g)jJMl2dqsCjX6cE>!U1bd=t1h&Ypw?_HCu*UY$ZvyInOhpweM!?3>T`2*
+z*bZz<Tm6uQ8;LG?a7$%XwZuM*NwH|J1qBGN0`I3u6?v6gPdZm9w}eX`4<+xhRg=$;
+zUt*wrG!GJ@wXpFgbm&BEIQnG90OA)|0Ul2{2pb~-R$uKIPJ)*)-e0MOiGi^JNJpq6
+zj6|)B@*c>xGd~P{GY)2Ah@?!8A;*_h-CwG!@XY^~w8PZ#d~5}5S|H2He<66F6M$op
+zU2l}9Zwh8S7!z~1{v6;wmofMK``FA=jF0JQ<Ifamc~tRUsHmtg(#qW4bv<%jph~)d
+z2M>W0i-xme@iEDEGsmF=kHZbO8z089AgGb`;ThWNn!d$(Y{}14p@P#hR)MVLTVJys
+zDfQeV8zO{_>y@Bv;;5<1shT-1D?fST7=jLd3q>ni^4PhNA68QVytk<$$wpz(kM)z$
+z+nwqfFJ01B%s;0TXRc)$G*F79sV5M0aTq@useS&KyR2wx@2kZ+J3Lx24{l4Bh{zmL
+zfqo?n>`Kz)YBIA6ALZ{KUmuU-K*wVKs1t1C>`WxXHW<4_$$kIRclnfTUhgrknnB!Z
+z$IptZoco)@)NiE4^e7FhdL_2zCB&Iz>Iy1G-qRevTK4I#@#586rgIpoA|IPC($_Ut
+z6;vo|8DQXnW|b7gITQpKa(ehFR3V<<T$6(^3b{%Wn#0N9fUL#}wS1P5Jru{7);GU;
+zt3NeJL8^i77XB({72be#X@W7K20iAITXtUC5Xc=r(y;uDeIb)VJuZJwL+YWXMqJ;A
+zRL8Oi3vsOk>A+9-cG@0IL@6$_>*NeZ7f{9|2D9kdJ*9XtvC*(qQcOWQsfQ@&A>uF1
+z`CisHt|QIwHe6n2zJubias4o{AWn{KE3_UFYq0n={`!sYtMW|$se*Iyo@KF?Zf)J$
+zFWz0Iw4T`An^5XJQ}Tn?+*2VCDrn!2{Dt$|>7!lJs0lJ;V)m9#LG1}qJN@Q2S;0y|
+zxqh~LJ!~YV_iY(Xz=JCEX)f64^z=-PUW;a}Y53&N{T^k1w%;VVWBYxbdHo@Kr8zqn
+z!TY=?y0I)5?DMjyW8Nax{HB<9y4+e7rayCQg66&Sn@K63IpSzKQjTy(+{|i1MTv(W
+zqXw5Lk%NS?D7GPa*;^!CwB1__RrKHPFu@xcgXav~M3r@edv*wFLI@_+@!3U8tfTj`
+zRyUbktncec;69ILbpFyj-@n;qg;XAN#FXkcjB*b-&XUIS##VT*eMfgQ!Y8blPvH<_
+zhnR8kDM##Y$@CJbZQue_KOB7nldx!DVEG2Rf<_h?149z14Wb21S8##z7jy{Sc_s3T
+zY03)bnBL~}&^JXy!Z!lC7LrV}Sg<pVTwM%rHL$%MlyjwU6k{ING|7)2Z&I;AGID$>
+zx)lG^w7JwFFCoPxW@;Xy!6tZKh>|+p%6@t`M@k%Vak>r0aQ9)bxEXV6Gcl2*i%D54
+zJd~B%;4#rEewAAQ3*|7J3v`UAC7_-Wt-^H)Su2S(I#KAym=--0=+^(j?y_LE+0-cr
+ztECRF4M3F@aizBEO?@()QmLMH5T05XqA3YdZiKa_FdrqE!Hy}yX@JH38Im~Pa>BGM
+zq-ny#Z6om>4m16y(?hMEk9Zypl8(*@H@4;*hU+)QCglx73?}F&dCn27X2Rdh>lY3O
+z^A-d&QHGUeFT%BI6t$CTtKv3`WS!`dirJ&}d<2st1(k+gD~V2%nsH-L98?QUjEK`=
+zqgV!_G^o0yyv#tA%4wL7t3_)#`OXibrQWV;LkdRYh`YbNJaM&|TFAUZQo}HZJ*tC$
+z!inFg>e=>*a%Me_g~THC9p;;+lt%|P*aaLrQ`!%uyDI?yj$4AO{9JVI1hpoM76~yw
+zN{V$xBSYc4?=-+W6xm&o&&{$wHxDO>r<Sa4_~VQ0iw#iWtIb+Q`fa^lmhP~8@1xXe
+z<DB(lz&h=Nr2A~@b9X3NMTeORoX&KvOvs_t?umcFR;8rqj2kt=X+xz<t+_Po*+kSq
+zf3J|d?Og-#MntQ%dqBC2qJhFBl-HNeZYKeg(0d6I^jiOMK>g}CnDNf~p~cikVp4HO
+zi`|o^9Nr9cIDUpGZ=_k}tLVw?;v_xIPc$!PR|$-(e$nlIPo^oiqnQ$-z|?^fK}*Z@
+zJhD~-BsA~bH+egca7NlBkP!6yo7D`;`r#0lp32|RTa??fyFL5X9_E*Wm*TEAlBrf_
+z*}C73Xwda9miV|~OtQCkhrNgH5^s;b`;yi9P}GE^c$ZU7lNubR;QK0rURr0TYoE8$
+z`6E)hkW~8&^h7doA^7r^;psk|ly<a~NWAo$XAEu6eh!LgApAoI*nfo!7TT+egcG}V
+zZ2Y*5HLhIP0e+pVQb&7KIe-Y?qy7zybp@W#23H6%od+At1gt8DdNZbxHW2jVRZF7!
+zWH<tJe-pk^yLfOwEhhmDXo+!AZBK+HnlLW;eub-zOM$gK1Qmp1bW(euMsi8UN^!=;
+zpI!U%JC{l45rx$jAV9(BLy7HYc}P|yv#PYRYA$)nYfnuH+#ly5@Q7X#D1NX)wi9iW
+zjDD2T?&iSpk8P^Bxok4gUAbeByM3~@M6lRrTI@c@8&ui1JthuZ@#x2!<?M-cngUX}
+z`C$XB6Ph-Oc_qF|&G^_1ty_ALCSo!3p)unpuh)AX;R^-v3|?MEOaW!fFrXm__UF-1
+ze?RFNh!AH}01pf8^LCM7U`YLaYA_>E`lsIHQ?!>0mcX1N&dp#fGIAwNl{#P2{a|xs
+z`g1H1um}`(&{ZShj3XlGYAu4-F>mO!eX3)R5loqEZ-?zbs+*@5-&h%eDExACq`kRP
+zy0rJ<n{$%!Y%l%!#^}$Wy`P?)V{NBXGl+AVXIdH&<5-QcsppKLBmjh%5d-mpKmH(T
+z*(#DMCk;~raZgSl(hN`OW>YtTZ2wL9cwDoTp70)p*AN)r&^$k0gq(iZtq>p1P)bSK
+zZb6?^?Od?gouHx6yWrI?vA!K};$^D#c7_#2=?hl+%QARp|94Uo^XW9!cBU1*8*^}1
+zk58N4+$a?lpBz338#CK^2Ph(Q3V7gTRF92hE=jS~*0+~@-8his=N~U7SphqUbhd4K
+zFg#t+I(Oy`PWFRgIkym%56Dk$)N%_D$CNWk$0X{jIVyV!;XQ>k*~r~x#zNxHi^t?@
+z(&_;m9af6#&&12#yn;*3(M>o-j1K+&5t=W~5rZ`|BC+^w2PjLl{fXE^^{r+zqN=u=
+zFGi%m>3;Rjn_6k_(q4oOQc;I>=idId*(X+SC&Msq(LZQ3oX(O7TdX!{n>ttRexURr
+zJrjP9C+DZMz`I4#(nYg$i*TE%Y+GkeN1339hfeQ>S}PUo^#$R<{xt4AQw_5Z@XDxt
+zQ(9KBQXyvFOkawxE;%DO2ILyEOGS1QI6$;7Vy0V!^2O#KNcaP*{Ux}lVUjN@x)!%n
+znmII5OvU9h8$aEa^6e$G@yh~C#U_sH<+`&-7nAniyu0imHZVx{dz;mwxJKJv@ue6@
+zBW!nE-w@%w#E#5wKFZ?YDsh?;yO<Iaa>^DKXx+!8&T=J|?<7I!C+={gQj6(UkGqv4
+ztQMj)1u`di3o*B?V3IVJj=i)3zabR19d9(ZLgxhNKAjQFF4H%$Z9P5^Z}@oc=^b|0
+z`}Gt(9^}eWr5t7XMPzSZAk9T4ym#;B^}VlKTBQ|vD%Vc}r<h%EVn^;ry0iC`#J+wb
+zV4hLv_c(?tJ|mSB(H8zy1aH8yJ!Vb7i-~Cst3W`DiF3sp)I{as`_g$nS<mG2c*^-3
+zofN7uk;~j7rI9`J(%Ac=JS$Svduy?=cb7|JiTCqk@4B(H{?=7he&zQe@=Xf=$VW=<
+zGwutPwXuNHco*lmnYZ1EuDP@q{1;3sWH*ZMQ4gl~CcmRyszo61J$P%XzVPvkg*X^L
+z2!YrdXn2AvjP#8PQ*$coOqA;%3^drPQB~Oohj%-T?=enh+wm0Z6PHhx-`U6z_h<eN
+zj>gf+HPcObYF@ivWX+Pz_~_B?k%*RRQn~Vj6Up5MSSC%1kX9?8>dq~wV|%97`ZjF)
+zXRF-?>b~h7C>xO|5l8j)otrS_C&xDD^M0bQ{ZioR6zVNsNwG^^F={z<7O0`PHr?Rb
+zN%ws&o0=yM?H>yVreB)okVoIR+%cG&O+NiyG1AM4dTiatU25aj>__A--lY0Ws0ev>
+z%#ad(`UjFl`R&L@^7LJT>P}#425hd-J(K4p^V=sD;RsfDNUynF&u80`k6){)-ZXUL
+z<c(M7@SSIJDze6lKIiluYIy?l*iEy}IV~2u8QgZ0w;M%4At`A*%9LB|aVU?ZRpK{$
+zmg@4ICA!-j*0&OKlR&G`lC*dwRaIqWS{18DI9N3~%;6@D_@3Ig5>G-F8Mv%UdkCj1
+zdE+W{IvU}vb33lkAp6~0g?bWJZhEO%P%~uScwNrXw-#KxbA!r!Tm5}&W%F3m0gIj4
+zZ(ASy4dt5OOzT}ktii+j;`;ClEZs|N?kuIgrL0#ql7Wvi{54$cz7sqoHzUR~^o?Vo
+zY-=jDB96SD&}&zB5m-THGtMe4Q++c2R<`k#lzRw*{Y`$F<Ghv&hN8m^q#cuF2^knl
+zc2s#Qu#4k?W?s1PSe~INNS)VwilOaSIJ%^y{!ko*o@7dlebwSo?Kiwbil^RoVR9;d
+z?@y58Tf+*nPv++|9M!0`qwAhO?_lT}!-;=Vx^8rQN^!h{1+&ihDpto<%{=UbxY3w9
+zJw+0a*irH`)?8tunxzuW@#@O-xHtWoc!<Cl8ptEqoH6x~#3kn4t7c*3f_PY~;L_O)
+z+5NlniGv?e2_+7Zb+QUbpU+vB5a^J2Bj8NripSM!H8h~jQTB30=RmB#m+I)jB`#ZU
+znkd^vnEL9{iCjP!BATnJvwIzA;sAT=WXHH7q9naLU%q}6K<~ApcLqHVqO2(S&>Brk
+z>h(l1BNX={9$B7Xyj+6Mwzw8CTu`F|PjGQpchJl$v4pLjwI{sY$gCMD9A?RheR=N}
+zJ{9Z;tkNISVIXk)8=GZ~vFRDq4;tURaZy@sMvr`)maLojqL6}dL1}3o^9*-LG)RG*
+z6tkj~DN?Ti0Xm}}5j6pac3{`<XQfkOSsG?d*2mUSl2T;1&HnW9IP_W-7>&0<h@EoH
+zB0{$7n|d*ciHI+I9-%{#F-XxTJqFP7nGx*><AFCgIY+n#KWH{$V*tC8@cJi{)c?Ow
+zXxNk}0Gs9mIp6@n+!R2^O$hJ`1%Y3ykB2t;&!;F@3->SZPq{pH_<t49FfbVZL7{((
+zg4^)^0&fB_Gkl;{=)Wv-Mg~+yeZ>wlF#wrJ2w*k~1JyF1MKnPAEDQWvmiaZSp3G<v
+z_n&J7$md|7Bkn6RigWbvYnf8lbQXE8K>wRK1%+P=+`a}37XAyo1Nx?VMaCiF@c%Ym
+zFfc@~;nOv)K$4FMflVYk{MusvHDHm}UmzI(U4a0W^Dxkb-j%4yg7!*OWD6nqN2Ms3
+z$mpt3YXKJ+wIu@x7dSz9CVxe&@axMS|7iUgb4wfaB8V(-3q=I#u>tO&BtVBYz_O<x
+z09k|pO(+;B&>qcF1K&_uAl|3IN-`YKUz7#)x?GW?LBv<U=|vcb#qCN&v?Kzu_d%1)
+zfZY-m{NMEybOiv3|2jtZtmk_L>ReI)odx_Qu>s;3LO^^OLUYYgyr#DY94!9hHqrod
+zOAw%883s}dy)yBASr~rpZSk7wX*e2m7tmgZ0Kf_iWEgj)b32;`*jeEO86;k@GOus|
+zp_i0bDBD#S$Rzn+apkHw$T{s_R<)Sq3MIG(136^;6_Z~5)4*l__vYAS|7|1yme#~U
+z4_{uf((4kSvivI&QBC*9($&-j#@8u9>qTfe6M(<L2a;|A_Iud@{Z$Cyu>k|AcLE6;
+z`k<%X0OPpi)!=`b_`iM0_X0mAB>ptOug~%SMxrQ~vL8L;naQzn{s{Te2Q~W5+NS>x
+F_djzcFxCJ7
+
+diff --git a/myapp/gradle/wrapper/gradle-wrapper.properties b/myplugin/gradle/wrapper/gradle-wrapper.properties
+similarity index 92%
+rename from myapp/gradle/wrapper/gradle-wrapper.properties
+rename to myplugin/gradle/wrapper/gradle-wrapper.properties
+index 558870da..ffed3a25 100644
+--- a/myapp/gradle/wrapper/gradle-wrapper.properties
++++ b/myplugin/gradle/wrapper/gradle-wrapper.properties
+@@ -1,5 +1,5 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-5.1.1-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-7.2-bin.zip
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
+diff --git a/myapp/gradlew b/myplugin/gradlew
+similarity index 75%
+rename from myapp/gradlew
+rename to myplugin/gradlew
+index af6708ff..4f906e0c 100755
+--- a/myapp/gradlew
++++ b/myplugin/gradlew
+@@ -1,5 +1,21 @@
+ #!/usr/bin/env sh
+ 
++#
++# Copyright 2015 the original author or authors.
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#      https://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++#
++
+ ##############################################################################
+ ##
+ ##  Gradle start up script for UN*X
+@@ -28,7 +44,7 @@ APP_NAME="Gradle"
+ APP_BASE_NAME=`basename "$0"`
+ 
+ # Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+-DEFAULT_JVM_OPTS='"-Xmx64m"'
++DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+ 
+ # Use the maximum available, or set MAX_FD != -1 to use that value.
+ MAX_FD="maximum"
+@@ -66,6 +82,7 @@ esac
+ 
+ CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
+ 
++
+ # Determine the Java command to use to start the JVM.
+ if [ -n "$JAVA_HOME" ] ; then
+     if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+@@ -109,10 +126,11 @@ if $darwin; then
+     GRADLE_OPTS="$GRADLE_OPTS \"-Xdock:name=$APP_NAME\" \"-Xdock:icon=$APP_HOME/media/gradle.icns\""
+ fi
+ 
+-# For Cygwin, switch paths to Windows format before running java
+-if $cygwin ; then
++# For Cygwin or MSYS, switch paths to Windows format before running java
++if [ "$cygwin" = "true" -o "$msys" = "true" ] ; then
+     APP_HOME=`cygpath --path --mixed "$APP_HOME"`
+     CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
++
+     JAVACMD=`cygpath --unix "$JAVACMD"`
+ 
+     # We build the pattern for arguments to be converted via cygpath
+@@ -138,19 +156,19 @@ if $cygwin ; then
+         else
+             eval `echo args$i`="\"$arg\""
+         fi
+-        i=$((i+1))
++        i=`expr $i + 1`
+     done
+     case $i in
+-        (0) set -- ;;
+-        (1) set -- "$args0" ;;
+-        (2) set -- "$args0" "$args1" ;;
+-        (3) set -- "$args0" "$args1" "$args2" ;;
+-        (4) set -- "$args0" "$args1" "$args2" "$args3" ;;
+-        (5) set -- "$args0" "$args1" "$args2" "$args3" "$args4" ;;
+-        (6) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" ;;
+-        (7) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" ;;
+-        (8) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" "$args7" ;;
+-        (9) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" "$args7" "$args8" ;;
++        0) set -- ;;
++        1) set -- "$args0" ;;
++        2) set -- "$args0" "$args1" ;;
++        3) set -- "$args0" "$args1" "$args2" ;;
++        4) set -- "$args0" "$args1" "$args2" "$args3" ;;
++        5) set -- "$args0" "$args1" "$args2" "$args3" "$args4" ;;
++        6) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" ;;
++        7) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" ;;
++        8) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" "$args7" ;;
++        9) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" "$args7" "$args8" ;;
+     esac
+ fi
+ 
+@@ -159,14 +177,9 @@ save () {
+     for i do printf %s\\n "$i" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/' \\\\/" ; done
+     echo " "
+ }
+-APP_ARGS=$(save "$@")
++APP_ARGS=`save "$@"`
+ 
+ # Collect all arguments for the java command, following the shell quoting and substitution rules
+ eval set -- $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS "\"-Dorg.gradle.appname=$APP_BASE_NAME\"" -classpath "\"$CLASSPATH\"" org.gradle.wrapper.GradleWrapperMain "$APP_ARGS"
+ 
+-# by default we should be in the correct project dir, but when run from Finder on Mac, the cwd is wrong
+-if [ "$(uname)" = "Darwin" ] && [ "$HOME" = "$PWD" ]; then
+-  cd "$(dirname "$0")"
+-fi
+-
+ exec "$JAVACMD" "$@"
+diff --git a/myapp/gradlew.bat b/myplugin/gradlew.bat
+similarity index 64%
+rename from myapp/gradlew.bat
+rename to myplugin/gradlew.bat
+index 0f8d5937..ac1b06f9 100755
+--- a/myapp/gradlew.bat
++++ b/myplugin/gradlew.bat
+@@ -1,3 +1,19 @@
++@rem
++@rem Copyright 2015 the original author or authors.
++@rem
++@rem Licensed under the Apache License, Version 2.0 (the "License");
++@rem you may not use this file except in compliance with the License.
++@rem You may obtain a copy of the License at
++@rem
++@rem      https://www.apache.org/licenses/LICENSE-2.0
++@rem
++@rem Unless required by applicable law or agreed to in writing, software
++@rem distributed under the License is distributed on an "AS IS" BASIS,
++@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++@rem See the License for the specific language governing permissions and
++@rem limitations under the License.
++@rem
++
+ @if "%DEBUG%" == "" @echo off
+ @rem ##########################################################################
+ @rem
+@@ -13,15 +29,18 @@ if "%DIRNAME%" == "" set DIRNAME=.
+ set APP_BASE_NAME=%~n0
+ set APP_HOME=%DIRNAME%
+ 
++@rem Resolve any "." and ".." in APP_HOME to make it shorter.
++for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
++
+ @rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+-set DEFAULT_JVM_OPTS="-Xmx64m"
++set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
+ 
+ @rem Find java.exe
+ if defined JAVA_HOME goto findJavaFromJavaHome
+ 
+ set JAVA_EXE=java.exe
+ %JAVA_EXE% -version >NUL 2>&1
+-if "%ERRORLEVEL%" == "0" goto init
++if "%ERRORLEVEL%" == "0" goto execute
+ 
+ echo.
+ echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+@@ -35,7 +54,7 @@ goto fail
+ set JAVA_HOME=%JAVA_HOME:"=%
+ set JAVA_EXE=%JAVA_HOME%/bin/java.exe
+ 
+-if exist "%JAVA_EXE%" goto init
++if exist "%JAVA_EXE%" goto execute
+ 
+ echo.
+ echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME%
+@@ -45,28 +64,14 @@ echo location of your Java installation.
+ 
+ goto fail
+ 
+-:init
+-@rem Get command-line arguments, handling Windows variants
+-
+-if not "%OS%" == "Windows_NT" goto win9xME_args
+-
+-:win9xME_args
+-@rem Slurp the command line arguments.
+-set CMD_LINE_ARGS=
+-set _SKIP=2
+-
+-:win9xME_args_slurp
+-if "x%~1" == "x" goto execute
+-
+-set CMD_LINE_ARGS=%*
+-
+ :execute
+ @rem Setup the command line
+ 
+ set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
+ 
++
+ @rem Execute Gradle
+-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %CMD_LINE_ARGS%
++"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
+ 
+ :end
+ @rem End local scope for the variables with windows NT shell
+diff --git a/myapp/grails-app/conf/application.yml b/myplugin/grails-app/conf/application.yml
+similarity index 81%
+rename from myapp/grails-app/conf/application.yml
+rename to myplugin/grails-app/conf/application.yml
+index 6390ac7d..accbad87 100644
+--- a/myapp/grails-app/conf/application.yml
++++ b/myplugin/grails-app/conf/application.yml
+@@ -1,8 +1,8 @@
+ ---
+ grails:
+-    profile: rest-api
++    profile: rest-api-plugin
+     codegen:
+-        defaultPackage: myapp
++        defaultPackage: myplugin
+     gorm:
+         reactor:
+             # Whether to translate GORM events into Reactor events
+@@ -30,9 +30,19 @@ spring:
+                 - '**/*.gson'
+                 - 'logback.groovy'
+                 - '*.properties'
+-management:
+-    endpoints:
+-        enabled-by-default: false
++environments:
++    development:
++        management:
++            endpoints:
++                enabled-by-default: true
++                web:
++                    base-path: '/actuator'
++                    exposure:
++                        include: '*'
++    production:
++        management:
++            endpoints:
++                enabled-by-default: false
+ 
+ ---
+ grails:
+@@ -87,15 +97,15 @@ environments:
+     development:
+         dataSource:
+             dbCreate: create-drop
+-            url: jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
++            url: jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+     test:
+         dataSource:
+             dbCreate: update
+-            url: jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
++            url: jdbc:h2:mem:testDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+     production:
+         dataSource:
+             dbCreate: none
+-            url: jdbc:h2:./prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
++            url: jdbc:h2:./prodDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+             properties:
+                 jmxEnabled: true
+                 initialSize: 5
+diff --git a/myplugin/grails-app/conf/logback.xml b/myplugin/grails-app/conf/logback.xml
+new file mode 100644
+index 00000000..3128faa4
+--- /dev/null
++++ b/myplugin/grails-app/conf/logback.xml
+@@ -0,0 +1,17 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<configuration>
++
++    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
++    <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
++
++    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
++        <encoder>
++            <charset>UTF-8</charset>
++            <pattern>%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wex</pattern>
++        </encoder>
++    </appender>
++
++    <root level="error">
++        <appender-ref ref="STDOUT" />
++    </root>
++</configuration>
+diff --git a/myapp/grails-app/conf/spring/resources.groovy b/myplugin/grails-app/conf/spring/resources.groovy
+similarity index 100%
+rename from myapp/grails-app/conf/spring/resources.groovy
+rename to myplugin/grails-app/conf/spring/resources.groovy
+diff --git a/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy b/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
+new file mode 100644
+index 00000000..5b6d02ee
+--- /dev/null
++++ b/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
+@@ -0,0 +1,8 @@
++package myplugin
++
++class UrlMappings {
++
++    static mappings = {
++        // provide plugin url mappings here
++    }
++}
+diff --git a/myapp/grails-app/init/myapp/Application.groovy b/myplugin/grails-app/init/myplugin/Application.groovy
+similarity index 65%
+rename from myapp/grails-app/init/myapp/Application.groovy
+rename to myplugin/grails-app/init/myplugin/Application.groovy
+index 980180d7..6d2c564c 100644
+--- a/myapp/grails-app/init/myapp/Application.groovy
++++ b/myplugin/grails-app/init/myplugin/Application.groovy
+@@ -1,11 +1,10 @@
+-package myapp
++package myplugin
+ 
+-import grails.boot.GrailsApp
++import grails.boot.*
+ import grails.boot.config.GrailsAutoConfiguration
++import grails.plugins.metadata.*
+ 
+-import groovy.transform.CompileStatic
+-
+-@CompileStatic
++@PluginSource
+ class Application extends GrailsAutoConfiguration {
+     static void main(String[] args) {
+         GrailsApp.run(Application, args)
+diff --git a/myapp/grails-app/init/myapp/BootStrap.groovy b/myplugin/grails-app/init/myplugin/BootStrap.groovy
+similarity index 83%
+rename from myapp/grails-app/init/myapp/BootStrap.groovy
+rename to myplugin/grails-app/init/myplugin/BootStrap.groovy
+index 5cf149b2..e8ad49ba 100644
+--- a/myapp/grails-app/init/myapp/BootStrap.groovy
++++ b/myplugin/grails-app/init/myplugin/BootStrap.groovy
+@@ -1,4 +1,4 @@
+-package myapp
++package myplugin
+ 
+ class BootStrap {
+ 
+diff --git a/myplugin/grails-wrapper.jar b/myplugin/grails-wrapper.jar
+new file mode 100644
+index 0000000000000000000000000000000000000000..2cb677725e6d8d38c7a2ba03ca34b6703357dcb9
+GIT binary patch
+literal 5507
+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
+J3}}A8{TD;|ma6~&
+
+literal 0
+HcmV?d00001
+
+diff --git a/myapp/grailsw b/myplugin/grailsw
+similarity index 100%
+rename from myapp/grailsw
+rename to myplugin/grailsw
+diff --git a/myapp/grailsw.bat b/myplugin/grailsw.bat
+similarity index 100%
+rename from myapp/grailsw.bat
+rename to myplugin/grailsw.bat
+diff --git a/myplugin/settings.gradle b/myplugin/settings.gradle
+new file mode 100644
+index 00000000..8d5eb670
+--- /dev/null
++++ b/myplugin/settings.gradle
+@@ -0,0 +1 @@
++rootProject.name = 'myplugin'
+diff --git a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+new file mode 100644
+index 00000000..62751318
+--- /dev/null
++++ b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+@@ -0,0 +1,69 @@
++package myplugin
++
++import grails.plugins.*
++
++class MypluginGrailsPlugin extends Plugin {
++
++    // the version or versions of Grails the plugin is designed for
++    def grailsVersion = "5.2.4 > *"
++    // resources that are excluded from plugin packaging
++    def pluginExcludes = [
++        "grails-app/views/error.gsp"
++    ]
++
++    // TODO Fill in these fields
++    def title = "Myplugin" // Headline display name of the plugin
++    def author = "Your name"
++    def authorEmail = ""
++    def description = '''\
++Brief summary/description of the plugin.
++'''
++
++    // URL to the plugin's documentation
++    def documentation = "http://grails.org/plugin/myplugin"
++
++    // Extra (optional) plugin metadata
++
++    // License: one of 'APACHE', 'GPL2', 'GPL3'
++//    def license = "APACHE"
++
++    // Details of company behind the plugin (if there is one)
++//    def organization = [ name: "My Company", url: "http://www.my-company.com/" ]
++
++    // Any additional developers beyond the author specified above.
++//    def developers = [ [ name: "Joe Bloggs", email: "joe@bloggs.net" ]]
++
++    // Location of the plugin's issue tracker.
++//    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPMYPLUGIN" ]
++
++    // Online location of the plugin's browseable source code.
++//    def scm = [ url: "http://svn.codehaus.org/grails-plugins/" ]
++
++    Closure doWithSpring() { {->
++            // TODO Implement runtime spring config (optional)
++        }
++    }
++
++    void doWithDynamicMethods() {
++        // TODO Implement registering dynamic methods to classes (optional)
++    }
++
++    void doWithApplicationContext() {
++        // TODO Implement post initialization spring config (optional)
++    }
++
++    void onChange(Map<String, Object> event) {
++        // TODO Implement code that is executed when any artefact that this plugin is
++        // watching is modified and reloaded. The event contains: event.source,
++        // event.application, event.manager, event.ctx, and event.plugin.
++    }
++
++    void onConfigChange(Map<String, Object> event) {
++        // TODO Implement code that is executed when the project configuration changes.
++        // The event is the same as for 'onChange'.
++    }
++
++    void onShutdown(Map<String, Object> event) {
++        // TODO Implement code that is executed when the application shuts down (optional)
++    }
++}
