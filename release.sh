@@ -86,8 +86,8 @@ function generateDiffs () {
         git diff --binary origin/release/"$newRelease-$profile-$type"..origin/release/"$existingRelease" > wt-diffs/diffs/"$newRelease-$profile-$type".."$existingRelease".diff
     done
 
-    find ./diffs -name '*plugin..*app.diff' -delete
-    find ./diffs -name '*app..*plugin.diff' -delete
+    find ./wt-diffs/diffs -name '*plugin..*app.diff' -delete
+    find ./wt-diffs/diffs -name '*app..*plugin.diff' -delete
 
     cd wt-diffs
     git add .
