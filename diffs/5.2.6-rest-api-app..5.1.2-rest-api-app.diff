@@ -1,0 +1,281 @@
+diff --git a/myapp/build.gradle b/myapp/build.gradle
+index 6ca21f35..b58a86cb 100644
+--- a/myapp/build.gradle
++++ b/myapp/build.gradle
+@@ -1,12 +1,11 @@
+ buildscript {
+     repositories {
+-        maven { url "https://plugins.gradle.org/m2/" }
+         maven { url "https://repo.grails.org/grails/core" }
+     }
+     dependencies {
+         classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
+-        classpath "org.grails.plugins:hibernate5:7.3.0"
+-        classpath "org.grails.plugins:views-gradle:2.3.2"
++        classpath "org.grails.plugins:hibernate5:7.2.1"
++        classpath "org.grails.plugins:views-gradle:2.2.0"
+     }
+ }
+ 
+@@ -20,7 +19,6 @@ apply plugin:"org.grails.grails-web"
+ apply plugin:"org.grails.plugins.views-json"
+ 
+ repositories {
+-    mavenCentral()
+     maven { url "https://repo.grails.org/grails/core" }
+ }
+ 
+@@ -53,7 +51,7 @@ dependencies {
+     implementation "org.grails.plugins:cache"
+     implementation "org.grails.plugins:async"
+     implementation "org.grails.plugins:hibernate5"
+-    implementation "org.hibernate:hibernate-core:5.6.11.Final"
++    implementation "org.hibernate:hibernate-core:5.6.3.Final"
+     implementation "org.grails.plugins:events"
+     implementation "org.grails.plugins:views-json"
+     implementation "org.grails.plugins:views-json-templates"
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index 156d56c3..2ab1369b 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,7 +1,7 @@
+-grailsVersion=5.2.6
+-grailsGradlePluginVersion=5.2.6
+-groovyVersion=3.0.11
+-gorm.version=7.3.2
++grailsVersion=5.1.2
++grailsGradlePluginVersion=5.1.1
++groovyVersion=3.0.7
++gorm.version=7.1.2
+ org.gradle.daemon=true
+ org.gradle.parallel=true
+ org.gradle.jvmargs=-Dfile.encoding=UTF-8 -Xmx1024M
+diff --git a/myapp/gradlew.bat b/myapp/gradlew.bat
+index ac1b06f9..107acd32 100755
+--- a/myapp/gradlew.bat
++++ b/myapp/gradlew.bat
+@@ -1,89 +1,89 @@
+-@rem
+-@rem Copyright 2015 the original author or authors.
+-@rem
+-@rem Licensed under the Apache License, Version 2.0 (the "License");
+-@rem you may not use this file except in compliance with the License.
+-@rem You may obtain a copy of the License at
+-@rem
+-@rem      https://www.apache.org/licenses/LICENSE-2.0
+-@rem
+-@rem Unless required by applicable law or agreed to in writing, software
+-@rem distributed under the License is distributed on an "AS IS" BASIS,
+-@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-@rem See the License for the specific language governing permissions and
+-@rem limitations under the License.
+-@rem
+-
+-@if "%DEBUG%" == "" @echo off
+-@rem ##########################################################################
+-@rem
+-@rem  Gradle startup script for Windows
+-@rem
+-@rem ##########################################################################
+-
+-@rem Set local scope for the variables with windows NT shell
+-if "%OS%"=="Windows_NT" setlocal
+-
+-set DIRNAME=%~dp0
+-if "%DIRNAME%" == "" set DIRNAME=.
+-set APP_BASE_NAME=%~n0
+-set APP_HOME=%DIRNAME%
+-
+-@rem Resolve any "." and ".." in APP_HOME to make it shorter.
+-for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
+-
+-@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+-set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
+-
+-@rem Find java.exe
+-if defined JAVA_HOME goto findJavaFromJavaHome
+-
+-set JAVA_EXE=java.exe
+-%JAVA_EXE% -version >NUL 2>&1
+-if "%ERRORLEVEL%" == "0" goto execute
+-
+-echo.
+-echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+-echo.
+-echo Please set the JAVA_HOME variable in your environment to match the
+-echo location of your Java installation.
+-
+-goto fail
+-
+-:findJavaFromJavaHome
+-set JAVA_HOME=%JAVA_HOME:"=%
+-set JAVA_EXE=%JAVA_HOME%/bin/java.exe
+-
+-if exist "%JAVA_EXE%" goto execute
+-
+-echo.
+-echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME%
+-echo.
+-echo Please set the JAVA_HOME variable in your environment to match the
+-echo location of your Java installation.
+-
+-goto fail
+-
+-:execute
+-@rem Setup the command line
+-
+-set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
+-
+-
+-@rem Execute Gradle
+-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
+-
+-:end
+-@rem End local scope for the variables with windows NT shell
+-if "%ERRORLEVEL%"=="0" goto mainEnd
+-
+-:fail
+-rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
+-rem the _cmd.exe /c_ return code!
+-if  not "" == "%GRADLE_EXIT_CONSOLE%" exit 1
+-exit /b 1
+-
+-:mainEnd
+-if "%OS%"=="Windows_NT" endlocal
+-
+-:omega
++@rem
++@rem Copyright 2015 the original author or authors.
++@rem
++@rem Licensed under the Apache License, Version 2.0 (the "License");
++@rem you may not use this file except in compliance with the License.
++@rem You may obtain a copy of the License at
++@rem
++@rem      https://www.apache.org/licenses/LICENSE-2.0
++@rem
++@rem Unless required by applicable law or agreed to in writing, software
++@rem distributed under the License is distributed on an "AS IS" BASIS,
++@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++@rem See the License for the specific language governing permissions and
++@rem limitations under the License.
++@rem
++
++@if "%DEBUG%" == "" @echo off
++@rem ##########################################################################
++@rem
++@rem  Gradle startup script for Windows
++@rem
++@rem ##########################################################################
++
++@rem Set local scope for the variables with windows NT shell
++if "%OS%"=="Windows_NT" setlocal
++
++set DIRNAME=%~dp0
++if "%DIRNAME%" == "" set DIRNAME=.
++set APP_BASE_NAME=%~n0
++set APP_HOME=%DIRNAME%
++
++@rem Resolve any "." and ".." in APP_HOME to make it shorter.
++for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
++
++@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
++set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
++
++@rem Find java.exe
++if defined JAVA_HOME goto findJavaFromJavaHome
++
++set JAVA_EXE=java.exe
++%JAVA_EXE% -version >NUL 2>&1
++if "%ERRORLEVEL%" == "0" goto execute
++
++echo.
++echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
++echo.
++echo Please set the JAVA_HOME variable in your environment to match the
++echo location of your Java installation.
++
++goto fail
++
++:findJavaFromJavaHome
++set JAVA_HOME=%JAVA_HOME:"=%
++set JAVA_EXE=%JAVA_HOME%/bin/java.exe
++
++if exist "%JAVA_EXE%" goto execute
++
++echo.
++echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME%
++echo.
++echo Please set the JAVA_HOME variable in your environment to match the
++echo location of your Java installation.
++
++goto fail
++
++:execute
++@rem Setup the command line
++
++set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
++
++
++@rem Execute Gradle
++"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
++
++:end
++@rem End local scope for the variables with windows NT shell
++if "%ERRORLEVEL%"=="0" goto mainEnd
++
++:fail
++rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
++rem the _cmd.exe /c_ return code!
++if  not "" == "%GRADLE_EXIT_CONSOLE%" exit 1
++exit /b 1
++
++:mainEnd
++if "%OS%"=="Windows_NT" endlocal
++
++:omega
+diff --git a/myapp/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
+index b74239d7..69d99c18 100644
+--- a/myapp/grails-app/conf/application.yml
++++ b/myapp/grails-app/conf/application.yml
+@@ -30,19 +30,9 @@ spring:
+                 - '**/*.gson'
+                 - 'logback.groovy'
+                 - '*.properties'
+-environments:
+-    development:
+-        management:
+-            endpoints:
+-                enabled-by-default: true
+-                web:
+-                    base-path: '/actuator'
+-                    exposure:
+-                        include: '*'
+-    production:
+-        management:
+-            endpoints:
+-                enabled-by-default: false
++management:
++    endpoints:
++        enabled-by-default: false
+ 
+ ---
+ grails:
+diff --git a/myapp/grails-app/conf/logback.xml b/myapp/grails-app/conf/logback.xml
+index 3128faa4..f4e77836 100644
+--- a/myapp/grails-app/conf/logback.xml
++++ b/myapp/grails-app/conf/logback.xml
+@@ -7,11 +7,11 @@
+     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+         <encoder>
+             <charset>UTF-8</charset>
+-            <pattern>%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wex</pattern>
++            <pattern>'%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wex'</pattern>
+         </encoder>
+     </appender>
+ 
+     <root level="error">
+         <appender-ref ref="STDOUT" />
+     </root>
+-</configuration>
++</configuration>
+\ No newline at end of file
