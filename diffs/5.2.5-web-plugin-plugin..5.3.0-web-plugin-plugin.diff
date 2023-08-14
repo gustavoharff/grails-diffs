@@ -1,0 +1,23 @@
+diff --git a/myplugin/gradle.properties b/myplugin/gradle.properties
+index e7a8ca74..e83a2ac5 100644
+--- a/myplugin/gradle.properties
++++ b/myplugin/gradle.properties
+@@ -1,4 +1,4 @@
+-grailsVersion=5.2.5
++grailsVersion=5.3.0
+ grailsGradlePluginVersion=5.2.4
+ groovyVersion=3.0.11
+ gorm.version=7.3.2
+diff --git a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+index 52473ca7..9e75ffde 100644
+--- a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
++++ b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+@@ -5,7 +5,7 @@ import grails.plugins.*
+ class MypluginGrailsPlugin extends Plugin {
+ 
+     // the version or versions of Grails the plugin is designed for
+-    def grailsVersion = "5.2.5 > *"
++    def grailsVersion = "5.3.0 > *"
+     // resources that are excluded from plugin packaging
+     def pluginExcludes = [
+         "grails-app/views/error.gsp"
