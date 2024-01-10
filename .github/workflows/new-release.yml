@@ -1,0 +1,45 @@
+name: Run new-release script
+
+on: 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release'
+        required: true
+        default: '0.0.0'
+      profile:
+        description: 'Profile to release'
+        required: true
+        default: 'rest-api'
+      type:
+        description: 'Type of release'
+        required: true
+        default: 'app'
+
+jobs:
+  generate_diffs:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup asdf
+        uses: asdf-vm/actions/setup@6844d09b13209e7d2ce3b63d2b089a2acef581ec
+
+      - name: Cache asdf
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.asdf
+          key: ${{ runner.os }}-asdf-${{ '**/.tool-versions' }}
+          restore-keys: |
+            ${{ runner.os }}-asdf-
+
+      - name: asdf install
+        uses: asdf-vm/actions/install@6844d09b13209e7d2ce3b63d2b089a2acef581ec
+
+      - name: yarn install
+        run: yarn install
+
+      - name: Run new-release script
+        run: ./release.sh ${{ github.event.inputs.version }} ${{ github.event.inputs.profile }} ${{ github.event.inputs.type }}
