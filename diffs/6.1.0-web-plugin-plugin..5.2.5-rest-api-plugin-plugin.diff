@@ -1,0 +1,491 @@
+diff --git a/myplugin/build.gradle b/myplugin/build.gradle
+index 0ca95909..ce0adcf3 100644
+--- a/myplugin/build.gradle
++++ b/myplugin/build.gradle
+@@ -5,7 +5,8 @@ buildscript {
+     }
+     dependencies {
+         classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
+-        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:3.3.4"
++        classpath "org.grails.plugins:hibernate5:7.3.0"
++        classpath "org.grails.plugins:views-gradle:2.3.2"
+     }
+ }
+ 
+@@ -15,8 +16,8 @@ group "myplugin"
+ apply plugin:"eclipse"
+ apply plugin:"idea"
+ apply plugin:"org.grails.grails-plugin"
+-apply plugin:"asset-pipeline"
+-apply plugin:"org.grails.grails-gsp"
++apply plugin:"org.grails.grails-plugin-publish"
++apply plugin:"org.grails.plugins.views-json"
+ 
+ repositories {
+     mavenCentral()
+@@ -40,24 +41,35 @@ dependencies {
+     implementation "org.grails:grails-core"
+     implementation "org.springframework.boot:spring-boot-starter-actuator"
+     implementation "org.springframework.boot:spring-boot-starter-tomcat"
+-    implementation "org.grails:grails-web-boot"
+-    implementation "org.grails:grails-logging"
+-    implementation "org.grails:grails-plugin-rest"
+-    implementation "org.grails:grails-plugin-databinding"
+-    implementation "org.grails:grails-plugin-i18n"
+-    implementation "org.grails:grails-plugin-services"
+     implementation "org.grails:grails-plugin-url-mappings"
++    implementation "org.grails:grails-plugin-rest"
++    implementation "org.grails:grails-plugin-codecs"
+     implementation "org.grails:grails-plugin-interceptors"
++    implementation "org.grails:grails-plugin-services"
++    implementation "org.grails:grails-plugin-datasource"
++    implementation "org.grails:grails-plugin-databinding"
++    implementation "org.grails:grails-web-boot"
++    implementation "org.grails:grails-logging"
+     implementation "org.grails.plugins:cache"
+     implementation "org.grails.plugins:async"
+-    implementation "org.grails.plugins:scaffolding"
+-    implementation "org.grails.plugins:gsp"
+-    profile "org.grails.profiles:web-plugin"
+-    runtimeOnly "com.bertramlabs.plugins:asset-pipeline-grails:3.3.4"
++    implementation "org.grails.plugins:hibernate5"
++    implementation "org.hibernate:hibernate-core:5.6.11.Final"
++    implementation "org.grails.plugins:views-json"
++    implementation "org.grails.plugins:views-json-templates"
++    profile "org.grails.profiles:rest-api-plugin"
++    provided "org.springframework.boot:spring-boot-starter-tomcat"
++    runtimeOnly "org.glassfish.web:el-impl:2.2.1-b05"
++    runtimeOnly "com.h2database:h2"
++    runtimeOnly "org.apache.tomcat:tomcat-jdbc"
++    runtimeOnly "javax.xml.bind:jaxb-api:2.3.1"
+     testImplementation "io.micronaut:micronaut-inject-groovy"
+     testImplementation "org.grails:grails-gorm-testing-support"
+     testImplementation "org.mockito:mockito-core"
++    testImplementation "io.micronaut:micronaut-http-client"
+     testImplementation "org.grails:grails-web-testing-support"
++    testImplementation "org.grails:views-json-testing-support"
++    testImplementation "org.hibernate.validator:hibernate-validator:6.1.7.Final"
++    testImplementation "io.micronaut:micronaut-http-client:2.5.11"
+ }
+ 
+ bootRun {
+@@ -83,8 +95,3 @@ tasks.withType(Test) {
+ }
+ // enable if you wish to package this plugin as a standalone application
+ bootJar.enabled = false
+-
+-
+-assets {
+-    packagePlugin = true
+-}
+diff --git a/myplugin/gradle.properties b/myplugin/gradle.properties
+index 8b89f17c..e7a8ca74 100644
+--- a/myplugin/gradle.properties
++++ b/myplugin/gradle.properties
+@@ -1,7 +1,7 @@
+-grailsVersion=6.1.0
+-grailsGradlePluginVersion=6.1.0
++grailsVersion=5.2.5
++grailsGradlePluginVersion=5.2.4
+ groovyVersion=3.0.11
+-gorm.version=8.0.2
++gorm.version=7.3.2
+ org.gradle.daemon=true
+ org.gradle.parallel=true
+ org.gradle.jvmargs=-Dfile.encoding=UTF-8 -Xmx1024M
+diff --git a/myplugin/grails-app/conf/application.yml b/myplugin/grails-app/conf/application.yml
+index e41ea994..accbad87 100644
+--- a/myplugin/grails-app/conf/application.yml
++++ b/myplugin/grails-app/conf/application.yml
+@@ -1,6 +1,6 @@
+ ---
+ grails:
+-    profile: web-plugin
++    profile: rest-api-plugin
+     codegen:
+         defaultPackage: myplugin
+     gorm:
+@@ -56,28 +56,22 @@ grails:
+                         - Presto
+                         - Trident
+         types:
+-            all: '*/*'
+-            atom: application/atom+xml
+-            css: text/css
+-            csv: text/csv
+-            form: application/x-www-form-urlencoded
+-            html:
+-              - text/html
+-              - application/xhtml+xml
+-            js: text/javascript
+             json:
+               - application/json
+-              - text/json
+-            multipartForm: multipart/form-data
+-            pdf: application/pdf
+-            rss: application/rss+xml
+-            text: text/plain
++              - text/json   
+             hal:
+               - application/hal+json
+-              - application/hal+xml
++              - application/hal+xml  
+             xml:
+               - text/xml
+-              - application/xml
++              - application/xml                                 
++            atom: application/atom+xml
++            css: text/css
++            csv: text/csv
++            js: text/javascript
++            rss: application/rss+xml
++            text: text/plain
++            all: '*/*'            
+     urlmapping:
+         cache:
+             maxsize: 1000
+@@ -85,14 +79,48 @@ grails:
+         defaultScope: singleton
+     converters:
+         encoding: UTF-8
+-    views:
+-        default:
+-            codec: html
+-        gsp:
+-            encoding: UTF-8
+-            htmlcodec: xml
+-            codecs:
+-                expression: html
+-                scriptlet: html
+-                taglib: none
+-                staticparts: none
++
++---
++hibernate:
++    cache:
++        queries: false
++        use_second_level_cache: false
++        use_query_cache: false
++dataSource:
++    pooled: true
++    jmxExport: true
++    driverClassName: org.h2.Driver
++    username: sa
++    password: ''
++
++environments:
++    development:
++        dataSource:
++            dbCreate: create-drop
++            url: jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
++    test:
++        dataSource:
++            dbCreate: update
++            url: jdbc:h2:mem:testDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
++    production:
++        dataSource:
++            dbCreate: none
++            url: jdbc:h2:./prodDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
++            properties:
++                jmxEnabled: true
++                initialSize: 5
++                maxActive: 50
++                minIdle: 5
++                maxIdle: 25
++                maxWait: 10000
++                maxAge: 600000
++                timeBetweenEvictionRunsMillis: 5000
++                minEvictableIdleTimeMillis: 60000
++                validationQuery: SELECT 1
++                validationQueryTimeout: 3
++                validationInterval: 15000
++                testOnBorrow: true
++                testWhileIdle: true
++                testOnReturn: false
++                jdbcInterceptors: ConnectionState
++                defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
+diff --git a/myplugin/grails-app/conf/spring/resources.groovy b/myplugin/grails-app/conf/spring/resources.groovy
+new file mode 100644
+index 00000000..fa950068
+--- /dev/null
++++ b/myplugin/grails-app/conf/spring/resources.groovy
+@@ -0,0 +1,3 @@
++// Place your Spring DSL code here
++beans = {
++}
+diff --git a/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy b/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
+index 90d38d42..5b6d02ee 100644
+--- a/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
++++ b/myplugin/grails-app/controllers/myplugin/UrlMappings.groovy
+@@ -3,14 +3,6 @@ package myplugin
+ class UrlMappings {
+ 
+     static mappings = {
+-        "/$controller/$action?/$id?(.$format)?"{
+-            constraints {
+-                // apply constraints here
+-            }
+-        }
+-
+-        "/"(view:"/index")
+-        "500"(view:'/error')
+-        "404"(view:'/notFound')
++        // provide plugin url mappings here
+     }
+ }
+diff --git a/myplugin/grails-app/views/error.gsp b/myplugin/grails-app/views/error.gsp
+deleted file mode 100644
+index 72e3d009..00000000
+--- a/myplugin/grails-app/views/error.gsp
++++ /dev/null
+@@ -1,39 +0,0 @@
+-<!doctype html>
+-<html>
+-    <head>
+-        <title><g:if env="development">Grails Runtime Exception</g:if><g:else>Error</g:else></title>
+-        <meta name="layout" content="main">
+-        <g:if env="development"><asset:stylesheet src="errors.css"/></g:if>
+-    </head>
+-    <body>
+-    <div id="content" role="main">
+-        <div class="container">
+-            <section class="row">
+-                <div class="col-12">
+-                <g:if env="development">
+-                    <g:if test="${Throwable.isInstance(exception)}">
+-                        <g:renderException exception="${exception}" />
+-                    </g:if>
+-                    <g:elseif test="${request.getAttribute('javax.servlet.error.exception')}">
+-                        <g:renderException exception="${request.getAttribute('javax.servlet.error.exception')}" />
+-                    </g:elseif>
+-                    <g:else>
+-                        <ul class="errors">
+-                            <li>An error has occurred</li>
+-                            <li>Exception: ${exception}</li>
+-                            <li>Message: ${message}</li>
+-                            <li>Path: ${path}</li>
+-                        </ul>
+-                    </g:else>
+-                </g:if>
+-                <g:else>
+-                    <ul class="errors">
+-                        <li>An error has occurred</li>
+-                    </ul>
+-                </g:else>
+-                </div>
+-            </section>
+-        </div>
+-    </div>
+-    </body>
+-</html>
+diff --git a/myplugin/grails-app/views/index.gsp b/myplugin/grails-app/views/index.gsp
+deleted file mode 100644
+index 9e534326..00000000
+--- a/myplugin/grails-app/views/index.gsp
++++ /dev/null
+@@ -1,79 +0,0 @@
+-<!doctype html>
+-<html>
+-<head>
+-    <meta name="layout" content="main"/>
+-    <title>Welcome to Grails</title>
+-</head>
+-<body>
+-<content tag="nav">
+-    <li class="dropdown">
+-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Application Status <span class="caret"></span></a>
+-        <ul class="dropdown-menu">
+-            <li class="dropdown-item"><a href="#">Environment: ${grails.util.Environment.current.name}</a></li>
+-            <li class="dropdown-item"><a href="#">App profile: ${grailsApplication.config.getProperty('grails.profile')}</a></li>
+-            <li class="dropdown-item"><a href="#">App version:
+-                <g:meta name="info.app.version"/></a>
+-            </li>
+-            <li role="separator" class="dropdown-divider"></li>
+-            <li class="dropdown-item"><a href="#">Grails version:
+-                <g:meta name="info.app.grailsVersion"/></a>
+-            </li>
+-            <li class="dropdown-item"><a href="#">Groovy version: ${GroovySystem.getVersion()}</a></li>
+-            <li class="dropdown-item"><a href="#">JVM version: ${System.getProperty('java.version')}</a></li>
+-            <li role="separator" class="dropdown-divider"></li>
+-            <li class="dropdown-item"><a href="#">Reloading active: ${grails.util.Environment.reloadingAgentEnabled}</a></li>
+-        </ul>
+-    </li>
+-    <li class="dropdown">
+-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Artefacts <span class="caret"></span></a>
+-        <ul class="dropdown-menu">
+-            <li class="dropdown-item"><a href="#">Controllers: ${grailsApplication.controllerClasses.size()}</a></li>
+-            <li class="dropdown-item"><a href="#">Domains: ${grailsApplication.domainClasses.size()}</a></li>
+-            <li class="dropdown-item"><a href="#">Services: ${grailsApplication.serviceClasses.size()}</a></li>
+-            <li class="dropdown-item"><a href="#">Tag Libraries: ${grailsApplication.tagLibClasses.size()}</a></li>
+-        </ul>
+-    </li>
+-    <li class="dropdown">
+-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Installed Plugins <span class="caret"></span></a>
+-        <ul class="dropdown-menu dropdown-menu-right">
+-            <g:each var="plugin" in="${applicationContext.getBean('pluginManager').allPlugins}">
+-                <li class="dropdown-item"><a href="#">${plugin.name} - ${plugin.version}</a></li>
+-            </g:each>
+-        </ul>
+-    </li>
+-</content>
+-
+-<div class="svg" role="presentation">
+-    <div class="grails-logo-container">
+-        <asset:image src="grails-cupsonly-logo-white.svg" class="grails-logo"/>
+-    </div>
+-</div>
+-
+-<div id="content" role="main">
+-    <div class="container">
+-        <section class="row colset-2-its">
+-            <h1>Welcome to Grails</h1>
+-
+-            <p>
+-                Congratulations, you have successfully started your first Grails application! At the moment
+-                this is the default page, feel free to modify it to either redirect to a controller or display
+-                whatever content you may choose. Below is a list of controllers that are currently deployed in
+-                this application, click on each to execute its default action:
+-            </p>
+-
+-            <div id="controllers" role="navigation">
+-                <h2>Available Controllers:</h2>
+-                <ul>
+-                    <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">
+-                        <li class="controller">
+-                            <g:link controller="${c.logicalPropertyName}">${c.fullName}</g:link>
+-                        </li>
+-                    </g:each>
+-                </ul>
+-            </div>
+-        </section>
+-    </div>
+-</div>
+-
+-</body>
+-</html>
+diff --git a/myplugin/grails-app/views/layouts/main.gsp b/myplugin/grails-app/views/layouts/main.gsp
+deleted file mode 100644
+index f79b81d7..00000000
+--- a/myplugin/grails-app/views/layouts/main.gsp
++++ /dev/null
+@@ -1,73 +0,0 @@
+-<!doctype html>
+-<html lang="en" class="no-js">
+-<head>
+-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+-    <title>
+-        <g:layoutTitle default="Grails"/>
+-    </title>
+-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+-    <asset:link rel="icon" href="favicon.ico" type="image/x-ico"/>
+-
+-    <asset:stylesheet src="application.css"/>
+-
+-    <g:layoutHead/>
+-</head>
+-
+-<body>
+-
+-<nav class="navbar navbar-expand-lg navbar-dark navbar-static-top" role="navigation">
+-    <div class="container-fluid">
+-        <a class="navbar-brand" href="/#"><asset:image src="grails.svg" alt="Grails Logo"/></a>
+-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+-            <span class="navbar-toggler-icon"></span>
+-        </button>
+-
+-        <div class="collapse navbar-collapse" aria-expanded="false" style="height: 0.8px;" id="navbarContent">
+-            <ul class="nav navbar-nav ml-auto">
+-                <g:pageProperty name="page.nav"/>
+-            </ul>
+-        </div>
+-    </div>
+-</nav>
+-
+-<g:layoutBody/>
+-
+-<div class="footer" role="contentinfo">
+-    <div class="container-fluid">
+-        <div class="row">
+-            <div class="col">
+-                <a href="http://guides.grails.org" target="_blank">
+-                    <asset:image src="advancedgrails.svg" alt="Grails Guides" class="float-left"/>
+-                </a>
+-                <strong class="centered"><a href="http://guides.grails.org" target="_blank">Grails Guides</a></strong>
+-                <p>Building your first Grails app? Looking to add security, or create a Single-Page-App? Check out the <a href="http://guides.grails.org" target="_blank">Grails Guides</a> for step-by-step tutorials.</p>
+-
+-            </div>
+-            <div class="col">
+-                <a href="http://docs.grails.org" target="_blank">
+-                    <asset:image src="documentation.svg" alt="Grails Documentation" class="float-left"/>
+-                </a>
+-                <strong class="centered"><a href="http://docs.grails.org" target="_blank">Documentation</a></strong>
+-                <p>Ready to dig in? You can find in-depth documentation for all the features of Grails in the <a href="http://docs.grails.org" target="_blank">User Guide</a>.</p>
+-
+-            </div>
+-            <div class="col">
+-                <a href="https://slack.grails.org" target="_blank">
+-                    <asset:image src="slack.svg" alt="Grails Slack" class="float-left"/>
+-                </a>
+-                <strong class="centered"><a href="https://slack.grails.org" target="_blank">Join the Community</a></strong>
+-                <p>Get feedback and share your experience with other Grails developers in the community <a href="https://slack.grails.org" target="_blank">Slack channel</a>.</p>
+-            </div>
+-        </div>
+-    </div>
+-</div>
+-
+-<div id="spinner" class="spinner" style="display:none;">
+-    <g:message code="spinner.alt" default="Loading&hellip;"/>
+-</div>
+-
+-<asset:javascript src="application.js"/>
+-
+-</body>
+-</html>
+diff --git a/myplugin/grails-app/views/notFound.gsp b/myplugin/grails-app/views/notFound.gsp
+deleted file mode 100644
+index fd0f55ab..00000000
+--- a/myplugin/grails-app/views/notFound.gsp
++++ /dev/null
+@@ -1,20 +0,0 @@
+-<!doctype html>
+-<html>
+-    <head>
+-        <title>Page Not Found</title>
+-        <meta name="layout" content="main">
+-        <g:if env="development"><asset:stylesheet src="errors.css"/></g:if>
+-    </head>
+-    <body>
+-    <div id="content" role="main">
+-        <div class="container">
+-            <section class="row">
+-                <ul class="col-12 errors">
+-                    <li>Error: Page Not Found (404)</li>
+-                    <li>Path: ${request.forwardURI}</li>
+-                </ul>
+-            </section>
+-        </div>
+-    </div>
+-    </body>
+-</html>
+diff --git a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+index ff3cd69f..1a068f14 100644
+--- a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
++++ b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+@@ -5,7 +5,7 @@ import grails.plugins.*
+ class MypluginGrailsPlugin extends Plugin {
+ 
+     // the version or versions of Grails the plugin is designed for
+-    def grailsVersion = "6.1.0 > *"
++    def grailsVersion = "5.2.5 > *"
+     // resources that are excluded from plugin packaging
+     def pluginExcludes = [
+         "grails-app/views/error.gsp"
+@@ -18,7 +18,6 @@ class MypluginGrailsPlugin extends Plugin {
+     def description = '''\
+ Brief summary/description of the plugin.
+ '''
+-    def profiles = ['web']
+ 
+     // URL to the plugin's documentation
+     def documentation = "http://grails.org/plugin/myplugin"
