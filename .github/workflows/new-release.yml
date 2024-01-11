@@ -15,6 +15,10 @@ on:
         description: 'Type of release'
         required: true
         default: 'app'
+      java-version:
+        description: 'Java version to use'
+        required: true
+        default: '11'
 
 jobs:
   generate_diffs:
@@ -22,9 +26,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      
+      - name: Setup java ${{ github.event.inputs.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ github.event.inputs.java-version }}
+          distribution: 'zulu'
 
       - name: Setup asdf
         uses: asdf-vm/actions/setup@6844d09b13209e7d2ce3b63d2b089a2acef581ec
+
+      - name: Install asdf plugin Grails
+        run: asdf plugin add grails
 
       - name: Cache asdf
         uses: actions/cache@v3
@@ -34,6 +47,12 @@ jobs:
           key: ${{ runner.os }}-asdf-${{ '**/.tool-versions' }}
           restore-keys: |
             ${{ runner.os }}-asdf-
+      
+      - name: Install grails version
+        run: asdf install grails ${{ github.event.inputs.version }}
+
+      - name: Select grails version
+        run: asdf local grails ${{ github.event.inputs.version }}
 
       - name: asdf install
         uses: asdf-vm/actions/install@6844d09b13209e7d2ce3b63d2b089a2acef581ec
