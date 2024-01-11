@@ -1,0 +1,15 @@
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index e83a2ac5..2177c2cd 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,7 +1,7 @@
+-grailsVersion=5.3.0
+-grailsGradlePluginVersion=5.2.4
++grailsVersion=6.0.0
++grailsGradlePluginVersion=6.0.0
+ groovyVersion=3.0.11
+-gorm.version=7.3.2
++gorm.version=8.0.0
+ org.gradle.daemon=true
+ org.gradle.parallel=true
+ org.gradle.jvmargs=-Dfile.encoding=UTF-8 -Xmx1024M
