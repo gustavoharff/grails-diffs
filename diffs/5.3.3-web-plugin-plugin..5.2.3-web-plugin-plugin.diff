@@ -1,0 +1,47 @@
+diff --git a/myplugin/build.gradle b/myplugin/build.gradle
+index 0ca95909..9086fb4a 100644
+--- a/myplugin/build.gradle
++++ b/myplugin/build.gradle
+@@ -1,6 +1,5 @@
+ buildscript {
+     repositories {
+-        maven { url "https://plugins.gradle.org/m2/" }
+         maven { url "https://repo.grails.org/grails/core" }
+     }
+     dependencies {
+@@ -19,7 +18,6 @@ apply plugin:"asset-pipeline"
+ apply plugin:"org.grails.grails-gsp"
+ 
+ repositories {
+-    mavenCentral()
+     maven { url "https://repo.grails.org/grails/core" }
+ }
+ 
+diff --git a/myplugin/gradle.properties b/myplugin/gradle.properties
+index 05aa7c28..f3eb2274 100644
+--- a/myplugin/gradle.properties
++++ b/myplugin/gradle.properties
+@@ -1,7 +1,7 @@
+-grailsVersion=5.3.3
+-grailsGradlePluginVersion=5.3.0
++grailsVersion=5.2.3
++grailsGradlePluginVersion=5.2.3
+ groovyVersion=3.0.11
+-gorm.version=7.3.3
++gorm.version=7.3.2
+ org.gradle.daemon=true
+ org.gradle.parallel=true
+ org.gradle.jvmargs=-Dfile.encoding=UTF-8 -Xmx1024M
+diff --git a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+index 96311035..68f2e25d 100644
+--- a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
++++ b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+@@ -5,7 +5,7 @@ import grails.plugins.*
+ class MypluginGrailsPlugin extends Plugin {
+ 
+     // the version or versions of Grails the plugin is designed for
+-    def grailsVersion = "5.3.3 > *"
++    def grailsVersion = "5.2.3 > *"
+     // resources that are excluded from plugin packaging
+     def pluginExcludes = [
+         "grails-app/views/error.gsp"
