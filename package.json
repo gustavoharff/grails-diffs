@@ -5,7 +5,14 @@
   "repository": "git@github.com:gustavoharff/grails-diffs.git",
   "author": "Gustavo Harff <gustavo.harff@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "release": "tsx ./release.ts"
+  },
   "dependencies": {
-    "semver": "^6.0.0"
+    "semver": "^6.0.0",
+    "tsx": "^4.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.21"
   }
 }

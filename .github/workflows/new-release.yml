@@ -32,33 +32,20 @@ jobs:
         with:
           java-version: ${{ github.event.inputs.java-version }}
           distribution: 'zulu'
-
-      - name: Setup asdf
-        uses: asdf-vm/actions/setup@6844d09b13209e7d2ce3b63d2b089a2acef581ec
-
-      - name: Install asdf plugin Grails
-        run: asdf plugin add grails
-
-      - name: Cache asdf
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.asdf
-          key: ${{ runner.os }}-asdf-${{ '**/.tool-versions' }}
-          restore-keys: |
-            ${{ runner.os }}-asdf-
       
       - name: Install grails version
-        run: asdf install grails ${{ github.event.inputs.version }}
+        uses: sdkman/sdkman-action@v1
+        id: sdkman
+        with:
+          candidate: grails
+          version: ${{ github.event.inputs.version }}
 
-      - name: Select grails version
-        run: asdf local grails ${{ github.event.inputs.version }}
-
-      - name: asdf install
-        uses: asdf-vm/actions/install@6844d09b13209e7d2ce3b63d2b089a2acef581ec
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
 
       - name: yarn install
         run: yarn install
 
       - name: Run new-release script
-        run: ./release.sh ${{ github.event.inputs.version }} ${{ github.event.inputs.profile }} ${{ github.event.inputs.type }}
+        run: yarn release ${{ github.event.inputs.version }} ${{ github.event.inputs.profile }} ${{ github.event.inputs.type }}
