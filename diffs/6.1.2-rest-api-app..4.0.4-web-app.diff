@@ -26032,7 +26032,7 @@ index 00000000..552abd91
 +    }
 +}
 diff --git a/myapp/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
-index 416f1757..096e0fde 100644
+index 6b18e89d..096e0fde 100644
 --- a/myapp/grails-app/conf/application.yml
 +++ b/myapp/grails-app/conf/application.yml
 @@ -1,50 +1,137 @@
@@ -26051,19 +26051,6 @@ index 416f1757..096e0fde 100644
 -    name: '@info.app.name@'
 -    version: '@info.app.version@'
 -    grailsVersion: '@info.app.grailsVersion@'
--dataSource:
--  url: jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
--  driverClassName: org.h2.Driver
--  username: sa
--  password: ''
--  pooled: true
--  jmxExport: true
--  dbCreate: update
--hibernate:
--  cache:
--    queries: false
--    use_second_level_cache: false
--    use_query_cache: false
 +    app:
 +        name: '@info.app.name@'
 +        version: '@info.app.version@'
@@ -26122,6 +26109,14 @@ index 416f1757..096e0fde 100644
 -      rss: application/rss+xml
 -      text: text/plain
 -      all: '*/*'
+-dataSource:
+-  url: jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+-  driverClassName: org.h2.Driver
+-  username: sa
+-  password: ''
+-  pooled: true
+-  jmxExport: true
+-  dbCreate: update
 +    mime:
 +        disable:
 +            accept:
@@ -26178,7 +26173,11 @@ index 416f1757..096e0fde 100644
 +            unique-names: true
 +
 +---
-+hibernate:
+ hibernate:
+-  cache:
+-    queries: false
+-    use_second_level_cache: false
+-    use_query_cache: false
 +    cache:
 +        queries: false
 +        use_second_level_cache: false
