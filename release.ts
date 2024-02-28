@@ -153,7 +153,6 @@ function generateDiffs() {
     child_process.spawnSync("git", ["add", "."]);
     child_process.spawnSync("git", ["commit", "-m", `Add release ${RELEASE_KEY} diffs`]);
     child_process.spawnSync("git", ["push"]);
-    child_process.execSync("git push");
     process.chdir("..");
   }
 }
