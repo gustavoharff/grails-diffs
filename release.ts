@@ -93,8 +93,8 @@ function generateNewReleaseBranch() {
   child_process.execSync(`git checkout -b ${branchName}`);
 
   // generate app
-  child_process.execSync(`sdk install grails ${version}`);
-  child_process.execSync(`sdk use grails ${version}`);
+  // child_process.execSync(`sdk install grails ${version}`);
+  // child_process.execSync(`sdk use grails ${version}`);
 
   child_process.execSync(
     `grails ${command} --servlet=${SERVLET} --jdk=${JDK} --gorm=${GORM} --test=${TEST} ${APP_NAME}`
