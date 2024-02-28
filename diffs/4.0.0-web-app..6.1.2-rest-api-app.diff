@@ -26025,7 +26025,7 @@ index 552abd91..00000000
 -    }
 -}
 diff --git a/myapp/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
-index 096e0fde..416f1757 100644
+index 096e0fde..6b18e89d 100644
 --- a/myapp/grails-app/conf/application.yml
 +++ b/myapp/grails-app/conf/application.yml
 @@ -1,137 +1,50 @@
@@ -26066,7 +26066,11 @@ index 096e0fde..416f1757 100644
 -        enabled-by-default: false
 -
 ----
--grails:
++  app:
++    name: '@info.app.name@'
++    version: '@info.app.version@'
++    grailsVersion: '@info.app.grailsVersion@'
+ grails:
 -    mime:
 -        disable:
 -            accept:
@@ -26128,10 +26132,37 @@ index 096e0fde..416f1757 100644
 -        queries: false
 -        use_second_level_cache: false
 -        use_query_cache: false
-+  app:
-+    name: '@info.app.name@'
-+    version: '@info.app.version@'
-+    grailsVersion: '@info.app.grailsVersion@'
++  controllers:
++    defaultScope: singleton
++  views:
++    default:
++      codec: html
++  mime:
++    disable:
++      accept:
++        header:
++          userAgents:
++          - Gecko
++          - WebKit
++          - Presto
++          - Trident
++    types:
++      json:
++      - application/json
++      - text/json
++      hal:
++      - application/hal+json
++      - application/hal+xml
++      xml:
++      - text/xml
++      - application/xml
++      atom: application/atom+xml
++      css: text/css
++      csv: text/csv
++      js: text/javascript
++      rss: application/rss+xml
++      text: text/plain
++      all: '*/*'
  dataSource:
 -    pooled: true
 -    jmxExport: true
@@ -26182,38 +26213,6 @@ index 096e0fde..416f1757 100644
 +    queries: false
 +    use_second_level_cache: false
 +    use_query_cache: false
-+grails:
-+  controllers:
-+    defaultScope: singleton
-+  views:
-+    default:
-+      codec: html
-+  mime:
-+    disable:
-+      accept:
-+        header:
-+          userAgents:
-+          - Gecko
-+          - WebKit
-+          - Presto
-+          - Trident
-+    types:
-+      json:
-+      - application/json
-+      - text/json
-+      hal:
-+      - application/hal+json
-+      - application/hal+xml
-+      xml:
-+      - text/xml
-+      - application/xml
-+      atom: application/atom+xml
-+      css: text/css
-+      csv: text/csv
-+      js: text/javascript
-+      rss: application/rss+xml
-+      text: text/plain
-+      all: '*/*'
 diff --git a/myapp/grails-app/conf/logback.groovy b/myapp/grails-app/conf/logback.groovy
 deleted file mode 100644
 index b835215c..00000000
