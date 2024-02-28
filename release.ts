@@ -166,7 +166,14 @@ function pushMaster() {
 function addReleaseToList() {
   child_process.execSync(`echo "${RELEASE_KEY}" >> ${RELEASES_FILE}`);
 
-  const hasTac = child_process.execSync("command -v tac").toString();
+  let hasTac: boolean
+
+  try {
+    child_process.execSync("command -v tac");
+    hasTac = true;
+  } catch (e) {
+    hasTac = false;
+  }
 
   if (hasTac) {
     //   take each line ->dedup->    sort them              -> reverse them -> save them
