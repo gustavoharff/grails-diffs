@@ -135,17 +135,17 @@ function generateDiffs() {
       continue;
     }
 
-    child_process.execFileSync(
+    child_process.execSync(
       `git diff --binary origin/release/${existingRelease}..origin/release/${RELEASE_KEY} > wt-diffs/diffs/${existingRelease}..${RELEASE_KEY}.diff`
     );
-    child_process.execFileSync(
+    child_process.execSync(
       `git diff --binary origin/release/${RELEASE_KEY}..origin/release/${existingRelease} > wt-diffs/diffs/${RELEASE_KEY}..${existingRelease}.diff`
     );
 
-    child_process.execFileSync(
+    child_process.execSync(
       "find ./wt-diffs/diffs -name '*plugin..*app.diff' -delete"
     );
-    child_process.execFileSync(
+    child_process.execSync(
       "find ./wt-diffs/diffs -name '*app..*plugin.diff' -delete"
     );
 
