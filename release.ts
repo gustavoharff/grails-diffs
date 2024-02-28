@@ -150,17 +150,18 @@ function generateDiffs() {
     );
 
     process.chdir("wt-diffs");
-    child_process.execSync("git add .");
-    child_process.execSync(`git commit -m "Add release ${RELEASE_KEY} diffs"`);
+    child_process.spawnSync("git", ["add", "."]);
+    child_process.spawnSync("git", ["commit", "-m", `Add release ${RELEASE_KEY} diffs`]);
+    child_process.spawnSync("git", ["push"]);
     child_process.execSync("git push");
     process.chdir("..");
   }
 }
 
 function pushMaster() {
-  child_process.execSync("git add .");
-  child_process.execSync(`git commit -m "Add release ${RELEASE_KEY}"`);
-  child_process.execSync("git push");
+  child_process.spawnSync("git", ["add", "."]);
+  child_process.spawnSync("git", ["commit", "-m", `Add release ${RELEASE_KEY} diffs`]);
+  child_process.spawnSync("git", ["push"]);
 }
 
 function addReleaseToList() {
