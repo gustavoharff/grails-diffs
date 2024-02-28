@@ -1,0 +1,67 @@
+plugins {
+    id "groovy"
+    id "org.grails.grails-web"
+    id "org.grails.plugins.views-json"
+    id "war"
+    id "idea"
+    id "application"
+    id "eclipse"
+}
+
+group = "myapp"
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.grails.org/grails/core/" }
+}
+
+configurations {
+    all {
+    }
+}
+
+dependencies {
+    implementation("org.grails:grails-core")
+    implementation("org.grails:grails-logging")
+    implementation("org.grails:grails-plugin-databinding")
+    implementation("org.grails:grails-plugin-i18n")
+    implementation("org.grails:grails-plugin-interceptors")
+    implementation("org.grails:grails-plugin-rest")
+    implementation("org.grails:grails-plugin-services")
+    implementation("org.grails:grails-plugin-url-mappings")
+    implementation("org.grails:grails-web-boot")
+    implementation("org.grails.plugins:hibernate5")
+    implementation("org.grails.plugins:views-json")
+    implementation("org.grails.plugins:views-json-templates")
+    implementation("org.hibernate:hibernate-core:5.6.15.Final")
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-logging")
+    implementation("org.springframework.boot:spring-boot-starter-tomcat")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    compileOnly("io.micronaut:micronaut-inject-groovy")
+    console("org.grails:grails-console")
+    runtimeOnly("com.h2database:h2")
+    runtimeOnly("javax.xml.bind:jaxb-api:2.3.1")
+    runtimeOnly("org.apache.tomcat:tomcat-jdbc")
+    runtimeOnly("org.glassfish.web:el-impl:2.2.1-b05")
+    testImplementation("io.micronaut:micronaut-inject-groovy")
+    testImplementation("org.grails:grails-gorm-testing-support")
+    testImplementation("org.grails:views-json-testing-support")
+    testImplementation("org.spockframework:spock-core")
+    testImplementation("io.micronaut:micronaut-http-client")
+
+}
+
+application {
+    mainClass.set("myapp.Application")
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion("11")
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+}
