@@ -1597,7 +1597,7 @@ index 0f8d5937..ac1b06f9
  :end
  @rem End local scope for the variables with windows NT shell
 diff --git a/myapp/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
-index 6390ac7d..416f1757 100644
+index 6390ac7d..6b18e89d 100644
 --- a/myapp/grails-app/conf/application.yml
 +++ b/myapp/grails-app/conf/application.yml
 @@ -1,116 +1,50 @@
@@ -1638,7 +1638,11 @@ index 6390ac7d..416f1757 100644
 -        enabled-by-default: false
 -
 ----
--grails:
++  app:
++    name: '@info.app.name@'
++    version: '@info.app.version@'
++    grailsVersion: '@info.app.grailsVersion@'
+ grails:
 -    mime:
 -        disable:
 -            accept:
@@ -1679,10 +1683,37 @@ index 6390ac7d..416f1757 100644
 -        queries: false
 -        use_second_level_cache: false
 -        use_query_cache: false
-+  app:
-+    name: '@info.app.name@'
-+    version: '@info.app.version@'
-+    grailsVersion: '@info.app.grailsVersion@'
++  controllers:
++    defaultScope: singleton
++  views:
++    default:
++      codec: html
++  mime:
++    disable:
++      accept:
++        header:
++          userAgents:
++          - Gecko
++          - WebKit
++          - Presto
++          - Trident
++    types:
++      json:
++      - application/json
++      - text/json
++      hal:
++      - application/hal+json
++      - application/hal+xml
++      xml:
++      - text/xml
++      - application/xml
++      atom: application/atom+xml
++      css: text/css
++      csv: text/csv
++      js: text/javascript
++      rss: application/rss+xml
++      text: text/plain
++      all: '*/*'
  dataSource:
 -    pooled: true
 -    jmxExport: true
@@ -1733,38 +1764,6 @@ index 6390ac7d..416f1757 100644
 +    queries: false
 +    use_second_level_cache: false
 +    use_query_cache: false
-+grails:
-+  controllers:
-+    defaultScope: singleton
-+  views:
-+    default:
-+      codec: html
-+  mime:
-+    disable:
-+      accept:
-+        header:
-+          userAgents:
-+          - Gecko
-+          - WebKit
-+          - Presto
-+          - Trident
-+    types:
-+      json:
-+      - application/json
-+      - text/json
-+      hal:
-+      - application/hal+json
-+      - application/hal+xml
-+      xml:
-+      - text/xml
-+      - application/xml
-+      atom: application/atom+xml
-+      css: text/css
-+      csv: text/csv
-+      js: text/javascript
-+      rss: application/rss+xml
-+      text: text/plain
-+      all: '*/*'
 diff --git a/myapp/grails-app/conf/logback.groovy b/myapp/grails-app/conf/logback.groovy
 deleted file mode 100644
 index b835215c..00000000
