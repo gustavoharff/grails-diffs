@@ -1,0 +1,178 @@
+diff --git a/myapp/README.md b/myapp/README.md
+index 481fdc8d..4444b6b1 100644
+--- a/myapp/README.md
++++ b/myapp/README.md
+@@ -1,7 +1,7 @@
+-## Grails 6.1.2 Documentation
++## Grails 6.2.1 Documentation
+ 
+-- [User Guide](https://docs.grails.org/6.1.2/guide/index.html)
+-- [API Reference](https://docs.grails.org/6.1.2/api/index.html)
++- [User Guide](https://docs.grails.org/6.2.1/guide/index.html)
++- [API Reference](https://docs.grails.org/6.2.1/api/index.html)
+ - [Grails Guides](https://guides.grails.org/index.html)
+ ---
+ 
+diff --git a/myapp/build.gradle b/myapp/build.gradle
+index 97844b98..c18973ac 100644
+--- a/myapp/build.gradle
++++ b/myapp/build.gradle
+@@ -33,7 +33,6 @@ dependencies {
+     implementation("org.grails.plugins:hibernate5")
+     implementation("org.grails.plugins:views-json")
+     implementation("org.grails.plugins:views-json-templates")
+-    implementation("org.hibernate:hibernate-core:5.6.15.Final")
+     implementation("org.springframework.boot:spring-boot-autoconfigure")
+     implementation("org.springframework.boot:spring-boot-starter")
+     implementation("org.springframework.boot:spring-boot-starter-actuator")
+@@ -43,9 +42,7 @@ dependencies {
+     compileOnly("io.micronaut:micronaut-inject-groovy")
+     console("org.grails:grails-console")
+     runtimeOnly("com.h2database:h2")
+-    runtimeOnly("javax.xml.bind:jaxb-api:2.3.1")
+     runtimeOnly("org.apache.tomcat:tomcat-jdbc")
+-    runtimeOnly("org.glassfish.web:el-impl:2.2.1-b05")
+     testImplementation("io.micronaut:micronaut-inject-groovy")
+     testImplementation("org.grails:grails-gorm-testing-support")
+     testImplementation("org.grails:views-json-testing-support")
+diff --git a/myapp/buildSrc/build.gradle b/myapp/buildSrc/build.gradle
+index fb77da84..7ac06fe8 100644
+--- a/myapp/buildSrc/build.gradle
++++ b/myapp/buildSrc/build.gradle
+@@ -3,12 +3,7 @@ repositories {
+     maven { url "https://repo.grails.org/grails/core/" }
+ }
+ dependencies {
+-    implementation("org.grails:grails-gradle-plugin:6.1.2")
+-    implementation("org.grails.plugins:hibernate5:8.0.2")
+-    implementation("org.grails.plugins:views-gradle:3.1.1")
++    implementation("org.grails:grails-gradle-plugin:6.2.1")
++    implementation("org.grails.plugins:hibernate5:8.1.0")
++    implementation("org.grails.plugins:views-gradle:3.2.3")
+ }
+-configurations.configureEach {
+-    // Needed for Gradle compatibility with Grails Gradle Plugin.
+-    // (Only needed when there are files in buildSrc/src/*/groovy)
+-    resolutionStrategy.force "org.codehaus.groovy:groovy-xml:${GroovySystem.version}"
+-}
+\ No newline at end of file
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index 0eec1c60..c4e7c603 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,5 +1,5 @@
+-grailsVersion=6.1.2
+-grailsGradlePluginVersion=6.1.2
++grailsVersion=6.2.1
++grailsGradlePluginVersion=6.2.1
+ version=0.1
+ org.gradle.caching=true
+ org.gradle.daemon=true
+diff --git a/myapp/gradle/wrapper/gradle-wrapper.properties b/myapp/gradle/wrapper/gradle-wrapper.properties
+index 068cdb2d..3994438e 100644
+--- a/myapp/gradle/wrapper/gradle-wrapper.properties
++++ b/myapp/gradle/wrapper/gradle-wrapper.properties
+@@ -1,5 +1,5 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-7.6.3-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-7.6.4-bin.zip
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
+diff --git a/myapp/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
+index 6b18e89d..7b0ba193 100644
+--- a/myapp/grails-app/conf/application.yml
++++ b/myapp/grails-app/conf/application.yml
+@@ -3,12 +3,20 @@ info:
+     name: '@info.app.name@'
+     version: '@info.app.version@'
+     grailsVersion: '@info.app.grailsVersion@'
++dataSource:
++  url: jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
++  driverClassName: org.h2.Driver
++  username: sa
++  password: ''
++  pooled: true
++  jmxExport: true
++  dbCreate: update
++hibernate:
++  cache:
++    queries: false
++    use_second_level_cache: false
++    use_query_cache: false
+ grails:
+-  controllers:
+-    defaultScope: singleton
+-  views:
+-    default:
+-      codec: html
+   mime:
+     disable:
+       accept:
+@@ -35,16 +43,6 @@ grails:
+       rss: application/rss+xml
+       text: text/plain
+       all: '*/*'
+-dataSource:
+-  url: jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+-  driverClassName: org.h2.Driver
+-  username: sa
+-  password: ''
+-  pooled: true
+-  jmxExport: true
+-  dbCreate: update
+-hibernate:
+-  cache:
+-    queries: false
+-    use_second_level_cache: false
+-    use_query_cache: false
++  views:
++    default:
++      codec: html
+diff --git a/myapp/grails-app/conf/spring/resources.groovy b/myapp/grails-app/conf/spring/resources.groovy
+new file mode 100644
+index 00000000..5008c275
+--- /dev/null
++++ b/myapp/grails-app/conf/spring/resources.groovy
+@@ -0,0 +1,3 @@
++// Place your Spring DSL code here
++beans = {
++}
+\ No newline at end of file
+diff --git a/myapp/grails-app/views/application/index.gson b/myapp/grails-app/views/application/index.gson
+index 4443cf8e..91f9cd7c 100644
+--- a/myapp/grails-app/views/application/index.gson
++++ b/myapp/grails-app/views/application/index.gson
+@@ -13,7 +13,6 @@ json {
+     environment Environment.current.name
+     appversion grailsApplication.metadata.getApplicationVersion()
+     grailsversion GrailsUtil.grailsVersion
+-    appprofile grailsApplication.config.getProperty('grails.profile')
+     groovyversion GroovySystem.getVersion()
+     jvmversion System.getProperty('java.version')
+     reloadingagentenabled Environment.reloadingAgentEnabled
+diff --git a/myapp/grails-cli.yml b/myapp/grails-cli.yml
+index e1be6674..3cf96761 100644
+--- a/myapp/grails-cli.yml
++++ b/myapp/grails-cli.yml
+@@ -5,4 +5,4 @@ sourceLanguage: groovy
+ buildTool: gradle
+ gormImpl: gorm-hibernate5
+ servletImpl: spring-boot-starter-tomcat
+-features: [app-name, base, gorm-hibernate5, gradle, grails-application, grails-console, grails-dependencies, grails-gorm-testing-support, grails-gradle-plugin, grails-url-mappings, grails-web, h2, logback, micronaut-inject-groovy, readme, spock, spring-boot-autoconfigure, spring-boot-starter, spring-boot-starter-tomcat, views-json, views-json-testing-support, yaml]
++features: [app-name, base, gorm-hibernate5, gradle, grails-application, grails-console, grails-dependencies, grails-gorm-testing-support, grails-gradle-plugin, grails-url-mappings, grails-web, h2, logback, micronaut-inject-groovy, readme, spock, spring-boot-autoconfigure, spring-boot-starter, spring-boot-starter-tomcat, spring-resources, views-json, views-json-testing-support, yaml]
+diff --git a/myapp/settings.gradle b/myapp/settings.gradle
+index 3f2f5e10..c0e88675 100644
+--- a/myapp/settings.gradle
++++ b/myapp/settings.gradle
+@@ -6,8 +6,8 @@ pluginManagement {
+         gradlePluginPortal()
+     }
+     plugins {
+-        id "org.grails.grails-web" version "6.1.2"
+-        id "org.grails.plugins.views-json" version "3.1.1"
++        id "org.grails.grails-web" version "6.2.1"
++        id "org.grails.plugins.views-json" version "3.2.3"
+     }
+ }
+ 
