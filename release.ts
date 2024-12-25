@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import child_process from "node:child_process";
+import arg from "arg";
 
-const JDK = "11";
 const GORM = "hibernate";
 const SERVLET = "tomcat";
 const TEST = "spock";
@@ -9,9 +9,37 @@ const TEST = "spock";
 type Type = "app" | "plugin";
 type Profile = "web" | "rest-api" | "web-plugin" | "rest-api-plugin";
 
-const version: string = process.argv[2];
-const profile: Profile = process.argv[3] as Profile;
-const type: Type = process.argv[4] as Type;
+const args = arg({
+  '--version': String,
+  '--profile': String,
+  '--type': String,
+  '--jdk': String,
+
+  '-v': '--version',
+  '-p': '--profile',
+  '-t': '--type'
+})
+
+if (!args['--version']) {
+  throw new Error('Argument --version is missing.')
+}
+
+if (!args['--profile']) {
+  throw new Error('Argument --profile is missing.')
+}
+
+if (!args['--type']) {
+  throw new Error('Argument --type is missing.')
+}
+
+if (!args['--jdk']) {
+  throw new Error('Argument --jdk is missing.')
+}
+
+const version = args['--version']
+const profile: Profile = args['--profile'] as Profile;
+const type: Type = args['--type'] as Type;
+const jdk = args['--jdk']
 
 const APP_NAME = type === "app" ? "myapp" : "myplugin";
 
@@ -97,7 +125,7 @@ function generateNewReleaseBranch() {
   // child_process.execSync(`sdk use grails ${version}`);
 
   child_process.execSync(
-    `grails ${command} --servlet=${SERVLET} --jdk=${JDK} --gorm=${GORM} --test=${TEST} ${APP_NAME}`
+    `grails ${command} --servlet=${SERVLET} --jdk=${jdk} --gorm=${GORM} --test=${TEST} ${APP_NAME}`
   );
 
   // commit and push branch

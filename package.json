@@ -9,6 +9,7 @@
     "release": "tsx ./release.ts"
   },
   "dependencies": {
+    "arg": "^5.0.2",
     "semver": "^6.0.0",
     "tsx": "^4.7.1"
   },
