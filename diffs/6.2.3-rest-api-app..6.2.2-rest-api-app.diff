@@ -1,0 +1,70 @@
+diff --git a/myapp/README.md b/myapp/README.md
+index f8676493..a1b647ca 100644
+--- a/myapp/README.md
++++ b/myapp/README.md
+@@ -1,7 +1,7 @@
+-## Grails 6.2.3 Documentation
++## Grails 6.2.2 Documentation
+ 
+-- [User Guide](https://docs.grails.org/6.2.3/guide/index.html)
+-- [API Reference](https://docs.grails.org/6.2.3/api/index.html)
++- [User Guide](https://docs.grails.org/6.2.2/guide/index.html)
++- [API Reference](https://docs.grails.org/6.2.2/api/index.html)
+ - [Grails Guides](https://guides.grails.org/index.html)
+ ---
+ 
+diff --git a/myapp/build.gradle b/myapp/build.gradle
+index 822561d6..e440ad32 100644
+--- a/myapp/build.gradle
++++ b/myapp/build.gradle
+@@ -4,7 +4,7 @@ buildscript {
+         mavenCentral()
+     }
+     dependencies { // Not Published to Gradle Plugin Portal
+-        classpath "org.grails:grails-gradle-plugin:6.2.4"
++        classpath "org.grails:grails-gradle-plugin:6.2.3"
+         classpath "org.grails.plugins:hibernate5:8.1.0"
+         classpath "org.grails.plugins:views-gradle:3.2.3"
+     }
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index 43271936..f67e840b 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,5 +1,5 @@
+-grailsVersion=6.2.3
+-grailsGradlePluginVersion=6.2.4
++grailsVersion=6.2.2
++grailsGradlePluginVersion=6.2.3
+ version=0.1
+ org.gradle.caching=true
+ org.gradle.daemon=true
+diff --git a/myapp/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
+index 739da0fc..f5da6dfd 100644
+--- a/myapp/grails-app/conf/application.yml
++++ b/myapp/grails-app/conf/application.yml
+@@ -4,12 +4,6 @@ info:
+     version: '@info.app.version@'
+     grailsVersion: '@info.app.grailsVersion@'
+ grails:
+-  views:
+-    default:
+-      codec: html
+-  codegen:
+-    defaultPackage: myapp
+-  profile: rest-api
+   mime:
+     disable:
+       accept:
+@@ -36,6 +30,12 @@ grails:
+       rss: application/rss+xml
+       text: text/plain
+       all: '*/*'
++  views:
++    default:
++      codec: html
++  codegen:
++    defaultPackage: myapp
++  profile: rest-api
+ dataSource:
+   driverClassName: org.h2.Driver
+   username: sa
