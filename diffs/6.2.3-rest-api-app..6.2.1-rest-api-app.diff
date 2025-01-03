@@ -1,0 +1,616 @@
+diff --git a/myapp/README.md b/myapp/README.md
+index f8676493..4444b6b1 100644
+--- a/myapp/README.md
++++ b/myapp/README.md
+@@ -1,7 +1,7 @@
+-## Grails 6.2.3 Documentation
++## Grails 6.2.1 Documentation
+ 
+-- [User Guide](https://docs.grails.org/6.2.3/guide/index.html)
+-- [API Reference](https://docs.grails.org/6.2.3/api/index.html)
++- [User Guide](https://docs.grails.org/6.2.1/guide/index.html)
++- [API Reference](https://docs.grails.org/6.2.1/api/index.html)
+ - [Grails Guides](https://guides.grails.org/index.html)
+ ---
+ 
+diff --git a/myapp/build.gradle b/myapp/build.gradle
+index 822561d6..c18973ac 100644
+--- a/myapp/build.gradle
++++ b/myapp/build.gradle
+@@ -1,27 +1,13 @@
+-buildscript {
+-    repositories {
+-        maven { url "https://repo.grails.org/grails/core" }
+-        mavenCentral()
+-    }
+-    dependencies { // Not Published to Gradle Plugin Portal
+-        classpath "org.grails:grails-gradle-plugin:6.2.4"
+-        classpath "org.grails.plugins:hibernate5:8.1.0"
+-        classpath "org.grails.plugins:views-gradle:3.2.3"
+-    }
+-}
+-
+ plugins {
+     id "groovy"
+-    id "org.grails.plugins.views-json" version "3.2.3"
++    id "org.grails.grails-web"
++    id "org.grails.plugins.views-json"
+     id "war"
+     id "idea"
+     id "application"
+     id "eclipse"
+ }
+ 
+-// Not Published to Gradle Plugin Portal
+-apply plugin: "org.grails.grails-web"
+-
+ group = "myapp"
+ 
+ repositories {
+@@ -35,37 +21,38 @@ configurations {
+ }
+ 
+ dependencies {
+-    profile "org.grails.profiles:rest-api"
+-    implementation "org.grails:grails-core"
+-    implementation "org.grails:grails-logging"
+-    implementation "org.grails:grails-plugin-databinding"
+-    implementation "org.grails:grails-plugin-i18n"
+-    implementation "org.grails:grails-plugin-interceptors"
+-    implementation "org.grails:grails-plugin-rest"
+-    implementation "org.grails:grails-plugin-services"
+-    implementation "org.grails:grails-plugin-url-mappings"
+-    implementation "org.grails:grails-web-boot"
+-    implementation "org.grails.plugins:hibernate5"
+-    implementation "org.grails.plugins:views-json"
+-    implementation "org.grails.plugins:views-json-templates"
+-    implementation "org.springframework.boot:spring-boot-autoconfigure"
+-    implementation "org.springframework.boot:spring-boot-starter"
+-    implementation "org.springframework.boot:spring-boot-starter-actuator"
+-    implementation "org.springframework.boot:spring-boot-starter-logging"
+-    implementation "org.springframework.boot:spring-boot-starter-tomcat"
+-    implementation "org.springframework.boot:spring-boot-starter-validation"
+-    compileOnly "io.micronaut:micronaut-inject-groovy"
+-    console "org.grails:grails-console"
+-    runtimeOnly "com.h2database:h2"
+-    runtimeOnly "org.apache.tomcat:tomcat-jdbc"
+-    testImplementation "io.micronaut:micronaut-inject-groovy"
+-    testImplementation "org.grails:grails-gorm-testing-support"
+-    testImplementation "org.grails:views-json-testing-support"
+-    testImplementation "org.spockframework:spock-core"
++    implementation("org.grails:grails-core")
++    implementation("org.grails:grails-logging")
++    implementation("org.grails:grails-plugin-databinding")
++    implementation("org.grails:grails-plugin-i18n")
++    implementation("org.grails:grails-plugin-interceptors")
++    implementation("org.grails:grails-plugin-rest")
++    implementation("org.grails:grails-plugin-services")
++    implementation("org.grails:grails-plugin-url-mappings")
++    implementation("org.grails:grails-web-boot")
++    implementation("org.grails.plugins:hibernate5")
++    implementation("org.grails.plugins:views-json")
++    implementation("org.grails.plugins:views-json-templates")
++    implementation("org.springframework.boot:spring-boot-autoconfigure")
++    implementation("org.springframework.boot:spring-boot-starter")
++    implementation("org.springframework.boot:spring-boot-starter-actuator")
++    implementation("org.springframework.boot:spring-boot-starter-logging")
++    implementation("org.springframework.boot:spring-boot-starter-tomcat")
++    implementation("org.springframework.boot:spring-boot-starter-validation")
++    compileOnly("io.micronaut:micronaut-inject-groovy")
++    console("org.grails:grails-console")
++    runtimeOnly("com.h2database:h2")
++    runtimeOnly("org.apache.tomcat:tomcat-jdbc")
++    testImplementation("io.micronaut:micronaut-inject-groovy")
++    testImplementation("org.grails:grails-gorm-testing-support")
++    testImplementation("org.grails:views-json-testing-support")
++    testImplementation("org.spockframework:spock-core")
++    testImplementation("io.micronaut:micronaut-http-client")
++
+ }
+ 
+ application {
+-    mainClass = "myapp.Application"
++    mainClass.set("myapp.Application")
+ }
+ 
+ java {
+diff --git a/myapp/buildSrc/build.gradle b/myapp/buildSrc/build.gradle
+new file mode 100644
+index 00000000..7ac06fe8
+--- /dev/null
++++ b/myapp/buildSrc/build.gradle
+@@ -0,0 +1,9 @@
++repositories {
++    mavenCentral()
++    maven { url "https://repo.grails.org/grails/core/" }
++}
++dependencies {
++    implementation("org.grails:grails-gradle-plugin:6.2.1")
++    implementation("org.grails.plugins:hibernate5:8.1.0")
++    implementation("org.grails.plugins:views-gradle:3.2.3")
++}
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index 43271936..c4e7c603 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,5 +1,5 @@
+-grailsVersion=6.2.3
+-grailsGradlePluginVersion=6.2.4
++grailsVersion=6.2.1
++grailsGradlePluginVersion=6.2.1
+ version=0.1
+ org.gradle.caching=true
+ org.gradle.daemon=true
+diff --git a/myapp/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
+index 739da0fc..7b0ba193 100644
+--- a/myapp/grails-app/conf/application.yml
++++ b/myapp/grails-app/conf/application.yml
+@@ -3,13 +3,20 @@ info:
+     name: '@info.app.name@'
+     version: '@info.app.version@'
+     grailsVersion: '@info.app.grailsVersion@'
++dataSource:
++  url: jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
++  driverClassName: org.h2.Driver
++  username: sa
++  password: ''
++  pooled: true
++  jmxExport: true
++  dbCreate: update
++hibernate:
++  cache:
++    queries: false
++    use_second_level_cache: false
++    use_query_cache: false
+ grails:
+-  views:
+-    default:
+-      codec: html
+-  codegen:
+-    defaultPackage: myapp
+-  profile: rest-api
+   mime:
+     disable:
+       accept:
+@@ -36,45 +43,6 @@ grails:
+       rss: application/rss+xml
+       text: text/plain
+       all: '*/*'
+-dataSource:
+-  driverClassName: org.h2.Driver
+-  username: sa
+-  password: ''
+-  pooled: true
+-  jmxExport: true
+-environments:
+-  development:
+-    dataSource:
+-      dbCreate: create-drop
+-      url: jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+-  test:
+-    dataSource:
+-      dbCreate: update
+-      url: jdbc:h2:mem:testDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+-  production:
+-    dataSource:
+-      dbCreate: none
+-      url: jdbc:h2:./prodDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+-      properties:
+-        jmxEnabled: true
+-        initialSize: 5
+-        maxActive: 50
+-        minIdle: 5
+-        maxIdle: 25
+-        maxWait: 10000
+-        maxAge: 600000
+-        timeBetweenEvictionRunsMillis: 5000
+-        minEvictableIdleTimeMillis: 60000
+-        validationQuery: SELECT 1
+-        validationQueryTimeout: 3
+-        validationInterval: 15000
+-        testOnBorrow: true
+-        testWhileIdle: true
+-        testOnReturn: false
+-        jdbcInterceptors: ConnectionState
+-        defaultTransactionIsolation: 2
+-hibernate:
+-  cache:
+-    queries: false
+-    use_second_level_cache: false
+-    use_query_cache: false
++  views:
++    default:
++      codec: html
+diff --git a/myapp/grails-cli.yml b/myapp/grails-cli.yml
+index 8c4979b7..3cf96761 100644
+--- a/myapp/grails-cli.yml
++++ b/myapp/grails-cli.yml
+@@ -5,4 +5,4 @@ sourceLanguage: groovy
+ buildTool: gradle
+ gormImpl: gorm-hibernate5
+ servletImpl: spring-boot-starter-tomcat
+-features: [app-name, base, gorm-hibernate5, gradle, grails-application, grails-console, grails-dependencies, grails-gorm-testing-support, grails-gradle-plugin, grails-profiles, grails-url-mappings, grails-web, grails-wrapper, h2, logback, micronaut-inject-groovy, readme, spock, spring-boot-autoconfigure, spring-boot-starter, spring-boot-starter-tomcat, spring-resources, views-json, views-json-testing-support, yaml]
++features: [app-name, base, gorm-hibernate5, gradle, grails-application, grails-console, grails-dependencies, grails-gorm-testing-support, grails-gradle-plugin, grails-url-mappings, grails-web, h2, logback, micronaut-inject-groovy, readme, spock, spring-boot-autoconfigure, spring-boot-starter, spring-boot-starter-tomcat, spring-resources, views-json, views-json-testing-support, yaml]
+diff --git a/myapp/grails-wrapper.jar b/myapp/grails-wrapper.jar
+deleted file mode 100644
+index 1fbada5c195b12612cd640bdf1c1a19d26912497..0000000000000000000000000000000000000000
+GIT binary patch
+literal 0
+HcmV?d00001
+
+literal 5746
+zcma)=cQoA3yT>;Yge8gI2@+)yZ7rhL=w;PSbXJSrd$J@%FTn=UqDPMsJ=!8_7Ez-2
+z)q4=a<$izPa{cb_p8I^x%xC_1zn_^oXP!A{UK+|bZ{Y&~w{HU+!lht<%fPzoE(7nf
+zsmf_faVe_FbKeAL{3RTG{ul-r3J-dGDG<7Br2iDEN~tNz%V}vpQkCCV?d?%f=6ZxC
+zROSNp_YPD*d4~CCm-bY9dxzZn6*(VOLlwA{dVASNdU|^}(ZENFoS?a-`6aA>%yoTH
+zxR-NTxtQA6x&DtOU6&F3Ewgd3ar-x|!^7~?-OG(iV*>yWu4(0M94w%4JGiMUT*1`A
+z!Vd28$lT7<)iqLkLXAX|)G&`isYmig3zN%{^t1L|UB`U97GlMZq4D6b(65=a6X;b^
+ztK4AY9TLAi3LZ^G@GcrxqPwQwhU?bwF^}(dg;i?f=yc%_gTxoVn@%^6pl|LcOZH0B
+zieb5`ezDw!7>LBwdl=S=bl=@LU3+a;J9l%{zP_6RQ@h}$=B0i=xlhLj%@L!|ofy`$
+zWQNav@X!Q?>3rEdt9&B=qvXKWL->HMv?JbUD$b!ycR#u5X)J=6vM(`eKG7vbk-&@%
+zVG3mBVdBx*&so5!-m)uwJpHrIg{;(55yqWd?4T=Y_jCS1L1Lm{*b<?kU2iM9VZi`E
+znNM3P|0HcBOWi4WqavZI%0SLMk5k25-lW-aw9tuAZHR<YTuo<Th4Vf7IAAn>v(=oV
+z&pu8ONvkeqD^MN(h4HgN&N{eouvlRRy`siPK9VYFl6$ZXLkij5Q<C7U`<U6FF}uqE
+zIW|sev*iv^aj5Eg!LFBC%{4=$P?x;IJbu6Nc)eQv>m#VihND1DgbQ0?DSdZpzgK~+
+z;jd5BF2Y!`wyDeG_&v$6{4we!mjpfF35(8T@yFB{Wdh<F6eOfR9+~cDO!8C<7s&8+
+zIVxIFrFML;(Dpl8l&@3IM{}lyGa+K9;td)aAWy_qxO+xK{i6Gr^3}PK^}wFR5b&2*
+z0K<F`A~kE1_bX}t&{KQBa%>Jo7voIrSt3U0_u{<MJb&Ewx0GmqX&+~=gV}hrTvjed
+z@g}`o92(FO!<dEl9->-O1$0lwSR*!Ghd$y7duJW1IV?-@RWw+6GZgn%XhZK)BAIou
+z)lLlXBwFE1o5nc@RGor_<%stj@2!eu6pPiqCf|1!e@Rb#ydO3{sN&MhPx#-T(bA-|
+zPI=3S%s33^7&em`2vh>wNeMQwO7=s~SwtSUUX)Z52%b!KK&?^+M4%CG=N3I3q8*|w
+ztLX-|LK~S2d*4oA9o9;QQq*dk#uzQosil_aGE{g*G<m+b@pr{vm6y{8*YCQ70Kg<Q
+z06=lAWVGB&UEKbtk_3G`FB(0f^K>p>INX&zFBPKWFi~DyshZNEmdX~D+7%nE6h+4h
+zw&W@`e;B7*q^oEU<&uc?`mXp>YvFEHVf<`%A(l)oQZ|jP)20EJ87rHUnJuM6GZf+P
+z!NaD{{QH*Y!qXA-{_~STfa*|FY%;9y=;WtNNrWtecpQ`!;Gw;iAQ1L<5UCe7Io*(&
+zbxU@lIQ0gNSZ*g5VvR1Y&M@Oslj%2LdNWy6d}5918drQQ<>-8(sakb}E$sKpqys6G
+zA2v{%v;6~cQu)`SoV;7hbl-~uhPp7h0_<hw;!s($q|gI&b@2Ezqho9=->gih2arKD
+z#U?GD9B!*&W)z|cv(vSuQRKQP31+%${Lw5)v^KdDvr1xAbWdN<6qaQ7oX2{NDhpNB
+z%oB}csF2MoKKwzg1w@9Nb3s%=Uu(5!6<F|OCBde8am+J=e*b)qH0M)QTxV@tEy~GR
+zr~{)k{Txal-rvYTSo+KvP)Wqg*?z7})t1MI@2G$crR>fRK2X-<)5-&VsGz@oIEW!X
+zDoiyWNk3HF2vNrEBj~HK`@F!5$T@`HJK}ev*0D>}FHx}RJiNn9H(HeWN}xs1rXnGs
+z6I^I56$5tG8s+q7h|OhHh_k%)Fru<KF}z-=_*n~#Ru-dVkTYvb_RKj_atfu0P5!OU
+z>G9hNHvLgbBaXd}2N5P{T>Povby7P$bQlDo<2uW!0pG^k$mizZU^0L5$&%enTHW%&
+zDZRfz&qJ<JLVLoXL6XrzYoywaW}g&P(+a!(R$}k{L2porRW`4Htn25nI~$p>Mt|m@
+zRJ49gsb{tb>5{xuY>6y1Prz`j&?G&Kr;h3gih=6%SApzE_YWK2{9r{QO>~e^NhEEB
+z4@^o|A~ja9J3Ii<WXepTu=GjSMEh<#-TTAxm+)Ifcw&-fQ`yWLD6iHBNeK$82t~f7
+zPj!u(ub$3k7r^=WsI%U%Q))N^g1jq~?~-fqxg=x@A`^gQShXa$Is`pTRXht$wz~^A
+zbIC{H-3+?B;7PXG%yIC57J~z&HcwoLoP3laZItBO90!diluiUfgUf_bi2_&K&|lN8
+zKdL7S#1eBKrrVMF_LreNpUwM-HFLbT@vwrH%wQ>rsc{VUe$SAL3V)905Qt#)vf$Ag
+zFJ4%=S*Qzv#7+pva^1|`*M#5}ONlv5Atb{CiiJ1C5}f_&s|aK%`bzz3jx`Zld`Ym%
+zI&Q`0hdS`2ivjIjPSI!05|-~(SPAXzx_13OTlQ-oHPFK=3g%)c1c8+VDwte)p#u2L
+zr;jsIa!qme_`KiI88~QTzsb8h(6&$3Ac+F*evppMz#PAlk1m(=sNwDvPlS0s{AMJc
+zw{OIqc<*}^uRXY6JFU_UnJ#dQ!r}-oUh9Ej^NLRfBD?PUvU5)YBajF`po7+~OG9hH
+zZS2&MVWfzWOCRm25>8tLE|dH(>+gN)k1tM~M7A_`sL4uEsaVJX_AndMq^FNX`Z>OW
+z-vy{1BCUNqJ!L+F=iEU?+^*%IH1MaoK*7Y}3IyJe5IfA@>*jR!e4kf%v!A^kXJU_q
+zidf3`&f6x=_sE6p-qh_t$Q(OG-mSl411Af_2`hUBzR>h<+j#619p*VV)l1)l87;y?
+zETOEU-g2@X;m!H(r*ZgUc=+D>I~@8mOqb5y1gR~E|D?`w;}lxu?W0Y}%;Q7%pDW~N
+zxn}R12tn>`P4$#8?rGZ%9|!npw1jA@%-PY`U<HAd$YbK21DEfNA}g{cr{}s*8@Bbg
+z$r&u&T|`17Y~Clko$`O?SH_HML{TBDi5m_GEhj2BK;nV8q@wxrjDGPv6x|kh>@q1;
+z=te?s^vIL$q4E9zN(Q|hJhJq7<l+Y)kN`0|6Hk$Dwz0xz&iShEb@-C0pFAq-xTs+(
+zEq2Hv4QarjcDHAZsc`s^PopVgK78-}d`+D7v1TZD&)P8=V*NaQ&&QPOEIF)nfd)$;
+zs>B12(>I3>y2DisdU&J)?XhGoav!XI<o5*SxhuB(4o>?fIGkyQ@$P;D!)yqCK=yp+
+zvEr%@g~vEk#Tb*tDN6tgaCiXrY5guTAYSa8dsY9lOd_47GPrY{H^GedbcZsacvcV;
+z5I#eMqN=c)@{W$Cu`EqAn>8}-z{tb`DQV4>%PNn?L(imgUnZKA9<b(i&AC`h1b@jt
+z<~WzHT<xcyO6Jkm^GFar-YL2n77ae!eX#HVqmVKCVm2NBJZFC9SiQ+0p3!3X;UH_o
+z0@%YhDPP2Z<(`$J_pUJ&r=9RKmWcSR710s4)Kc%)8B<X-C4C`&;r{FHp-Oe?UP9mF
+z8x547vEs<Ts4T6oFgM8-93E0kAILRx@Ao_iddipQD;L=tJJ`m~HdA>Jg7ee+b@%Wc
+z@;;3U%=(d=$Ll+?IPz(>wppbj5xiKnJaG!^jkUx14tKiNC2gO#S1o2(vMm0XI?yM<
+zlb?v|DncaYvSpnVST;>P_-RdrRHYh-wqNIlt7MsvO|9St_N=_`$;TWQNkw=nSZrxV
+z`YCJuz!U3>nYVv#GZ<ODML+HXG=Pl8Ke&G&&29WxapxIatsAD1Jj2<Com|8;LLsm?
+z*VIZOjohw3;H?inG06K-$Ikj*IM{LAK(wT%mm*|rm`^n4h8nj1V##B5XME2tj!we3
+zk%U|J&fBtw%MZhz)Fuh%)M#eicLhHxTZPg<oZZV)`Qu1i=3Lqy;>C)|C4nC77lOoN
+z6+Y1p%Rhql<-nY4X?YfLPFrDz`7f1f!`iLC^=8RBc-!!)SnlDKA4nras3*QIPZ6ot
+zNz5FZ$@fRptHuxXCy;-Yk=TR~aP$Q8EYKni^|^i?%jRLA?MBm~W(@mq`39|hgVR*w
+zTlimsCt(J-hSE>+Nw&uiiQ0tHdV0m|<9U>rdtxNy+}-8etiM`tny%U#wTy$<mh*L`
+zL<m!~9O$cg`Wl&_$9+YTqnr(a<_Euo;h`BZIX^gr)E!0ci`)=yitk6c1jcGrr6?EQ
+zAW|5tcNtOZO3-s!Hs%c6iq>gK0?}HECRZcfb9WGaw<O3gVU)!BVuI}3;1J5^W4&Gg
+z?MyZ8P}|#?PCASY2B%>o`!#726&)_aU-6LJ?t7jD=ZDZZrgXC#dQv5?;wQYw6OP82
+z$oF9Oj*lq9kG1Kr%JsX9GyL`hIg!Gve5HG%D(2JY9Z%SnD_`t_6BlQY>B}oh&lYVJ
+zB1<wbfY(KtW9~cVVgi#d6UMZKK2rCz6F&u%$BPK$d(nOj3|WaSXmr|3AG@!+yM1m`
+zG&v*m`g`oYzK9?Bx^Hgz94+<B>17*ml@DapC$}ue27h$#f-dhUUCJ6iwX`jce{6d@
+zrIpZveoti~M#w&8P+Hcbj@mf<#1BGrWVwb8M4jn|a1CE5f#*RbCCj!P)eF?G6sAJ$
+zZ=2WKD~fFH@W7CvOVwmFDE#s`R?ZGvO^!88(&HbsVII2BX=&%An)e6K%9M)8^=hgM
+z^La=&{AjEE2K@@2y|zDRs|B5SE_u^Z<*uaBkBh!WN6&Ysu_TL3yVcDqe4!KA95!Jc
+zn3k)QsSdaiGBYB%_F3arJM}XO)JTqW(Na^0Q|ZFjjZC^(6#kx~1bxvY+Uri|OZto5
+zX?}(AjE_H+mmgIMoJ6ZLPbirPf+4AGiWyZOtCf7R>qfMmsUlSta_NqmXVzk)yzbC3
+z(g{?q8LgEiJJ%gyac?{{GhG|!dLhCr#|`-qEskORB^YxKVE>T)##!K{6v2e9Jk<(K
+z=rIn|OJS3O#>SD%dwE<}_pNzTWR2`<#+XHxCPGS+n>t^S@Ruy}5ooc%tl}VXGYOUN
+z7idP6cqS;d&3Rv8ptXYT=nX!8Vqh>teW6xt#X0-{UEJ8G<ptB~gErXWmx_0x43A9U
+zg`M7-q0xEOw)mc-KJ;cPP44*HmF7B4Ui8hr!5jm#(_`R%0`ILHabOw#bK(9{D<!+-
+znR(j!SaNzs)NPwIwU5jZ%8|Dtf4l<^j$m8gQ~fX=g<zzi8*}869ti@;qR5>eM#fef
+z-5hvJI<MIb#DL`Nbew?Jzi84P)aan<Co3epE_8^+1!(C@+}rXd)PS>5`|m94(o#CS
+zS(&$6_d0O5I|L#V^i=1}&!6P(tk##UMyTuzjFYBIgm5EBei2T->(C2%P&KH}Znm=9
+zXNu(}izQp<s6KaEUU6*GegV8YccG*H_TuR5Y|JU=BD$RYtoAd^X_czPZgFi}M%HLK
+z$`ETSYg2qO49WXb6q2?XGvK_%LiwcgTi8PH0V!@Em>F$BZ&~|%j%BgSlSEj39`e4G
+zgEw?ySA}M~xZO4W<cq4olao$L$b=k+m={Uo4lY`rVG^g5F6h(wB%?=Jjg-N*u1rYN
+z)FDdL3sQ25>%lwUVDSUSw!lcEW76jBMtI6#B_JNc`m(}nFCcr7p5HaJ8K&thA^oWr
+zI3dn(XmZj4HR!ng1FjbtGiE;;0zylDEc-p_DB-(dmHxXys@*Pt5vM&v=*^FdYfrJu
+z*VkW^=JG}MClGORarE;3H`IZfX+y(&i8`om0RTML#aiC3Zg6`I7e^<!i<=GHRm$DX
+z8t&j`V{Yo^_$T(zGIS)CA{A>J9fY&H7ZwlO+9T>ru)hejP|^^SkZ40e<*P&SY9{XW
+z;T1vM412Y|zEP{5-8g4km~z)CYj<O?blHCIx}8*S)pT*ZN7yVj`JG6{K&Dlam_7Kl
+z-WgYEt@L+D$VYAixM%I&1DQ3%=8rW-nMshRTQ+Z&lwb^^MPpUbK_tNbe&bQrQ{P1n
+z=WlV-k_vF(MY^=BSY~y5O6CsxBt7A+Ab3K`&?z}<%pp}TQ=VymGu1l+)KCm%TygOV
+zw<qO@`lxIhEI2{p8~M?1&$LN~tg*|}h}C9iTp%UTa0oQ+0{8Pvb`n3b)`vI|Au)BP
+zj3M=n);t7M$&%nSqBj3RVI0jt58uPLNqb+lsgYE@Ux)*M-^+sogFhgMM_936$r5KY
+z$fx(HvJ2xW=r2tLM|tZbaJvb@wMaK1-E@JF27hYn5}W$@@f{QOF8ihxjSf2>!!5U(
+z${-;n7VVjzRFLGn&rebr8C0y+da3Xi<dg1vz#p%kpBhy^xj&fsxiNDitkdIO(eKYM
+z1oHb$M4b&8Y3{h+a|_ydB~_-h70q~TX3|oTStYF*>A?qxOE52sp4-)Vs%6Uen(%3)
+zF~C43;pZ*Qk|!1+pITrAF1I#GJ~5P?k?o5t3%l;}?=36U(3u`m>fIS<ys==q`w&Fy
+zrIv@ZhMtIiIymKLyDvCWMk>%iw5N}VpCUM%YTb-cGs?yEXPv2QDBr*$z4@Oh;?;Qt
+z0PX=crLO*eF~xt{{x_z0CBBMm1p8(Gm+c>f@t+y4Bfu+C_(xn#oNzh(7dQOBOjq3S
+zkGL{5Tn_(b`frMO-FclN{^`v|V6Hj;6H~mN@j7JrJ0s0y`Tlb)|3EI+lU$kpgt%AN
+y!yj?Ap<JTBlKgR5T(@4oEdDfSBZjV9{~uR}hB7wJRfgM_ALZqWWUoju;J*MI#w3*h
+
+diff --git a/myapp/grailsw b/myapp/grailsw
+deleted file mode 100755
+index 8d0cc123..00000000
+--- a/myapp/grailsw
++++ /dev/null
+@@ -1,152 +0,0 @@
+-#!/usr/bin/env bash
+-
+-##############################################################################
+-##
+-##  Grails start up script for UN*X
+-##
+-##############################################################################
+-
+-# Add default JVM options here. You can also use JAVA_OPTS and GRAILS_OPTS to pass JVM options to this script.
+-DEFAULT_JVM_OPTS='"-XX:+TieredCompilation" "-XX:TieredStopAtLevel=1" "-XX:CICompilerCount=3"'
+-
+-
+-# Use the maximum available, or set MAX_FD != -1 to use that value.
+-MAX_FD="maximum"
+-
+-warn ( ) {
+-    echo "$*"
+-}
+-
+-die ( ) {
+-    echo
+-    echo "$*"
+-    echo
+-    exit 1
+-}
+-
+-# OS specific support (must be 'true' or 'false').
+-cygwin=false
+-msys=false
+-darwin=false
+-case "`uname`" in
+-  CYGWIN* )
+-    cygwin=true
+-    ;;
+-  Darwin* )
+-    darwin=true
+-    ;;
+-  MINGW* )
+-    msys=true
+-    ;;
+-esac
+-
+-# Attempt to set APP_HOME
+-# Resolve links: $0 may be a link
+-PRG="$0"
+-# Need this for relative symlinks.
+-while [ -h "$PRG" ] ; do
+-    ls=`ls -ld "$PRG"`
+-    link=`expr "$ls" : '.*-> \(.*\)$'`
+-    if expr "$link" : '/.*' > /dev/null; then
+-        PRG="$link"
+-    else
+-        PRG=`dirname "$PRG"`"/$link"
+-    fi
+-done
+-SAVED="`pwd`"
+-cd "`dirname \"$PRG\"`/" >/dev/null
+-APP_HOME="`pwd -P`"
+-cd "$SAVED" >/dev/null
+-
+-JAR_PATH=$APP_HOME/grails-wrapper.jar
+-
+-# Determine the Java command to use to start the JVM.
+-if [ -n "$JAVA_HOME" ] ; then
+-    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+-        # IBM's JDK on AIX uses strange locations for the executables
+-        JAVACMD="$JAVA_HOME/jre/sh/java"
+-    else
+-        JAVACMD="$JAVA_HOME/bin/java"
+-    fi
+-    if [ ! -x "$JAVACMD" ] ; then
+-        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
+-
+-Please set the JAVA_HOME variable in your environment to match the
+-location of your Java installation."
+-    fi
+-else
+-    JAVACMD="java"
+-    which java >/dev/null 2>&1 || die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+-
+-Please set the JAVA_HOME variable in your environment to match the
+-location of your Java installation."
+-fi
+-
+-# Increase the maximum file descriptors if we can.
+-if [ "$cygwin" = "false" -a "$darwin" = "false" ] ; then
+-    MAX_FD_LIMIT=`ulimit -H -n`
+-    if [ $? -eq 0 ] ; then
+-        if [ "$MAX_FD" = "maximum" -o "$MAX_FD" = "max" ] ; then
+-            MAX_FD="$MAX_FD_LIMIT"
+-        fi
+-        ulimit -n $MAX_FD
+-        if [ $? -ne 0 ] ; then
+-            warn "Could not set maximum file descriptor limit: $MAX_FD"
+-        fi
+-    else
+-        warn "Could not query maximum file descriptor limit: $MAX_FD_LIMIT"
+-    fi
+-fi
+-
+-# For Cygwin, switch paths to Windows format before running java
+-if $cygwin ; then
+-    APP_HOME=`cygpath --path --mixed "$APP_HOME"`
+-    JAVACMD=`cygpath --unix "$JAVACMD"`
+-    JAR_PATH=`cygpath --path --mixed "$JAR_PATH"`
+-
+-    # We build the pattern for arguments to be converted via cygpath
+-    ROOTDIRSRAW=`find -L / -maxdepth 1 -mindepth 1 -type d 2>/dev/null`
+-    SEP=""
+-    for dir in $ROOTDIRSRAW ; do
+-        ROOTDIRS="$ROOTDIRS$SEP$dir"
+-        SEP="|"
+-    done
+-    OURCYGPATTERN="(^($ROOTDIRS))"
+-    # Add a user-defined pattern to the cygpath arguments
+-    if [ "$GRAILS_CYGPATTERN" != "" ] ; then
+-        OURCYGPATTERN="$OURCYGPATTERN|($GRAILS_CYGPATTERN)"
+-    fi
+-    # Now convert the arguments - kludge to limit ourselves to /bin/sh
+-    i=0
+-    for arg in "$@" ; do
+-        CHECK=`echo "$arg"|egrep -c "$OURCYGPATTERN" -`
+-        CHECK2=`echo "$arg"|egrep -c "^-"`                                 ### Determine if an option
+-
+-        if [ $CHECK -ne 0 ] && [ $CHECK2 -eq 0 ] ; then                    ### Added a condition
+-            eval `echo args$i`=`cygpath --path --ignore --mixed "$arg"`
+-        else
+-            eval `echo args$i`="\"$arg\""
+-        fi
+-        i=$((i+1))
+-    done
+-    case $i in
+-        (0) set -- ;;
+-        (1) set -- "$args0" ;;
+-        (2) set -- "$args0" "$args1" ;;
+-        (3) set -- "$args0" "$args1" "$args2" ;;
+-        (4) set -- "$args0" "$args1" "$args2" "$args3" ;;
+-        (5) set -- "$args0" "$args1" "$args2" "$args3" "$args4" ;;
+-        (6) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" ;;
+-        (7) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" ;;
+-        (8) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" "$args7" ;;
+-        (9) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" "$args7" "$args8" ;;
+-    esac
+-fi
+-
+-# Split up the JVM_OPTS And GRAILS_OPTS values into an array, following the shell quoting and substitution rules
+-function splitJvmOpts() {
+-    JVM_OPTS=("$@")
+-}
+-eval splitJvmOpts $DEFAULT_JVM_OPTS $JAVA_OPTS $GRAILS_OPTS
+-
+-exec "$JAVACMD" -jar "${JVM_OPTS[@]}" "$JAR_PATH" "$@"
+diff --git a/myapp/grailsw.bat b/myapp/grailsw.bat
+deleted file mode 100644
+index c48c3840..00000000
+--- a/myapp/grailsw.bat
++++ /dev/null
+@@ -1,89 +0,0 @@
+-@if "%DEBUG%" == "" @echo off
+-@rem ##########################################################################
+-@rem
+-@rem  Grails startup script for Windows
+-@rem
+-@rem ##########################################################################
+-
+-@rem Set local scope for the variables with windows NT shell
+-if "%OS%"=="Windows_NT" setlocal
+-
+-@rem Add default JVM options here. You can also use JAVA_OPTS and GRAILS_OPTS to pass JVM options to this script.
+-set DEFAULT_JVM_OPTS="-XX:+TieredCompilation" "-XX:TieredStopAtLevel=1" "-XX:CICompilerCount=3"
+-
+-set DIRNAME=%~dp0
+-if "%DIRNAME%" == "" set DIRNAME=.
+-set APP_BASE_NAME=%~n0
+-set APP_HOME=%DIRNAME%
+-
+-@rem Find java.exe
+-if defined JAVA_HOME goto findJavaFromJavaHome
+-
+-set JAVA_EXE=java.exe
+-%JAVA_EXE% -version >NUL 2>&1
+-if "%ERRORLEVEL%" == "0" goto init
+-
+-echo.
+-echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+-echo.
+-echo Please set the JAVA_HOME variable in your environment to match the
+-echo location of your Java installation.
+-
+-goto fail
+-
+-:findJavaFromJavaHome
+-set JAVA_HOME=%JAVA_HOME:"=%
+-set JAVA_EXE=%JAVA_HOME%/bin/java.exe
+-
+-if exist "%JAVA_EXE%" goto init
+-
+-echo.
+-echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME%
+-echo.
+-echo Please set the JAVA_HOME variable in your environment to match the
+-echo location of your Java installation.
+-
+-goto fail
+-
+-:init
+-@rem Get command-line arguments, handling Windowz variants
+-
+-if not "%OS%" == "Windows_NT" goto win9xME_args
+-if "%@eval[2+2]" == "4" goto 4NT_args
+-
+-:win9xME_args
+-@rem Slurp the command line arguments.
+-set CMD_LINE_ARGS=
+-set _SKIP=2
+-
+-:win9xME_args_slurp
+-if "x%~1" == "x" goto execute
+-
+-set CMD_LINE_ARGS=%*
+-goto execute
+-
+-:4NT_args
+-@rem Get arguments from the 4NT Shell from JP Software
+-set CMD_LINE_ARGS=%$
+-
+-:execute
+-@rem Setup the command line
+-set JAR_PATH=%APP_HOME%/grails-wrapper.jar
+-
+-@rem Execute Grails
+-"%JAVA_EXE%" -jar %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRAILS_OPTS% %JAR_PATH% %CMD_LINE_ARGS%
+-
+-:end
+-@rem End local scope for the variables with windows NT shell
+-if "%ERRORLEVEL%"=="0" goto mainEnd
+-
+-:fail
+-rem Set variable GRAILS_EXIT_CONSOLE if you need the _script_ return code instead of
+-rem the _cmd.exe /c_ return code!
+-if  not "" == "%GRAILS_EXIT_CONSOLE%" exit 1
+-exit /b 1
+-
+-:mainEnd
+-if "%OS%"=="Windows_NT" endlocal
+-
+-:omega
+diff --git a/myapp/settings.gradle b/myapp/settings.gradle
+new file mode 100644
+index 00000000..c0e88675
+--- /dev/null
++++ b/myapp/settings.gradle
+@@ -0,0 +1,14 @@
++
++pluginManagement {
++    repositories {
++        mavenLocal()
++        maven { url "https://repo.grails.org/grails/core/" }
++        gradlePluginPortal()
++    }
++    plugins {
++        id "org.grails.grails-web" version "6.2.1"
++        id "org.grails.plugins.views-json" version "3.2.3"
++    }
++}
++
++rootProject.name="myapp"
