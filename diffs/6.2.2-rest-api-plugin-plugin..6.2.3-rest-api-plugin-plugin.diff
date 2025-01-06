@@ -1,0 +1,61 @@
+diff --git a/myplugin/build.gradle b/myplugin/build.gradle
+index 8702b02a..c657842c 100644
+--- a/myplugin/build.gradle
++++ b/myplugin/build.gradle
+@@ -4,7 +4,7 @@ buildscript {
+         mavenCentral()
+     }
+     dependencies { // Not Published to Gradle Plugin Portal
+-        classpath "org.grails:grails-gradle-plugin:6.2.3"
++        classpath "org.grails:grails-gradle-plugin:6.2.4"
+         classpath "org.grails.plugins:hibernate5:8.1.0"
+     }
+ }
+diff --git a/myplugin/gradle.properties b/myplugin/gradle.properties
+index f67e840b..43271936 100644
+--- a/myplugin/gradle.properties
++++ b/myplugin/gradle.properties
+@@ -1,5 +1,5 @@
+-grailsVersion=6.2.2
+-grailsGradlePluginVersion=6.2.3
++grailsVersion=6.2.3
++grailsGradlePluginVersion=6.2.4
+ version=0.1
+ org.gradle.caching=true
+ org.gradle.daemon=true
+diff --git a/myplugin/grails-app/conf/application.yml b/myplugin/grails-app/conf/application.yml
+index a6769ba0..b2f2ad46 100644
+--- a/myplugin/grails-app/conf/application.yml
++++ b/myplugin/grails-app/conf/application.yml
+@@ -3,10 +3,6 @@ info:
+     name: '@info.app.name@'
+     version: '@info.app.version@'
+     grailsVersion: '@info.app.grailsVersion@'
+-grails:
+-  codegen:
+-    defaultPackage: myplugin
+-  profile: plugin
+ dataSource:
+   driverClassName: org.h2.Driver
+   username: sa
+@@ -49,3 +45,7 @@ hibernate:
+     queries: false
+     use_second_level_cache: false
+     use_query_cache: false
++grails:
++  codegen:
++    defaultPackage: myplugin
++  profile: plugin
+diff --git a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+index 26f9954b..1d1e3c86 100644
+--- a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
++++ b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+@@ -5,7 +5,7 @@ import grails.plugins.*
+ class MypluginGrailsPlugin extends Plugin {
+ 
+     // the version or versions of Grails the plugin is designed for
+-       def grailsVersion = "6.2.2  > *"
++       def grailsVersion = "6.2.3  > *"
+        // resources that are excluded from plugin packaging
+        def pluginExcludes = [
+            "grails-app/views/error.gsp"
