@@ -1,0 +1,67 @@
+diff --git a/myplugin/README.md b/myplugin/README.md
+index ebee5939..b272805b 100644
+--- a/myplugin/README.md
++++ b/myplugin/README.md
+@@ -1,17 +1,17 @@
+-## Grails 6.2.3 Documentation
++## Grails 6.2.2 Documentation
+ 
+-- [User Guide](https://docs.grails.org/6.2.3/guide/index.html)
+-- [API Reference](https://docs.grails.org/6.2.3/api/index.html)
++- [User Guide](https://docs.grails.org/6.2.2/guide/index.html)
++- [API Reference](https://docs.grails.org/6.2.2/api/index.html)
+ - [Grails Guides](https://guides.grails.org/index.html)
+ ---
+ 
+-## Feature asset-pipeline-grails documentation
+-
+-- [Grails Asset Pipeline Core documentation](https://www.asset-pipeline.com/manual/)
+-
+ ## Feature scaffolding documentation
+ 
+ - [Grails Scaffolding Plugin documentation](https://grails.github.io/scaffolding/latest/groovydoc/)
+ 
+ - [https://grails-fields-plugin.github.io/grails-fields/latest/guide/index.html](https://grails-fields-plugin.github.io/grails-fields/latest/guide/index.html)
+ 
++## Feature asset-pipeline-grails documentation
++
++- [Grails Asset Pipeline Core documentation](https://www.asset-pipeline.com/manual/)
++
+diff --git a/myplugin/build.gradle b/myplugin/build.gradle
+index b5df25b4..fdd9dc2a 100644
+--- a/myplugin/build.gradle
++++ b/myplugin/build.gradle
+@@ -4,7 +4,7 @@ buildscript {
+         mavenCentral()
+     }
+     dependencies { // Not Published to Gradle Plugin Portal
+-        classpath "org.grails:grails-gradle-plugin:6.2.4"
++        classpath "org.grails:grails-gradle-plugin:6.2.3"
+         classpath "org.grails.plugins:hibernate5:8.1.0"
+     }
+ }
+diff --git a/myplugin/gradle.properties b/myplugin/gradle.properties
+index 43271936..f67e840b 100644
+--- a/myplugin/gradle.properties
++++ b/myplugin/gradle.properties
+@@ -1,5 +1,5 @@
+-grailsVersion=6.2.3
+-grailsGradlePluginVersion=6.2.4
++grailsVersion=6.2.2
++grailsGradlePluginVersion=6.2.3
+ version=0.1
+ org.gradle.caching=true
+ org.gradle.daemon=true
+diff --git a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+index 1e5d09a6..739f6d2e 100644
+--- a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
++++ b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+@@ -5,7 +5,7 @@ import grails.plugins.*
+ class MypluginGrailsPlugin extends Plugin {
+ 
+     // the version or versions of Grails the plugin is designed for
+-       def grailsVersion = "6.2.3  > *"
++       def grailsVersion = "6.2.2  > *"
+        // resources that are excluded from plugin packaging
+        def pluginExcludes = [
+            "grails-app/views/error.gsp"
