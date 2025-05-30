@@ -1,0 +1,105 @@
+diff --git a/myplugin/build.gradle b/myplugin/build.gradle
+index a1e8b41d..e3249d5c 100644
+--- a/myplugin/build.gradle
++++ b/myplugin/build.gradle
+@@ -30,13 +30,16 @@ dependencies {
+     implementation("org.grails:grails-plugin-url-mappings")
+     implementation("org.grails:grails-web-boot")
+     implementation("org.grails.plugins:hibernate5")
++    implementation("org.hibernate:hibernate-core:5.6.15.Final")
+     implementation("org.springframework.boot:spring-boot-autoconfigure")
+     implementation("org.springframework.boot:spring-boot-starter-logging")
+     implementation("org.springframework.boot:spring-boot-starter-validation")
+     compileOnly("io.micronaut:micronaut-inject-groovy")
+     console("org.grails:grails-console")
+     runtimeOnly("com.h2database:h2")
++    runtimeOnly("javax.xml.bind:jaxb-api:2.3.1")
+     runtimeOnly("org.apache.tomcat:tomcat-jdbc")
++    runtimeOnly("org.glassfish.web:el-impl:2.2.1-b05")
+     testImplementation("io.micronaut:micronaut-inject-groovy")
+     testImplementation("org.grails:grails-gorm-testing-support")
+     testImplementation("org.spockframework:spock-core")
+@@ -49,7 +52,7 @@ application {
+ }
+ 
+ java {
+-    sourceCompatibility = JavaVersion.toVersion("17")
++    sourceCompatibility = JavaVersion.toVersion("11")
+ }
+ 
+ tasks.withType(Test) {
+diff --git a/myplugin/buildSrc/build.gradle b/myplugin/buildSrc/build.gradle
+index 668a8e3e..69b06d24 100644
+--- a/myplugin/buildSrc/build.gradle
++++ b/myplugin/buildSrc/build.gradle
+@@ -3,6 +3,11 @@ repositories {
+     maven { url "https://repo.grails.org/grails/core/" }
+ }
+ dependencies {
+-    implementation("org.grails:grails-gradle-plugin:6.2.1")
+-    implementation("org.grails.plugins:hibernate5:8.1.0")
++    implementation("org.grails:grails-gradle-plugin:6.1.2")
++    implementation("org.grails.plugins:hibernate5:8.0.2")
+ }
++configurations.configureEach {
++    // Needed for Gradle compatibility with Grails Gradle Plugin.
++    // (Only needed when there are files in buildSrc/src/*/groovy)
++    resolutionStrategy.force "org.codehaus.groovy:groovy-xml:${GroovySystem.version}"
++}
+\ No newline at end of file
+diff --git a/myplugin/gradle.properties b/myplugin/gradle.properties
+index c4e7c603..0eec1c60 100644
+--- a/myplugin/gradle.properties
++++ b/myplugin/gradle.properties
+@@ -1,5 +1,5 @@
+-grailsVersion=6.2.1
+-grailsGradlePluginVersion=6.2.1
++grailsVersion=6.1.2
++grailsGradlePluginVersion=6.1.2
+ version=0.1
+ org.gradle.caching=true
+ org.gradle.daemon=true
+diff --git a/myplugin/gradle/wrapper/gradle-wrapper.properties b/myplugin/gradle/wrapper/gradle-wrapper.properties
+index 3994438e..068cdb2d 100644
+--- a/myplugin/gradle/wrapper/gradle-wrapper.properties
++++ b/myplugin/gradle/wrapper/gradle-wrapper.properties
+@@ -1,5 +1,5 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-7.6.4-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-7.6.3-bin.zip
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
+diff --git a/myplugin/grails-app/conf/spring/resources.groovy b/myplugin/grails-app/conf/spring/resources.groovy
+deleted file mode 100644
+index 5008c275..00000000
+--- a/myplugin/grails-app/conf/spring/resources.groovy
++++ /dev/null
+@@ -1,3 +0,0 @@
+-// Place your Spring DSL code here
+-beans = {
+-}
+\ No newline at end of file
+diff --git a/myplugin/grails-cli.yml b/myplugin/grails-cli.yml
+index 3b347110..67610226 100644
+--- a/myplugin/grails-cli.yml
++++ b/myplugin/grails-cli.yml
+@@ -5,4 +5,4 @@ sourceLanguage: groovy
+ buildTool: gradle
+ gormImpl: gorm-hibernate5
+ servletImpl: spring-boot-starter-tomcat
+-features: [app-name, base, gorm-hibernate5, gradle, grails-application, grails-console, grails-dependencies, grails-gorm-testing-support, grails-gradle-plugin, h2, logback, micronaut-inject-groovy, readme, spock, spring-boot-autoconfigure, spring-boot-starter, spring-resources, yaml]
++features: [app-name, base, gorm-hibernate5, gradle, grails-application, grails-console, grails-dependencies, grails-gorm-testing-support, grails-gradle-plugin, h2, logback, micronaut-inject-groovy, readme, spock, spring-boot-autoconfigure, spring-boot-starter, yaml]
+diff --git a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+index 454dfec4..f7857dbd 100644
+--- a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
++++ b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+@@ -5,7 +5,7 @@ import grails.plugins.*
+ class MypluginGrailsPlugin extends Plugin {
+ 
+     // the version or versions of Grails the plugin is designed for
+-       def grailsVersion = "6.2.1  > *"
++       def grailsVersion = "6.1.2  > *"
+        // resources that are excluded from plugin packaging
+        def pluginExcludes = [
+            "grails-app/views/error.gsp"
