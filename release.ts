@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import child_process from "node:child_process";
 import arg from "arg";
+import semver from "semver";
 
 const GORM = "hibernate";
 const SERVLET = "tomcat";
@@ -124,8 +125,10 @@ function generateNewReleaseBranch() {
   // child_process.execSync(`sdk install grails ${version}`);
   // child_process.execSync(`sdk use grails ${version}`);
 
+  const forgeFlag = semver.major(version) >= 7 ? "-t forge" : ""
+
   child_process.execSync(
-    `grails ${command} --servlet=${SERVLET} --jdk=${jdk} --gorm=${GORM} --test=${TEST} ${APP_NAME}`
+    `grails ${forgeFlag} ${command} --servlet=${SERVLET} --jdk=${jdk} --gorm=${GORM} --test=${TEST} ${APP_NAME}`
   );
 
   // commit and push branch
