@@ -10,15 +10,30 @@ on:
       profile:
         description: 'Profile to release'
         required: true
+        type: choice
+        options:
+          - web
+          - rest-api
+          - web-plugin
+          - rest-api-plugin
         default: 'rest-api'
       type:
         description: 'Type of release'
         required: true
+        type: choice
+        options:
+          - app
+          - plugin
         default: 'app'
       java-version:
         description: 'Java version to use'
         required: true
-        default: '11'
+        type: choice
+        options:
+          - '11'
+          - '17'
+          - '21'
+        default: '17'
 
 jobs:
   generate_diffs:
@@ -27,13 +42,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       
-      - name: Setup java ${{ github.event.inputs.java-version }}
+      - name: Setup Java ${{ github.event.inputs.java-version }}
         uses: actions/setup-java@v4
         with:
           java-version: ${{ github.event.inputs.java-version }}
           distribution: 'zulu'
       
-      - name: Install grails version
+      - name: Install Grails version
         uses: sdkman/sdkman-action@b1f9b696c79148b66d3d3a06f7ea801820318d0f
         id: sdkman
         with:
