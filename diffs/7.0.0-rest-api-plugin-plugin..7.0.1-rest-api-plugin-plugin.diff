@@ -1,0 +1,102 @@
+diff --git a/myplugin/README.md b/myplugin/README.md
+index 72b90995..53e06e00 100644
+--- a/myplugin/README.md
++++ b/myplugin/README.md
+@@ -1,7 +1,7 @@
+-## Grails 7.0.0 Documentation
++## Grails 7.0.1 Documentation
+ 
+-- [User Guide](https://grails.apache.org/docs/7.0.0/guide/index.html)
+-- [API Reference](https://grails.apache.org/docs/7.0.0/api/index.html)
++- [User Guide](https://grails.apache.org/docs/7.0.1/guide/index.html)
++- [API Reference](https://grails.apache.org/docs/7.0.1/api/index.html)
+ - [Grails Guides](https://guides.grails.org/index.html)
+ ---
+ 
+diff --git a/myplugin/gradle.properties b/myplugin/gradle.properties
+index 6bd7c223..c2d1f792 100644
+--- a/myplugin/gradle.properties
++++ b/myplugin/gradle.properties
+@@ -1,4 +1,4 @@
+-grailsVersion=7.0.0
++grailsVersion=7.0.1
+ version=0.1
+ org.gradle.caching=true
+ org.gradle.daemon=true
+diff --git a/myplugin/grails-app/conf/application.yml b/myplugin/grails-app/conf/application.yml
+index b2deb5a6..72e1aa4e 100644
+--- a/myplugin/grails-app/conf/application.yml
++++ b/myplugin/grails-app/conf/application.yml
+@@ -3,10 +3,6 @@ info:
+     name: '@info.app.name@'
+     version: '@info.app.version@'
+     grailsVersion: '@info.app.grailsVersion@'
+-grails:
+-  codegen:
+-    defaultPackage: myplugin
+-  profile: plugin
+ dataSource:
+   driverClassName: org.h2.Driver
+   username: sa
+@@ -31,3 +27,7 @@ hibernate:
+     queries: false
+     use_second_level_cache: false
+     use_query_cache: false
++grails:
++  codegen:
++    defaultPackage: myplugin
++  profile: plugin
+diff --git a/myplugin/grails-wrapper.jar b/myplugin/grails-wrapper.jar
+index baa69660aa9c4456f0588548efb01a406ae4fccb..0e012302612ac69f814ed08664c5e18e732e85bb 100644
+GIT binary patch
+delta 866
+zcmV-o1D*WJ>;cE@0gyKY2LeG2kvlGbXeS|Csa6WsrA1tyHP%S-UP<2K-&=}w(e<2r
+zPYdWDF0;P4ls%zUh1p8c#3{Jwkb!5Yd(XjHRZcKGojNA)A^(il!p>|>@kisGl2zmK
+zHn6k|rBR9&JnAYy&a3w5*>ntvrRZ)H^@)b1V^w?TOWmC7O`f@VWy0^IrWAn;t*YKb
+zAawhy6jFQukQ%cN0dH*%4WlpSjRF7wfC&Hq5&)ARb`+DJZV!K!)5H;!Cgf5IC50xG
+z(o)KLcVut7H}>KSCjZ`D$#$ZPqXgRMMeNMz%$zf`qxC`0KmCd1*HUw2`&qAlvBFFW
+zxct^XEWJhn{tDVqDT03(AMZS%DPlK{Pe2Ek(;{<@lI&za(m{HJqVXviMWY;{XmWZ?
+zqVzb&h@|=WBu{_0AoCscaAV<M5kVGt)4H$}R!cb;i?|AzJo?*cIEd2IyEM&4<18J2
+z-vE}uQZiHdzA$6SmFFgG@cpRx!n1BzO0boJkQ6D!C`L9^d)OX|oSjMCCSxO1AYP#2
+zGLS5zsYZlBq?nu1y%`?l>ZkEhJnT2Z?kkp`Rh-bXImLg_E<p9m-Rb_3vO5Wz>UQfC
+zCN0vChbZ-DnsGD-kw`s_kwSO|v6p}{la#M$p*<Anvy*rb58o>-e*?C^6tc5-Z${_U
+zpn9gMmaZ6;26{bm+lZ&}9_e0`Q}-*U*(=cElF*z2@u_me4Ak7Pw4eoIUmyn!Vqc#-
+z27Lh&LoI*o8^I0JnYGGf$%fUIs%PCYl1-$J66Uzxr@iT^ow-Tu=Q1fv*vgEhhJR5C
+z_h?j1BSwwwsLA=;WzPPKAVgxv{k3~?{d9FE@hB!K<}RUvz%rg$&N^2}>muMtxEx{Y
+zbg}%`?U(Aj$lbe@xm_R)y=&<NX<ZFv?af);u~~mC7LTd4Xs`=4fSsmxRf&IcEn?}V
+z#r7q)rAF~XA$IQ)=D?&1t?JzY;`>?!VXTVA!u(ki^Ng1Gtqa1m-1#PhZET}+d+0@J
+zJb32R)%vt8D*5#B;_Bx1Dj>ynX}c&soJz7AqFyfresl$<HKMf%e4XD+S&jKDUi3db
+sD9;1;e*u%=bR3gQaVrD|0znP4dU1*b1r4Jw=8cmHb~^?vaR2}S0Q$$Td;kCd
+
+delta 856
+zcmV-e1E>7Q>;cN`0gyKY4co50kvlGbsFRSbR4WDR(o$TXHP%S-UP<2K-&=}w(e>PO
+zPXp*5F0<}k%AU}wo!LrJ$0@kzkb!5YJI}#cRZK8EojN7(A^%8gVQ;p78ok3iC9B5e
+zZD45`N~07Fc+_QpoY&c-XVWqymZH5;)Mpx&j#bUED|CISHhJdel?lH}MJWOdTUEY?
+zK<ExvDWv!SkQ%cN0dH*urj2c7kduOLEPt}&I2Dv8<WdSHg(j5JQp##IvbWtEd$Ao%
+z{=K`Btwa|`3AE9R*qPCpIcH`^n}dOShN)mzLNR29$zXVXhpFIj@ojimdbI@n6_h4|
+zdw(1rR~}FV(QC_6P~K$~Ppl<ba-73-I-8vYM@QL7Fd0wMAf4oI1Bmf#n$M2YS$~dq
+zAj=9m-dY$Klp%whX;WAVt04@uK}`Bg<I#8;#G@dd-j3rWj+1HpeG6Cy3qf`5`@)O`
+zla3oV-uI*C^UtPbDZ%a}_@qcmN-#3M+QaTpWX(dTE*V>)9I*lwmx0+jm@AY~2qd+0
+zvNywnT*GmA6vo3=*nQ3NvyS6?wtplTx&^3zS)J}5DO*X{R<~a#KWTx2+(*ej^Ms)#
+z@JOh6h$O-b2%Q9k>Zp7LE9Ia-ozB8hIC?LY_zl?nlE^IHy_uZVgPNJ<O4wplTIkKl
+zT_c{xd!&0&PSY=~qOU-UiHzg~GM6exR71lJYXgcS`UP@O!1wjJXV6!WYJXy2-w1A*
+zE{u^niMFhER2}P%k!&ONl(59jKJ86U%)+Ljo6D#yVJ9;d3jReY%%KrJ4=B;5rzY!e
+zmp=V3f@A_)=C0k7>!+_Xkwei@F?SK+8LY#FVYGLJbS?shxXlqZRu#*C(|xJVirj-6
+zk((7#Ft`$yXPv8|ti3&}6@Q!6YW0{(hXz%s25c2EceVH@*CG~9T5Mi&TN)HU6k-o9
+zU<p)6->ShaAhxen;K!<HEG(ZjG0$j;+q%GY$DMC8*u}Oww})OZZmqm3vN3gyKJAK%
+zK7BmDyuP{gNTFGqK8g>glI)hK(@TOIU5-hEXk!9j=QmSUqd)T({RU4D%JcnSlihS2
+ilSpwZ1P$A+y|Z_5iUb9wjcsL+lLmG>1}|{{0002$?3lFx
+
+diff --git a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+index 85827376..822353f3 100644
+--- a/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
++++ b/myplugin/src/main/groovy/myplugin/MypluginGrailsPlugin.groovy
+@@ -5,7 +5,7 @@ import grails.plugins.*
+ class MypluginGrailsPlugin extends Plugin {
+ 
+     // the version or versions of Grails the plugin is designed for
+-       def grailsVersion = "7.0.0  > *"
++       def grailsVersion = "7.0.1  > *"
+        // resources that are excluded from plugin packaging
+        def pluginExcludes = [
+            "grails-app/views/error.gsp"
