@@ -1,0 +1,98 @@
+diff --git a/myapp/README.md b/myapp/README.md
+index e0332e18..ab01a447 100644
+--- a/myapp/README.md
++++ b/myapp/README.md
+@@ -1,13 +1,13 @@
+-## Grails 7.0.0 Documentation
++## Grails 7.0.2 Documentation
+ 
+-- [User Guide](https://grails.apache.org/docs/7.0.0/guide/index.html)
+-- [API Reference](https://grails.apache.org/docs/7.0.0/api/index.html)
++- [User Guide](https://grails.apache.org/docs/7.0.2/guide/index.html)
++- [API Reference](https://grails.apache.org/docs/7.0.2/api/index.html)
+ - [Grails Guides](https://guides.grails.org/index.html)
+ ---
+ 
+ ## Feature views-json documentation
+ 
+-- [Grails JSON Views documentation](https://grails.apache.org/docs/7.0.0/guide/theWebLayer.html)
++- [Grails JSON Views documentation](https://grails.apache.org/docs/7.0.2/guide/theWebLayer.html)
+ 
+ ## Feature spring-boot-devtools documentation
+ 
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index 6bd7c223..e23e3db3 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,4 +1,4 @@
+-grailsVersion=7.0.0
++grailsVersion=7.0.2
+ version=0.1
+ org.gradle.caching=true
+ org.gradle.daemon=true
+diff --git a/myapp/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
+index d6976c43..7d2668a3 100644
+--- a/myapp/grails-app/conf/application.yml
++++ b/myapp/grails-app/conf/application.yml
+@@ -4,9 +4,6 @@ info:
+     version: '@info.app.version@'
+     grailsVersion: '@info.app.grailsVersion@'
+ grails:
+-  codegen:
+-    defaultPackage: myapp
+-  profile: rest-api
+   mime:
+     disable:
+       accept:
+@@ -36,6 +33,9 @@ grails:
+   views:
+     default:
+       codec: html
++  codegen:
++    defaultPackage: myapp
++  profile: rest-api
+ dataSource:
+   driverClassName: org.h2.Driver
+   username: sa
+diff --git a/myapp/grails-wrapper.jar b/myapp/grails-wrapper.jar
+index baa69660aa9c4456f0588548efb01a406ae4fccb..c693e8a69eeb92afeab33e4285d4979a5175bfe3 100644
+GIT binary patch
+delta 878
+zcmV-!1Cjj7>;cE@0gyKYSZ@Fakvk%Py$ZrG6h`+z-XSlL__GMvO0`n3E-m7Et+7Uu
+zdrNW`-`-NBi>~K<-)R8-!)4YNm$E0cYGc+?)Nu?hI%MDp>dtd;Ruv=kPp6Ive8@ke
+zrLZ$=v;Cv-PRXiaejAuuhSDHK10Ho5Am>GU^lVy&#8R|3iuy$T+_9=TbcL=M&($hV
+z+`Ka3cT!P`z*d#-J`lS7RSGFSkQ%cN0dH*%*7nJ`jRF7wfC&Hq5&)ARb`+DJZV!J_
+z>bMb<Cgf5IC4nZC(o)K5HL|ze8+-8ulYj57WINHtQ37rBB6enUX3m+}(fVNEo?#}~
+zl~4?sVLBL|uP_xHF1`&9E3cM-zk<?4aPN=9<DCZ-LG;?P43u|S#ZzlZo)#xDhLb!F
+zaFUIKqj$$BKro4e$#^`TWGKT)ak75}neU+EjfH_hIWowZ)}^Ji8p1#u#H7!ZjFNE>
+z$HD0ME*YhxNjgrxZvd-cA*il>Uz)LC(sAR)`+n4X{#myy71&CGPl}|Z1S8|CJ?sue
+z*35+JlCc%a5i3z~6__uBsX{r0KvFv;dow)9HB7>{VLWVw-PbHX>o~q=bAo@NTY&nP
+zyVLz6Wp@&`)$P~GPg<a$@KN&5G-YTGJQ8XeB8l(}LMH*CI;vj5LOCc<r;~6LCLg2{
+zzX6+H5}DciH%Djnpk}7261E(b7J4&s+lZ&}9_e0|)AUQL=qu1-A}0lb+@&fI)zEOm
+z(tzTKet`lM@O^#m8T18YnizlBH-a0cGh?JqqYbMqRmZwxB-=<mCCqWNPkYl7GqYLf
+z<}#{E*vgEBf`3s8b7+K514^{%smZ$ArBDBhAi2Pnxoh|2`swRT<WO`}&Rs-!4$E+6
+z80}plor{1WZVQBsRps(ucVDWrGWXzC6lQ@G46cObdFN`VYH!c#j?I5!v3N|SLxWwY
+z25c2Et6Kb%YY_`4EjBN?Ee(nvOR)zRFb686Z`I%q5Zl)(@MBdr7Us{Im}j)aZC&8H
+z<IcAkY-3xU+e0r%!qGFQuF<D$QPJm5=a<*FmmVoJOVda3;Z%{`5OsP<aHGpHX%KBp
+z;OqQms%rENf6@Q+pgIHJ{{@rabR3gQaVrE^ZvY3gdU1*b1=jY-xQ&wub~^?vaR2}S
+E04cwt>;M1&
+
+delta 868
+zcmV-q1DpKE>;cN`0gyKY4co50kvk%Pu?oU46h-$y{vkh*sFRSbR4WDR(o$TXHP%S-
+zUP<2K-&=}w(e>POPXp*5F0<}k%AU}wo!LrJ$0@kzkb!5YJI}#cRZK8EojN7(A^%8g
+zVQ;p78ok3iC9B5eZD45`N~07Fc+_QpoY&c-XVWqymZH5;)Mpx&j#bUED|CGrsWy4$
+z=9LM*N<}FGTUEY?K<ExvDWv!SkQ%cN0dH*urj2c7kduOLEPt}&I2Dv8<WdSHg(j5J
+zQp##IvbWtEd$Ao%{=K`Btwa|`3AE9R*qPCpIcH`^n}dOShN)mzLNR29$zXVXhpFIj
+z@ojimdbI@n6_h4|dw(1rR~}FV(QC_6P~K$~Ppl<ba-73-I-8vYM@QL7Fd0wMAf4oI
+z1Bmf#n$M2YS$~dqAj=9m-dY$Klp%whX;WAVt04@uK}`Bg<I#8;#G@dd-j3rWj+1Hp
+zeG6Cy3qf`5`@)O`la3oV-uI*C^UtPbDZ%a}_@qcmN-#3M+QaTpWX(dTE*V>)9I*lw
+zmx0+jm@AY~2qd+0vNywnT*GmA6vo3=*nQ3NvyS6?wtplTx&^3zS)J}5DO*X{R<~a#
+zKWTx2+(*ej^Ms)#@JOh6h$O-b2%Q9k>Zp7LE9Ia-ozB8hIC?LY_zl?nlE^IHy_uZV
+zgPNJ<O4wplTIkKlT_c{xd!&0&PSY=~qOU-UiHzg~GM6exR71lJYXgcS`UP@O!1wjJ
+zXV6!WYJXy2-w1A*E{u^niMFhER2}P%k!&ONl(59jKJ86U%)+Ljo6D#yVJ9;d3jReY
+z%%KrJ4=B;5rzY!emp=V3f@A_)=C0k7>!+_Xkwei@F?SK+8LY#FVYGLJbS?shxXlqZ
+zRu#*C(|xJVirj-6k((7#Ft`$yXPv8|ti3&}6@Q!6YW0{(hXz%s25c2EceVH@*CG~9
+zT5Mi&TN)HU6k-o9U<p)6->ShaAhxen;K!<HEG(ZjG0$j;+q%GY$DMC8*u}Oww})OZ
+zZmqm3vN3gyKJAK%K7BmDyuP{gNTFGqK8g>glI)hK(@TOIU5-hEXk!9j=QmSUqd)T(
+u{RU4D%JcnSlihS2lSpwZ1P$A+y|Z_5iUb9wjcsL+lLmG>1}|{{0000|NS)vS
+
