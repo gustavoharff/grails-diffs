@@ -39,6 +39,9 @@ jobs:
   generate_diffs:
     runs-on: macos-latest
     steps:
+      - name: Install modern bash
+        run: brew install bash
+
       - name: Checkout
         uses: actions/checkout@v3
       
