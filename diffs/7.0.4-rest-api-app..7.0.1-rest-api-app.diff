@@ -1,0 +1,143 @@
+diff --git a/myapp/README.md b/myapp/README.md
+index d658b65b..52f8dc1e 100644
+--- a/myapp/README.md
++++ b/myapp/README.md
+@@ -1,13 +1,13 @@
+-## Grails 7.0.4 Documentation
++## Grails 7.0.1 Documentation
+ 
+-- [User Guide](https://grails.apache.org/docs/7.0.4/guide/index.html)
+-- [API Reference](https://grails.apache.org/docs/7.0.4/api/index.html)
++- [User Guide](https://grails.apache.org/docs/7.0.1/guide/index.html)
++- [API Reference](https://grails.apache.org/docs/7.0.1/api/index.html)
+ - [Grails Guides](https://guides.grails.org/index.html)
+ ---
+ 
+ ## Feature views-json documentation
+ 
+-- [Grails JSON Views documentation](https://grails.apache.org/docs/7.0.4/guide/theWebLayer.html)
++- [Grails JSON Views documentation](https://grails.apache.org/docs/7.0.1/guide/theWebLayer.html)
+ 
+ ## Feature spring-boot-devtools documentation
+ 
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index 222962cc..c2d1f792 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,4 +1,4 @@
+-grailsVersion=7.0.4
++grailsVersion=7.0.1
+ version=0.1
+ org.gradle.caching=true
+ org.gradle.daemon=true
+diff --git a/myapp/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
+index e3c8aa43..0ce8a03a 100644
+--- a/myapp/grails-app/conf/application.yml
++++ b/myapp/grails-app/conf/application.yml
+@@ -3,31 +3,10 @@ info:
+     name: '@info.app.name@'
+     version: '@info.app.version@'
+     grailsVersion: '@info.app.grailsVersion@'
+-dataSource:
+-  driverClassName: org.h2.Driver
+-  username: sa
+-  password: ''
+-  pooled: true
+-  jmxExport: true
+-environments:
+-  development:
+-    dataSource:
+-      dbCreate: create-drop
+-      url: jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+-  test:
+-    dataSource:
+-      dbCreate: update
+-      url: jdbc:h2:mem:testDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+-  production:
+-    dataSource:
+-      dbCreate: none
+-      url: jdbc:h2:./prodDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+-hibernate:
+-  cache:
+-    queries: false
+-    use_second_level_cache: false
+-    use_query_cache: false
+ grails:
++  views:
++    default:
++      codec: html
+   mime:
+     disable:
+       accept:
+@@ -57,6 +36,27 @@ grails:
+   codegen:
+     defaultPackage: myapp
+   profile: rest-api
+-  views:
+-    default:
+-      codec: html
++dataSource:
++  driverClassName: org.h2.Driver
++  username: sa
++  password: ''
++  pooled: true
++  jmxExport: true
++environments:
++  development:
++    dataSource:
++      dbCreate: create-drop
++      url: jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
++  test:
++    dataSource:
++      dbCreate: update
++      url: jdbc:h2:mem:testDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
++  production:
++    dataSource:
++      dbCreate: none
++      url: jdbc:h2:./prodDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
++hibernate:
++  cache:
++    queries: false
++    use_second_level_cache: false
++    use_query_cache: false
+diff --git a/myapp/grails-wrapper.jar b/myapp/grails-wrapper.jar
+index 9c1c91587522b195c430a42dc743bb7535b4dc57..0e012302612ac69f814ed08664c5e18e732e85bb 100644
+GIT binary patch
+delta 867
+zcmV-p1DyQG>;cE@0gyKY2LeG2kvk%Pu?oU46h-$y{vkh*XeS|Csa6WsrA1tyHP%S-
+zUP<2K-&=}w(e<2rPYdWDF0;P4ls%zUh1p8c#3{Jwkb!5Yd(XjHRZcKGojNA)A^(il
+z!p>|>@kisGl2zmKHn6k|rBR9&JnAYy&a3w5*>ntvrRZ)H^@)b1V^w?TOWm9p>rI}y
+zd1b=yq^1;st*YKbAawhy6jFQukQ%cN0dH*u4WlpSjgx|IDt{u$mea%$lqTd-3MGXm
+zl+seldUs@RyEpdY3nu^GUCDN$i=zbE=tb<z=**lmv!nGv&p-W%<kwPjWcyjKf3d<$
+z3b_2%KP<gQ0sacwP$`0c7$5IEpebTEj!!@bm(wD1j*{$TK+-{agre~&8AYQUp=fe?
+zOrrES$B3l)_<tl%w;=N!^l)S0U=cwUdDFVE6jn<)7>l?HnLPU2XgG+{)4MdyM&m3U
+zf8PL>!BR3)`Mxk?$(83OZ1DZ4_`<VpSW2*!f{+v`#VAHLRD0MSikzKE-6mrrR3KiU
+z;xdpdqp3!OL8O?Q(!CiT<m#vKQ9SH7!tN`UpH-aDvwu0o&@Mpr%iZbzk+M4po9cG!
+z6ecawkcTMsXPR*|2a!lUjgdll2C<ibGLw|AXrVn6=(Ce}5D(ugEq?>HzZ9~wcW*}L
+z)u4K&sg|x7l?Hk}a@&Zf@gC`3lvDRBr`ape;*!vu0`aMG#0=Eju(Y5BVqYK!4PsxP
+zI|h9L6MsW3>>I%i)0wr(WXXorma1pnGLlWCjuPg$-lx6kshzn=?B_BmOW4YcrG|e|
+z3ioJKOe02(?WoE5+hxxFiy%Z|$NjZ?a{Y95Ch;gHDdsMrg1|DKS<X6FNb4ftNVptf
+z>vXaF*X@_;yvW_VmAPFY4ZUmW1ZiCjW$n#b-G8xJEEbQcv}mvkHGrL_c2$XgaxG%%
+zrN#Cox1~n$Lm_tW66V093a#qh0pj~w1!1g;#=`tr6Z4Fg_^k`VwA}e7gKcc1b9?AT
+zX*_u5)Yba5Eh_o+@#5;{_9`I7c4@mPKAcLj8=_t>1%7k|rZu9q34ER3Oj(WjEMD|K
+tJq0Mw_kRJC-gF$3NpUL#2LeG2vv_fe1O*MFFXoMt2X;FKEO7t;008r(v!wt4
+
+delta 868
+zcmV-q1DpKE>;cH^0gyKY=Cy(okvk%PK?=e!5JmTa+#wf8R1k#hO0`n3Zd%0cSYwSO
+zGbNdgx3?7OMz`<%{~AF5aGCYRrR)i<+L*NzbsU3>4jFiYy7L^IRmBMX)2U+uAM(#=
+zDeTPJZ2xGyQ?hE9-v;KEp)^R*fJa>h$a&EoJ)4#xu@vo%qCQbScdTj-U7_n3bG6D7
+zH?K_iom7+}uvO)|4}@-il|qUSkQ%cN0dH*u>8>KPj+26JDu1Gj6(_a@r3tx|LP?+r
+zrL>f?UXAQ+_r_jq2a|vAu4FsW#Zdxn^dfd<bY{+(+0pu-=brvluq&Y$GX1pIKflLR
+zaJcx^KP<gk0{#k06T!WI5T5Kjpa`PZmQ6u<msLEqmSkx>Ji?=slW{PH2?~zzFb*a#
+zjsrk>avYCgI)5G}Tad*Lda$uDFepO?In%nZ6jnnRXoHyanUXj;4hDlD8QsNk8c)*W
+z<ogD&3>Jdw%J+pC3nm>mZoKbD#pj=O!%~9XOYljNl$2m(e6@$|p~#xKP;D|cLOEgu
+zDlP-FRWMU1qYy}HXJl`NN4fe*I1C5<M%Y8e^0SKLdw;ed7}^D>ez`k6JW+NhVN>01
+zo&2N)3UVJM|IAW`7QiE+W+9RY&mnXY5UQi{6)cs50(CkH<8b&vD)Aez`6ZE=zkhdh
+zRt>6Wnkiw6QE8ypBe#us9`A|nMLBi9w2Hm~EhaLO6Ubbu98nE5H>?aOj_4Q2K>^>_
+z=Z-;N!hci~1N%mB!*p(p)M>O~wWaD<w~S;HsiTAiuJ>tgdSd2w8oIfR$`ZCRW1-+*
+zl)@Yu;j@4eZ8~bQ?sn<Z{~|~xux0MrJ-dFoIukh*9TjsI5uU*+oEt_vS4it3V2Ils
+zVPjRX{MYT5>a57!yA`=vA_cuGVR_cN8p_(6vwyl{vs^BpQfbj(7pehUMa+FA{@JyN
+zg_9PW*W8vG#gB#9y$e_X71Fn=cL#{=YZdshDjExm7fs9yTH>}YaNTm}n+&$Gjn3_%
+z7bIc)!l|qEX<JnE`P2F3_3foc3eC!NQG7g=WH&^eUJ~5sa!hJOYZLf3znQWceZyb%
+uKL$N0&kuhAlihS2lSpwZ1m?AZ6SH@5iUbAet|GIJlLmG>1}$*_0001~T$(Td
+
