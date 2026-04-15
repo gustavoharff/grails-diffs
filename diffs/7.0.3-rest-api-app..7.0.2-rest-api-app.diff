@@ -1,0 +1,98 @@
+diff --git a/myapp/README.md b/myapp/README.md
+index ed7d7a79..ab01a447 100644
+--- a/myapp/README.md
++++ b/myapp/README.md
+@@ -1,15 +1,15 @@
+-## Grails 7.0.3 Documentation
++## Grails 7.0.2 Documentation
+ 
+-- [User Guide](https://grails.apache.org/docs/7.0.3/guide/index.html)
+-- [API Reference](https://grails.apache.org/docs/7.0.3/api/index.html)
++- [User Guide](https://grails.apache.org/docs/7.0.2/guide/index.html)
++- [API Reference](https://grails.apache.org/docs/7.0.2/api/index.html)
+ - [Grails Guides](https://guides.grails.org/index.html)
+ ---
+ 
+-## Feature spring-boot-devtools documentation
++## Feature views-json documentation
+ 
+-- [Grails SpringBoot Developer Tools documentation](https://docs.spring.io/spring-boot/reference/using/devtools.html)
++- [Grails JSON Views documentation](https://grails.apache.org/docs/7.0.2/guide/theWebLayer.html)
+ 
+-## Feature views-json documentation
++## Feature spring-boot-devtools documentation
+ 
+-- [Grails JSON Views documentation](https://grails.apache.org/docs/7.0.3/guide/theWebLayer.html)
++- [Grails SpringBoot Developer Tools documentation](https://docs.spring.io/spring-boot/reference/using/devtools.html)
+ 
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index 218bea02..e23e3db3 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,4 +1,4 @@
+-grailsVersion=7.0.3
++grailsVersion=7.0.2
+ version=0.1
+ org.gradle.caching=true
+ org.gradle.daemon=true
+diff --git a/myapp/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
+index 1a5af033..7d2668a3 100644
+--- a/myapp/grails-app/conf/application.yml
++++ b/myapp/grails-app/conf/application.yml
+@@ -30,12 +30,12 @@ grails:
+       rss: application/rss+xml
+       text: text/plain
+       all: '*/*'
+-  codegen:
+-    defaultPackage: myapp
+-  profile: rest-api
+   views:
+     default:
+       codec: html
++  codegen:
++    defaultPackage: myapp
++  profile: rest-api
+ dataSource:
+   driverClassName: org.h2.Driver
+   username: sa
+diff --git a/myapp/grails-wrapper.jar b/myapp/grails-wrapper.jar
+index fb1c5f9a83b65c3414db0ab902199f45ea0446bd..c693e8a69eeb92afeab33e4285d4979a5175bfe3 100644
+GIT binary patch
+delta 871
+zcmV-t1DO2A>;cE@0gyKYSZ@Fakvk%Py$ZrG6h`+z-XSlL__GMvO0`n3E-m7Et+7Uu
+zdrNW`-`-NBi>~K<-)R8-!)4YNm$E0cYGc+?)Nu?hI%MDp>dtd;Ruv=kPp6Ive8@ke
+zrLZ$=v;Cv-PRXiaejAuuhSDHK10Ho5Am>GU^lVy&#8R|3iuy$T+_9=TbcL=M&($hV
+z+`Ka3cT!P`z*d#-J`lS7RSGFSkQ$S~aRjpx0c&jq*7nJ`jgx|IDt{u$QtG%7lqTd-
+z3MGLil+selYBjRA-5Y!H1(Sd8u4FsW#Zdxn^dfd<bY{+(+0pu7;GSV7*p*NWnPEB@
+zp06+!94@{M4=b;hfWLy$L~!qq!{eO?6hZXbvJ8}WS;bRpNuCxbF@}>o4seo<gQIuH
+zC_pfYgUNV2o@6M)Nq=#&1)1-l<Bf%ZK{+zWnbxJHv>L)d8^ol~l#G&b5XZsj_%0cx
+zqe(hWzHb1lU?HfkeP5cfVA65p#`}KMeEwOtEEU*Ff=`O1qy!`5t3B)vMb^xO>XNY)
+z$`LD3aTS;^gQ-F}g+Nj}C3`bG$TdvDw_!YNh27UIKkGQYXMb~op<96Zm%G#bBV~6I
+zw$<&|$xm9Kpzu-h&opId4m=WS8X}4C3_>RXp*pHw!9qDGP^Xh{6eb^}62AePUlN(w
+z`!`2t^`K^^sS>svl@@w4a@&Zf@gC`3mecf0tLQ7xVj?F6f!w7k5Y^Cd!_t7_h<<?r
+z6!3k0?iut2WPh3%*f)Y3rZZ!tPNNO0Emg<5V<g*1JtfR>vrl`|6Em|}=;ku2O4!Pb
+zg@S)k3Ug?LPXkJ{>8Z)O+oezciy*ncmbq*9<ofCBOyp2>RL)&Qcn-^OW*F^VA)SkW
+zA#MwVjaB9HUw2=svoiPKRupD|6b!C}<$337sA_M|>VJ;SVzGEkr9*>Vs0M5mF{@hq
+zlWP$RCoMKFxh)NfA4{<Z7cd7Zq;J*W4iMYdD)3`fHWud3nwV#_#BE*Ry5r8b8Ej))
+zo!dh%NW#%Gr>@bbZBfzZPv@7{x0fC%G)vP*@!?dF-4JzpNpPdfF=-HOOyKMMW~yrR
+x4S&)9^aY?g-~R=Z+;kk1M{z3zSZ@FavvzTc1O?Xi$+(S^1$H|IEO7t;007gyq^JM@
+
+delta 866
+zcmV-o1D*WG>;cB?0gyKYQnv56kvk%Pu?oU46h-$y{vkh*s5l7OO0`n3E-m8vtg%Lt
+z_e$~>|K3uhi>~L~dm2FhaGCYRrR)i<+L*NzbsU3>4jFiYy7L^IRmBMX)2U+uAM(#=
+zDeTPJZ2xGyQ?hE9-v;KEp)^R*fJa>h$a&EoJ)4#xu@vo%qCQbScdTj-U7_n3bG6D7
+zH?K_iom7+}uvO)|4}@-il|qUSkQ%cN0dH*u5t82}jFW<HDu1Gz9Vf1!G$EH#C@D0d
+zl$KJ)tFgW9-q?%nVDj%>NwyPR93{|3FJfm#XXc!l9jy;~{^?I7zml4R?Weu|`5j?W
+z;KjH8Vd*sr$yd~dN|F1M@ObAzO@UoIK0%$koEE8bG)oc2$ppqE7>-9-FdV%-4q!5h
+zg9Jw76F7<y$$xkYve-c<8w*DZ8CdY9bzv#2mU1)}xXLpP;=w3Ll3)<u#z{IHr^Dp?
+z2Cxj4l9|f)g_%gMJU3x;-;atff7T6433jJ2PYOygO2FpT9=3;qvvaB2WNd^A-~}ov
+z1G7~y(~vO?6mv7WH^YNm{XuvXCjCa(eZ}&#ij((jL4OIh3sC)Xce;P1>`ua_y4^bE
+zlNM;4=27a;Eak935lKA@K>?X#=p~@cMCB`3Y7d3_^dyYK;d`a!ZzT4Y0y}^AW_VT&
+zs%M&M>55Tlpw}a}jd&XGk?ut~b-!|&y#g&RGdiW1`BYP225W9yS=0j97o4I-v9He^
+zgTBOxp??<ljo^mq+*)PQXv1nt)w6CH$tF@q2@6v1)86#d&fO&Ra~YK-Y-J`=<G(0{
+zdo(I$0i(ut)a3l_GN=DVkW3QC{k3~?{d9FE@+c-M<}RWl!&Nx9oOP~{)<wWUxG50p
+zbg}%`?U(AT$lbe<Q@aF>y({TN*18(X+MBbwV}G+;E+12A(O?&9kT^~4T_yg>wMe9w
+zme`lvmKwzmh1k6dTp*JwZ&mLWf$wV-=3`Yf78lQ&m}j)aZ(S6o<<2)5Y-1ap+e0rH
+zgz+<{uGXh*QPHQ5=a<(vmpM{sSGJ4d!>J^@A?o!~=tox&S|eJUz}NZBl+~Ee;zj?{
+sg9P$?{}+?pbR3gNaVrE;w(qyIcX5gY1rd_pC5)2>b~^?uaR2}S0Aj_eNB{r;
+
