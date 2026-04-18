@@ -1,0 +1,133 @@
+diff --git a/myapp/README.md b/myapp/README.md
+index 1ddfe06d..e081b21c 100644
+--- a/myapp/README.md
++++ b/myapp/README.md
+@@ -1,7 +1,7 @@
+-## Grails 7.0.10 Documentation
++## Grails 7.0.7 Documentation
+ 
+-- [User Guide](https://grails.apache.org/docs/7.0.10/guide/index.html)
+-- [API Reference](https://grails.apache.org/docs/7.0.10/api/index.html)
++- [User Guide](https://grails.apache.org/docs/7.0.7/guide/index.html)
++- [API Reference](https://grails.apache.org/docs/7.0.7/api/index.html)
+ - [Grails Guides](https://guides.grails.org/index.html)
+ ---
+ 
+@@ -11,9 +11,5 @@
+ 
+ ## Feature views-json documentation
+ 
+-- [Grails JSON Views documentation](https://grails.apache.org/docs/7.0.10/guide/theWebLayer.html)
+-
+-## Feature mockito documentation
+-
+-- [https://site.mockito.org](https://site.mockito.org)
++- [Grails JSON Views documentation](https://grails.apache.org/docs/7.0.7/guide/theWebLayer.html)
+ 
+diff --git a/myapp/build.gradle b/myapp/build.gradle
+index 0e9a3db4..115b9f8e 100644
+--- a/myapp/build.gradle
++++ b/myapp/build.gradle
+@@ -58,7 +58,6 @@ dependencies {
+     runtimeOnly "com.zaxxer:HikariCP"
+     testImplementation "org.apache.grails:grails-testing-support-datamapping"
+     testImplementation "org.apache.grails:grails-testing-support-views-gson"
+-    testImplementation "org.mockito:mockito-core"
+     testImplementation "org.spockframework:spock-core"
+ }
+ 
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index 0765073d..3345f2e8 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,4 +1,4 @@
+-grailsVersion=7.0.10
++grailsVersion=7.0.7
+ version=0.1
+ org.gradle.caching=true
+ org.gradle.daemon=true
+diff --git a/myapp/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
+index 325abb4b..0178e91c 100644
+--- a/myapp/grails-app/conf/application.yml
++++ b/myapp/grails-app/conf/application.yml
+@@ -28,6 +28,9 @@ hibernate:
+     use_second_level_cache: false
+     use_query_cache: false
+ grails:
++  views:
++    default:
++      codec: html
+   codegen:
+     defaultPackage: myapp
+   profile: rest-api
+@@ -57,6 +60,3 @@ grails:
+       rss: application/rss+xml
+       text: text/plain
+       all: '*/*'
+-  views:
+-    default:
+-      codec: html
+diff --git a/myapp/grails-forge-cli.yml b/myapp/grails-forge-cli.yml
+index f6dcc1ef..f056284d 100644
+--- a/myapp/grails-forge-cli.yml
++++ b/myapp/grails-forge-cli.yml
+@@ -1,8 +1,8 @@
+ applicationType: rest_api
+ defaultPackage: myapp
+-reloading: devtools
++testFramework: spock
+ sourceLanguage: groovy
+ buildTool: gradle
+ gormImpl: gorm-hibernate5
+ servletImpl: spring-boot-starter-tomcat
+-features: [app-name, base, gorm-hibernate5, gradle, grails-application, grails-console, grails-dependencies, grails-gorm-testing-support, grails-gradle-plugin, grails-profiles, grails-url-mappings, grails-web, grails-wrapper, h2, logback, mockito, readme, spock, spring-boot-autoconfigure, spring-boot-devtools, spring-boot-starter, spring-boot-starter-tomcat, spring-resources, views-json, views-json-testing-support, yaml]
++features: [app-name, base, gorm-hibernate5, gradle, grails-application, grails-console, grails-dependencies, grails-gorm-testing-support, grails-gradle-plugin, grails-profiles, grails-url-mappings, grails-web, grails-wrapper, h2, logback, readme, spock, spring-boot-autoconfigure, spring-boot-devtools, spring-boot-starter, spring-boot-starter-tomcat, spring-resources, views-json, views-json-testing-support, yaml]
+diff --git a/myapp/grails-wrapper.jar b/myapp/grails-wrapper.jar
+index 0b7a3bfc9261087a27cbf2cede444a50462539c7..ede19aaa08b5ed7c2b0e8c5db670a91b8a71a37a 100644
+GIT binary patch
+delta 1066
+zcmV+_1l9YC{Q-pi0gyKdx!A)QnE(I);gLWae{GDh3c@fHMfX7dAwQ6)Qz2WaRtnao
+zMO>dX)=2VRN#5e$TZ(ki^_+W83+Nv%v%a{LJ)u=Qvz4NWQ*hBC1J6+Ro`bWhoM3o5
+zbxhzx{u!->!fZ|PN8_E6RpatDu(S-NQHmBk>MB6atM=&GbPS25=x!ACiH4<PReR`5
+z8r_`hO`f@VWy0^IrWAp#s@_8&bo;9mQhWfA8nX`pPjwFK_x0<H0ssJj2><{R0Fz;U
+z6qA5<4S%Amo7fSQCgf5IC50xG(o)K5HL|zWUf7H6VDj(Xm2AhlIC7wkUc}Cf&dfP8
+zJ6atL>@!R`z2TA~Jxm6}%LiO=23OyP$CXzJz+XWs!kP0&{^`~OlAz+&&=jO|8Oai3
+zNS2_J6PS$f*qcC_d!tE+y)-<Vc=;I`p)`!FA%EI{%(u|d+Co923~6LdtI|?hHKCw1
+zqQYg0!}!z-BQKuZ$8i#!CGq(C8n6oHyim38OEczFSZ+)^-;bKlJ*$?b0(%hPk|H4r
+zf{}LB9(RW#qi0-p$=C{Ih?c0h3e1+?RHCc^PZVZK_GWmJYZ&`){b<+<d#qW0)^S|V
+z=6?i3w*d7ox2MM)Ww#Qx)$P~GO`0bmcTwWcG@)n?EZ}nLBZ2S?d@BJdR8YOVg|tv0
+z&&Ph~kKYT)e*@OP1k$s2Z$=mOpk}72<fa^z7J4&s(}?Hsc62YxY5Ikc#VgRFJR>=Q
+z%%;jwp`hW0r3T4R@da{_!1ndIXV4drDu1G3-w3Xm&a@UP3D&GOR4wa{k!&ONlrYE5
+zKJ86U^vtBboy(vqVIwo<68=Rg)S?kK^$MbNPff<&E_ME21j#ry)Ly%1*H2$(0*j)8
+za_$1cGFbXEO^e<Y(zysIVkSpe8(A*@RrjU3D02_)c&-;n!r+D*mUXU%s`mD*ZhzS<
+z7K>df9U5#y6<{NYeyGJiyB0CG(qjFR+tQ%;p%i;?1#>94aIG5L1ETv{1#Ya$#=`ud
+zi8-JpcIyID9e2LXU=!Qw+#Y&f?1u+VU87H%qJmE!FRyR!t{sxEm%5MQ)2Sl6CTjH(
+zU`Ll>(jeNHz}NZBRMn`@>_z|6qXg>w_!pBQeH@c6c`FII*uxo_0002tlVW*O3-ka0
+z0B3SxX>4;ZlOcT^liYa@0UML+c{u?`lO=jq0-6PrAW;;PZwCjHn0i41J_nN^Q52K!
+zdOHGj43i*H6q7)EHv)GllORzPlZ|^f0%19mAW<8W;d?Lw3qq41Q5%ykd^7?BQIjB1
+zC6kGKDglO*w0u$lMw179L;-J;Ono{6oMV%@V=|MveJTMBljVIq0jiTDej*#|_x0<H
+k0ssJj2><{R00000000000001_flrfQekBGAc>n+a03ihLRsaA1
+
+delta 1069
+zcmZqq%h>&wae_Ig)TGS(Squyek0v@u*QfSu<ZChzas96LxBZ`kwvXCfjxI$(agM^;
+zN5a{ss+YWdbl<xpG12z>oy!b6#g8qi=DBDXId!&ASJf<AKM&4JOr_5!xv%b$Y%^cw
+z&G7uO-z_fp$un!@UrwASvqtLr?ncuzi=H5p2OiVqlJ2Cr>&-NC^a$F*Kkv)b_N~dG
+z#qXrKV(+hVj@j|kW!e6q!WjyYp>^!%TbAz@3Hrk@L2B}XN|wz+jNYZ3o1<REPGVwU
+zXq}u^rdF?Xa#QSau_<a#g1A&$)uvnuI#p%5Y5QI2>W#8K|Mu>lwAMx3opZ~@?h9vL
+zoS9?1dGqbX^QwOpA6(axbmGh8xc`6nf)74?6#ak4hb+z?+8Vwr-~U<6nIad!axwe#
+zvjuxjYt4)BzQm$9=TVLs_p+OuTyFW7BMqee3k_t?xqUvEV^u%T$7@0;r|f$j9v-iW
+zj_0<V)!lhjfbEuoTJ5rj2^O4eixWidAA77Kr`CM&yKI7>4$IZ4|BH>qe5~^BRNU|H
+zI&XiwZ7IX<$qyzgX=)xk@guAMw(~?&?}fKga$1Ux6otgFESsIMFu+T3!WF#}2YL95
+zzP3NK==t5d;dj^5bkXDA>vLQUwr~gh-TY@){gNEb#NfMmbN?)1<ua02{jVd`7Ir{+
+zp_t+%4t>QEA%RtkABnD++RRj1CB%2A;zOL)N9heeRVPO7t2VY;?RGU-cglvJYfK)z
+zp7`6(ruVzYk45vU8n$%pV>46>nk48EyN)N2*VH_RN2BkB_z4F_`zx>dBID~1#|SgG
+zFDq~_&Fs12xn=Rz=dUuh`=ko5T-+kMuKZO(RnoLFxm_1~x`e)2B`<ssKjn~&)Whxu
+zp<Ju1P460BUjDD-p|v6P-4olLjk~ObEk$HSo5cm^9a4*ta<jhf@!BY%<2FxXa%df6
+z&h7J8Bj@cYS2o)0##I%5=+l-`TalyY_3c}iY>rzmUz{npkmqW{TBT>}g#JItI&vtp
+z`>c1LckiS2n78*>*EDdwtiHON^$6cru0JtP=eAzm?DkAjw{W)jjy%gRzHGm5xIO2)
+zz}=Qu`*P~Uts7T=&5RHE^78S|r(e%5b>}*JtR%4Jht`RA9aei)c3gZq<4VUhwGUI*
+z%~~Y$muu$!7eTgK``-U&n#^74j>u4xqbq|MzfN9XX~HNo`AMZEqsL^qsxYS6tdl45
+zh)m97XP-Q=%8|()NP)S6lYdreF_rNExr&qBs<jv^CKp!wFeO=n<rQk!C*P_zVB&Ft
+za;=$I0^u@Nfm}c>0+Xji32+1RG8imrY@fWgCWz5}QmqSP!DQE3E5^B#8){=2`6l11
+jwPjpAS*A`&8lICl85o3MI)U_(#(>F@b*gMal^{U?G)LS9
+
