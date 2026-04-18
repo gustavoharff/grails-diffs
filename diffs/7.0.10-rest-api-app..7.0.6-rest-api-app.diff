@@ -1,0 +1,194 @@
+diff --git a/myapp/README.md b/myapp/README.md
+index 1ddfe06d..cb07923e 100644
+--- a/myapp/README.md
++++ b/myapp/README.md
+@@ -1,7 +1,7 @@
+-## Grails 7.0.10 Documentation
++## Grails 7.0.6 Documentation
+ 
+-- [User Guide](https://grails.apache.org/docs/7.0.10/guide/index.html)
+-- [API Reference](https://grails.apache.org/docs/7.0.10/api/index.html)
++- [User Guide](https://grails.apache.org/docs/7.0.6/guide/index.html)
++- [API Reference](https://grails.apache.org/docs/7.0.6/api/index.html)
+ - [Grails Guides](https://guides.grails.org/index.html)
+ ---
+ 
+@@ -11,9 +11,5 @@
+ 
+ ## Feature views-json documentation
+ 
+-- [Grails JSON Views documentation](https://grails.apache.org/docs/7.0.10/guide/theWebLayer.html)
+-
+-## Feature mockito documentation
+-
+-- [https://site.mockito.org](https://site.mockito.org)
++- [Grails JSON Views documentation](https://grails.apache.org/docs/7.0.6/guide/theWebLayer.html)
+ 
+diff --git a/myapp/build.gradle b/myapp/build.gradle
+index 0e9a3db4..115b9f8e 100644
+--- a/myapp/build.gradle
++++ b/myapp/build.gradle
+@@ -58,7 +58,6 @@ dependencies {
+     runtimeOnly "com.zaxxer:HikariCP"
+     testImplementation "org.apache.grails:grails-testing-support-datamapping"
+     testImplementation "org.apache.grails:grails-testing-support-views-gson"
+-    testImplementation "org.mockito:mockito-core"
+     testImplementation "org.spockframework:spock-core"
+ }
+ 
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index 0765073d..1cdbcadf 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,4 +1,4 @@
+-grailsVersion=7.0.10
++grailsVersion=7.0.6
+ version=0.1
+ org.gradle.caching=true
+ org.gradle.daemon=true
+diff --git a/myapp/gradle/wrapper/gradle-wrapper.properties b/myapp/gradle/wrapper/gradle-wrapper.properties
+index aaaabb3c..d4081da4 100644
+--- a/myapp/gradle/wrapper/gradle-wrapper.properties
++++ b/myapp/gradle/wrapper/gradle-wrapper.properties
+@@ -1,6 +1,6 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-8.14.4-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-8.14.3-bin.zip
+ networkTimeout=10000
+ validateDistributionUrl=true
+ zipStoreBase=GRADLE_USER_HOME
+diff --git a/myapp/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
+index 325abb4b..13fc9722 100644
+--- a/myapp/grails-app/conf/application.yml
++++ b/myapp/grails-app/conf/application.yml
+@@ -3,31 +3,10 @@ info:
+     name: '@info.app.name@'
+     version: '@info.app.version@'
+     grailsVersion: '@info.app.grailsVersion@'
+-dataSource:
+-  driverClassName: org.h2.Driver
+-  username: sa
+-  password: ''
+-  pooled: true
+-  jmxExport: true
+-environments:
+-  development:
+-    dataSource:
+-      dbCreate: create-drop
+-      url: jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+-  test:
+-    dataSource:
+-      dbCreate: update
+-      url: jdbc:h2:mem:testDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+-  production:
+-    dataSource:
+-      dbCreate: none
+-      url: jdbc:h2:./prodDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+-hibernate:
+-  cache:
+-    queries: false
+-    use_second_level_cache: false
+-    use_query_cache: false
+ grails:
++  views:
++    default:
++      codec: html
+   codegen:
+     defaultPackage: myapp
+   profile: rest-api
+@@ -57,6 +36,27 @@ grails:
+       rss: application/rss+xml
+       text: text/plain
+       all: '*/*'
+-  views:
+-    default:
+-      codec: html
++dataSource:
++  driverClassName: org.h2.Driver
++  username: sa
++  password: ''
++  pooled: true
++  jmxExport: true
++environments:
++  development:
++    dataSource:
++      dbCreate: create-drop
++      url: jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
++  test:
++    dataSource:
++      dbCreate: update
++      url: jdbc:h2:mem:testDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
++  production:
++    dataSource:
++      dbCreate: none
++      url: jdbc:h2:./prodDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
++hibernate:
++  cache:
++    queries: false
++    use_second_level_cache: false
++    use_query_cache: false
+diff --git a/myapp/grails-forge-cli.yml b/myapp/grails-forge-cli.yml
+index f6dcc1ef..f056284d 100644
+--- a/myapp/grails-forge-cli.yml
++++ b/myapp/grails-forge-cli.yml
+@@ -1,8 +1,8 @@
+ applicationType: rest_api
+ defaultPackage: myapp
+-reloading: devtools
++testFramework: spock
+ sourceLanguage: groovy
+ buildTool: gradle
+ gormImpl: gorm-hibernate5
+ servletImpl: spring-boot-starter-tomcat
+-features: [app-name, base, gorm-hibernate5, gradle, grails-application, grails-console, grails-dependencies, grails-gorm-testing-support, grails-gradle-plugin, grails-profiles, grails-url-mappings, grails-web, grails-wrapper, h2, logback, mockito, readme, spock, spring-boot-autoconfigure, spring-boot-devtools, spring-boot-starter, spring-boot-starter-tomcat, spring-resources, views-json, views-json-testing-support, yaml]
++features: [app-name, base, gorm-hibernate5, gradle, grails-application, grails-console, grails-dependencies, grails-gorm-testing-support, grails-gradle-plugin, grails-profiles, grails-url-mappings, grails-web, grails-wrapper, h2, logback, readme, spock, spring-boot-autoconfigure, spring-boot-devtools, spring-boot-starter, spring-boot-starter-tomcat, spring-resources, views-json, views-json-testing-support, yaml]
+diff --git a/myapp/grails-wrapper.jar b/myapp/grails-wrapper.jar
+index 0b7a3bfc9261087a27cbf2cede444a50462539c7..ba0621bb5b0b437b2d7e4747d93cbaa59b8b03d3 100644
+GIT binary patch
+delta 1065
+zcmeDF%h>vtae_JLW=5TrGZ`2d9!_+SuFvh+$aTm-#Pz$wKSlcqE4rPw1+5iX<K4Z(
+zE_=<yCwnLDIl6zl$je2qEx*rWyI>!aR$Hi9?X=n~P1jZS_=82xZ1WbpvtdsUHFWx4
+z@@mF`_CLl^T-KY-Zre+}pRz{k+4jbrsT#aNCJzFqGZw{daX-H-)kDX%dhrVXE9Yfb
+z&vFizdhsh}?WZGWwT0`{MVE5qg#LWTyzqAX(g}~4CrEAPXY?=SYj^nU)XT)c(7?&S
+zAjB{^u})-iLm7X)_HI7WDQZuGxKvwJrd$d-m1VkV`_;G`-ER{<y}vs(M}3z?(SqK%
+zBj<X~ov}2wj*{oSW9-AaTc|71*oW=#=jtF1KJoi)$ESvSE5tiyYVG*GxM0`khDAGe
+zY|~+V8XNZUNYpG<j!O~;MVNX5WO_dT$o-JlbnIY;)Z&vWt}jofY^i6Be6!%<u|o$Q
+z@JPS$d3`A;iZ^uuZ`!5wF87Zn5(^dj-d|AZe9W@&z4QUChz_Ug`}EJc7`)t3__)?S
+z%kKZ0=xJPU;+p)smg;C6JQiMkN49J2Ozx|y$=Xwr!xl}_GKgk1Zr#kp6nR7P?(Bzw
+z>k?)BoJ?|BZLjFqzqZ(y&h53JKDy!8^xc;a3#XO~ZM*vR`bqz&1q$B-Kb_Y}tYEYe
+z$`VWJJSpR(&Zt`wvbSkzQNRK}|3iTme-)<w;63tZ(v36s_e;*d+B|D!n%9k@kf;}D
+zPvk1kJ6^r0I@0g5{#vcLMloT@vzjS-p?%!Eyyk0oH2S)wPdGB(zy5rlW4zO<m5uea
+z$~zLR%-vq8+}dy}sC13B+os+t!H1emes3|iH7%aqmZ!IPRm<8lE*d|?mm0LY{nXJ|
+zVP<O@S-$(r%X&c-;Uh-nZ|B9@*Us&f>FPVRvs>eQg6KJ3?W%B(=Sm4PZp#QKhwl7y
+z{qFQvYtGp25ZxJ>#M-Q#Sb1%y)T&#zH}6W`Tpy!1Kj`I!1o2gk5w2%zb^qPm>d`WJ
+z+KlOUrm-FEUwWgNJHkP6N&eLbd<M6#Ykf!#H4_tK_dUa?TNo|A<K2$Wxoo#@ggyUu
+zf%{QG$%8AVzqaUV{rdCr&!=DCE-AOBrT)^eo2Ru&dXb+#XI_crLf%EaoHcXr`-JxX
+zI~4!L-gebFX8wA{$%?fyll3aK5jkpdQe`mr7hv8>FG|eJDb@$8xKqi;C_VXgr6r^L
+zWYwxLrdh0$6#_*j=d-g<o>Aq<WXBHXzOS-oD&+w)9jeWl$~D2vULZ5k63CRE{IJ@9
+ziQ5Ux)T=RJVh#i{RVR1WXfd`;-cl39=r)<X)`c;DvQMoQ)12hVJCltj@2b^e<emJq
+g)|PSAWaT;~Y1FI)bS4xmY4o3*P^ZeqQwb6P00X4eR{#J2
+
+delta 1069
+zcmZqu%h>&wae_Ig)TGS(Squyek0v@u*QfSu<ZChzas96LxBZ`kwvXCfjxI$(agM^;
+zN5a{ss+YWdbl<xpG12z>oy!b6#g8qi=DBDXId!&ASJf<AKM&4JOr_5!xv%b$Y%^cw
+z&G7uO-z_fp$un!@UrwASvqtLr?ncuzi=H5p2OiVqlJ2Cr>&-NC^a$F*Kkv)b_N~dG
+z#qXrKV(+hVj@j|kW!e6q!WjyYp>^!%TbAz@3Hrk@L25G}qkk#q=BQV(lb9G7S|_KK
+zY1D6uJuWsy?MV=qYOC6mOF^fqOgC-6D_y-&*5}{e-ILb3h`V!cx!8T-%!@N~j5lw-
+zy?9>rui}I2T9QtDnH=~34`1-XhmWHF@A#0#`9oX7m*x9Ei#b!|0$46)pMJJr&uOiB
+z5#E<r6z4q3G2>o#latFW|8k^(w11(2>^Zm32Xn0E`P6$&2<4Q0ufxORHPP|hmb1D$
+zuL`i;Qc$a1_AtSMlWlQ=$o*rFRpiu~FMgLz5Y%D0I`x0Cv6zol-kpm3{axqnZ?`RF
+z*gg5dWF<|_gC~Au_1|`$XzIQ2R!UAw(UGE%7?x$T6BY(|DNeYecj6!qf6>?WhZa4*
+zdpG><dYUeJ{CkdTy}=glfWMpn?5baqqnQ|dH*fBrC9GUV@~Z!JgxbOmC@&OKoW!B8
+zSRy2_YVjk{HB+0JN~?tU4pn@J)A}gA;iu}v$bHquR;%5v2J24Q@N<pHgVz&(``Pq<
+z_xQ1BURA@Eu6=BVYC)3(J!04K1oE1i=kRFsy%0a)z-WKvRbOQM;h1`1=JsU;?xmSM
+zS3I{Y-unDi#&(}n;gyS9MAwzSN~lVjRwlRWVo#UQH>>1@58|gBl977Y-5``}m9^<z
+z!^_M6l{~aIq`rG%yR&hZm9V9VtZ1{i;Jia>F;Z^U*F9bvC3M{8NlXr{W6ZgI{%YjB
+zJ>|+qo87po!Vi7gQfe!5)VzIb{gTab>*b3x1sC#MZCI=HY@N{mCs{`hWp<zS?(^<_
+z)E@Kp9_yM0u9wwUce5Vh`^xnv=IPwltDD`PN$M8P7T=L)`Nfy*_YJq_d>6Re5^G;h
+zow#-5>aUscAzxlT{`vIl*`@AWXOEQx*8I>q@vg&augZ>#PiI`|xTf}D>bhBrWd6?F
+z&+#J2R%_q;|4fs4D%}xTX>v?uFyq(B8!Am0WhOtZv}E*{EMFDIG@EtuL>`gJdF<?y
+zCsjEz*|S5rf|Gw$X)%@Y0J(~j-K({jDm1||?bYT?NtR&d6(Ezx3Cy&15(Fv|nCw&|
+z#l#W_7BUWm2u+C+;09)8Fj&&qK6zbD5TpBK##$G~g2`^RR*Z8eH`c~7@=d;9Ys<KL
+fvTU7_G(0zPGB60iv;yfRjRBLR>Qvc;DnWt(gU8zl
+
