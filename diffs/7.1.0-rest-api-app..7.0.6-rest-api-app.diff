@@ -1,0 +1,164 @@
+diff --git a/myapp/README.md b/myapp/README.md
+index 4b4e2060..cb07923e 100644
+--- a/myapp/README.md
++++ b/myapp/README.md
+@@ -1,7 +1,7 @@
+-## Grails 7.1.0 Documentation
++## Grails 7.0.6 Documentation
+ 
+-- [User Guide](https://grails.apache.org/docs/7.1.0/guide/index.html)
+-- [API Reference](https://grails.apache.org/docs/7.1.0/api/index.html)
++- [User Guide](https://grails.apache.org/docs/7.0.6/guide/index.html)
++- [API Reference](https://grails.apache.org/docs/7.0.6/api/index.html)
+ - [Grails Guides](https://guides.grails.org/index.html)
+ ---
+ 
+@@ -9,11 +9,7 @@
+ 
+ - [Grails SpringBoot Developer Tools documentation](https://docs.spring.io/spring-boot/reference/using/devtools.html)
+ 
+-## Feature mockito documentation
+-
+-- [https://site.mockito.org](https://site.mockito.org)
+-
+ ## Feature views-json documentation
+ 
+-- [Grails JSON Views documentation](https://grails.apache.org/docs/7.1.0/guide/theWebLayer.html)
++- [Grails JSON Views documentation](https://grails.apache.org/docs/7.0.6/guide/theWebLayer.html)
+ 
+diff --git a/myapp/build.gradle b/myapp/build.gradle
+index 93e382c6..115b9f8e 100644
+--- a/myapp/build.gradle
++++ b/myapp/build.gradle
+@@ -58,7 +58,6 @@ dependencies {
+     runtimeOnly "com.zaxxer:HikariCP"
+     testImplementation "org.apache.grails:grails-testing-support-datamapping"
+     testImplementation "org.apache.grails:grails-testing-support-views-gson"
+-    testImplementation "org.mockito:mockito-core"
+     testImplementation "org.spockframework:spock-core"
+ }
+ 
+@@ -68,3 +67,7 @@ tasks.withType(Test).configureEach {
+     useJUnitPlatform()
+ }
+ 
++// https://github.com/apache/grails-core/issues/15321
++tasks.withType(GroovyCompile).configureEach {
++    groovyOptions.optimizationOptions.indy = false
++}
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index 6d958d44..1cdbcadf 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,4 +1,4 @@
+-grailsVersion=7.1.0
++grailsVersion=7.0.6
+ version=0.1
+ org.gradle.caching=true
+ org.gradle.daemon=true
+diff --git a/myapp/gradle/wrapper/gradle-wrapper.properties b/myapp/gradle/wrapper/gradle-wrapper.properties
+index aaaabb3c..d4081da4 100644
+--- a/myapp/gradle/wrapper/gradle-wrapper.properties
++++ b/myapp/gradle/wrapper/gradle-wrapper.properties
+@@ -1,6 +1,6 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-8.14.4-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-8.14.3-bin.zip
+ networkTimeout=10000
+ validateDistributionUrl=true
+ zipStoreBase=GRADLE_USER_HOME
+diff --git a/myapp/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
+index 1a5af033..13fc9722 100644
+--- a/myapp/grails-app/conf/application.yml
++++ b/myapp/grails-app/conf/application.yml
+@@ -4,6 +4,12 @@ info:
+     version: '@info.app.version@'
+     grailsVersion: '@info.app.grailsVersion@'
+ grails:
++  views:
++    default:
++      codec: html
++  codegen:
++    defaultPackage: myapp
++  profile: rest-api
+   mime:
+     disable:
+       accept:
+@@ -30,12 +36,6 @@ grails:
+       rss: application/rss+xml
+       text: text/plain
+       all: '*/*'
+-  codegen:
+-    defaultPackage: myapp
+-  profile: rest-api
+-  views:
+-    default:
+-      codec: html
+ dataSource:
+   driverClassName: org.h2.Driver
+   username: sa
+diff --git a/myapp/grails-forge-cli.yml b/myapp/grails-forge-cli.yml
+index f6dcc1ef..f056284d 100644
+--- a/myapp/grails-forge-cli.yml
++++ b/myapp/grails-forge-cli.yml
+@@ -1,8 +1,8 @@
+ applicationType: rest_api
+ defaultPackage: myapp
+-reloading: devtools
++testFramework: spock
+ sourceLanguage: groovy
+ buildTool: gradle
+ gormImpl: gorm-hibernate5
+ servletImpl: spring-boot-starter-tomcat
+-features: [app-name, base, gorm-hibernate5, gradle, grails-application, grails-console, grails-dependencies, grails-gorm-testing-support, grails-gradle-plugin, grails-profiles, grails-url-mappings, grails-web, grails-wrapper, h2, logback, mockito, readme, spock, spring-boot-autoconfigure, spring-boot-devtools, spring-boot-starter, spring-boot-starter-tomcat, spring-resources, views-json, views-json-testing-support, yaml]
++features: [app-name, base, gorm-hibernate5, gradle, grails-application, grails-console, grails-dependencies, grails-gorm-testing-support, grails-gradle-plugin, grails-profiles, grails-url-mappings, grails-web, grails-wrapper, h2, logback, readme, spock, spring-boot-autoconfigure, spring-boot-devtools, spring-boot-starter, spring-boot-starter-tomcat, spring-resources, views-json, views-json-testing-support, yaml]
+diff --git a/myapp/grails-wrapper.jar b/myapp/grails-wrapper.jar
+index fb3d439769317f1038e9bcdc2c4661c6f9306ca5..ba0621bb5b0b437b2d7e4747d93cbaa59b8b03d3 100644
+GIT binary patch
+delta 1055
+zcmV+)1mOFI{Q-sj0gyKZvjHrrnUOp$e~Uu4QmquMON+QZYpjvvy^_4ezqb_WqU$;L
+zo(9lATxNZ7DSJYzHfAkF9mn9JLk6Cp?mP!)RWU;Ubn2MEhx{{I3Olnl+dmrbl&l)&
+zw}H83C=F6H;8B+Wa$dAY&!%NaEJb^xs87_-9jlr{SLpg&t@6apD-(Vv6{QGl3sw2<
+z1EJerrI6wSkQ%cM0Z(-Whd}c}jgw(^AAj3w+dvR~&sP{j-y+E?yABnUCgf5IC50rE
+z(o)K5HL|zWUf7H6VDj(Xm24-vIC7wkUc}Cf&dfP8J6azN+%rrCyAq0FGfW1<^LtVV
+z4j12s$CX!0AYVagD!BKfaJut=qPV!WECuCVR`JAInk5L*7{L?*j8Ghm^Z0G>ZhwNt
+z!Dt$z$s|ST$z-$zS?r+E#=^kh3>)lB>(WwM4P~GWX3}ShNAWZmp&*X$&?JfD1flO6
+zz$#dXLf5`8%|tNixN+lsKWaYztXq}}>|TOTilr<l!Nym6+#QOonG4k=V=I(nR-%$B
+zFk1yPg|h+zS=brfo8eKeVH{3EG=FS`J=82e>o~q=3re6{fclra)58;GcM`VM?bpdq
+zTA(2JQS#3$VR!*N5^5G=iOC#7Cjl*VRK0?wa!{a7Pr^|+{UDY24aEGC*v#L*8K2dI
+znwe%w*m6`_=*`G&Bc8{5qI+3R(=V+mUV#=98O<qVE>(^T4GlM}3@DC^8-K__0pHi>
+zo<Uzis;Pl}Be-EYH%96t+OXPEb*wu^vW?VJ!h$sWv^PC9bDM^4E~Bc1t;|Fy_!p%x
+zher7<D5y3)HCcDN^yz;QBoo9kckP~CKYg8v9Ey(0xr->zU=_{{D|%N*=OSR3+Z+>P
+zRk{4v-IwaD%ssdjxmjWbgMTYwdDgias@mJLx?{6kE}v5A&|nv;fmlV&eJ%dkwMc}M
+zmYA2^mIlR-rPzZDSU@49Z`I%qFx%HE@MBdr78VCh%mFQNTNk+QxbtlW+t^m;_RtIB
+zaCG3*HTtwID*F8C{POzt(j$dtW%?*So+`2%qE0UfZge@J4Wf++d=Q=AOjV8k!e8`1
+zJ*v(Re*u#Xc}E4a0W7JRlUaFJ0rZoxc{BkVljeCj0Y{S{dR79O1(U&h6q9WS2b0hR
+z7n7=bDgr(SlfiowlWhkPllyuq0(A_N!Fv>wJ9{?*cPW#>dlZw1dp7}LlfZjS0t-Tu
+z!FwB%DSR{n15uN~dmEE_d^7@vT9ct#CzDKi5R>P88UjXOlVM;PlN^020dJE>eL4c1
+zW0SXIGLuMq5R)2a5DNeR00000005+c4U^z~Jprnd9)2Plhd}c}jRF7wfC&Hq5&!@I
+Z0000000000q=8S9TYe=540!+m005FJ*b)E$
+
+delta 1076
+zcmZqu%h>jpae_Ik#7n;&GbY;T)lZ(VHbk5C^`)Sg`ClWIPkMXadvrg#tK{O>JH`IY
+zPvmAqexI?aJLT%RoTV!cKQUA={J>NC{Kn$Yqb!GouWB}a{^=gYUHy6eMdiE6o3di=
+zu}z!SnK@+<qx-He6Fys67v)5?9SPd9UE+%+pZD=q&u)nB+7~k0rug%ziTk`ngBiB1
+z;;P}d6OvmO<nfVlg4AX{M*q@!(>uqw`<WOR8aNpkgcukYd|g8vbv^yu^ox`7bM>-{
+z^YiwGW@g`Z5coSUK9T3InCG-diw&o!J<({L<Rt8sshPT0>gMftN9F7ce!jmuHAmG-
+zM)iW5#F=wFY0vgnTHliUdgt<d&N5vQ=VkV9zv`RK;NqKp|JU)>aPI^0j+sh3>c1a<
+zxZ_KMQpddrGv=qUVINm+Rhi4TnbGS*rcjUj^2rZW`V?pQsx5c4nc3^c>0l(Y_pW;6
+zw3UzNwl+Fy8l9NAZKvvXsY4FZN0zLg!ZWGRK!UBXNW6dfJM%d;_f>V8S{Lm4RF`+G
+z$+Nvz`u*>~k3Z9IZxA_YCR7usqN*w(dH-#FVYSAlG{q3<-rj(|h<T#ojW4ZcXio{^
+zP}y2swBZnQ>|Yg`w!-~_W$_#Tta<j)I9iD3ElbFK9slqBGjug`Hr+luIXr5C!sozG
+z=W9+~5UNnQV&fw8khP_c$*DBt53Bamphm0NErk{p`cr@K-uN@=gwDOamX_<;u4<p1
+zx?yLCRQ=7@6Ms9}%zZETzS6pM|CX+OOgd^olLS3tSMmh%nwqcS)#!U6e!_v#-sCyo
+z!u1KuIvbsZ?kL7eD1SA%weXg6>56ETn`f?EJS24edC3MFLvCyCxq6Eiwc4JI(D)&~
+z)?j+?hf0S|Gg;fn^4(u<)+?%r-Y_bEJ1@pQc5-KonC#Q~UELi1iL!b;i|1-DDHSw0
+zlH0anqgMRC+uyuP=Usnyx9iNB2~GF5Zm`LX<#m1UyLMVe*y^jv8oDx57D{ahJ(8pK
+z(SMz*j?C5@d!B5&qEL6@<h$5ILMtZJh3vI<cynRJfzw*@Iy&>0&PeY$k{kPA*VA+6
+zf^U+gCtEY<dq`=o?^$EEa-G@o+Te@J`^Ce}w};yWXIxvx{pj#YhTY7seoT6><h0>R
+z#<iLsO6`nY&3_r!U;O@Mg~k2<tdn^v-66SZazte~<LAj6Doq%rCO@sTWOSP>UlqnQ
+zlXdb$9+Am;?Cg^#RXH-*vO~FolYdodF_rKDxr&qBtF@TQG{G|M)#gkImSE-;Ad|}p
+z%(QkA1S%4k>{KJg#1se?G7f|YO^FiV24)v9Skl-!d0kBqqw8eGS{KH=$!@h)jI$><
+j*2XgOOuk=h%eZo~Y@L!cdQL;=_M044r^?1#2@(MSxzyL8
+
