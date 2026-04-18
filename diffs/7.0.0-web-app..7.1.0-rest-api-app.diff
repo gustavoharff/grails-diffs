@@ -1,0 +1,2257 @@
+diff --git a/myapp/README.md b/myapp/README.md
+index 04a35ac0..4b4e2060 100644
+--- a/myapp/README.md
++++ b/myapp/README.md
+@@ -1,25 +1,19 @@
+-## Grails 7.0.0 Documentation
++## Grails 7.1.0 Documentation
+ 
+-- [User Guide](https://grails.apache.org/docs/7.0.0/guide/index.html)
+-- [API Reference](https://grails.apache.org/docs/7.0.0/api/index.html)
++- [User Guide](https://grails.apache.org/docs/7.1.0/guide/index.html)
++- [API Reference](https://grails.apache.org/docs/7.1.0/api/index.html)
+ - [Grails Guides](https://guides.grails.org/index.html)
+ ---
+ 
+-## Feature geb-with-testcontainers documentation
+-
+-- [Grails Geb Functional Testing for Grails with Testcontainers documentation](https://github.com/apache/grails-geb#readme)
+-
+-- [https://groovy.apache.org/geb/manual/current/](https://groovy.apache.org/geb/manual/current/)
+-
+-## Feature asset-pipeline-grails documentation
++## Feature spring-boot-devtools documentation
+ 
+-- [Grails Asset Pipeline documentation](https://github.com/wondrify/asset-pipeline#readme)
++- [Grails SpringBoot Developer Tools documentation](https://docs.spring.io/spring-boot/reference/using/devtools.html)
+ 
+-## Feature scaffolding documentation
++## Feature mockito documentation
+ 
+-- [Grails Scaffolding documentation](https://grails.apache.org/docs/7.0.0/guide/scaffolding.html)
++- [https://site.mockito.org](https://site.mockito.org)
+ 
+-## Feature spring-boot-devtools documentation
++## Feature views-json documentation
+ 
+-- [Grails SpringBoot Developer Tools documentation](https://docs.spring.io/spring-boot/reference/using/devtools.html)
++- [Grails JSON Views documentation](https://grails.apache.org/docs/7.1.0/guide/theWebLayer.html)
+ 
+diff --git a/myapp/build.gradle b/myapp/build.gradle
+index 6bedf1ca..93e382c6 100644
+--- a/myapp/build.gradle
++++ b/myapp/build.gradle
+@@ -6,7 +6,6 @@ buildscript {
+         }
+     }
+     dependencies { // Not Published to Gradle Plugin Portal
+-        classpath "cloud.wondrify:asset-pipeline-gradle"
+         classpath platform("org.apache.grails:grails-bom:$grailsVersion")
+         classpath "org.apache.grails:grails-data-hibernate5"
+         classpath "org.apache.grails:grails-gradle-plugins"
+@@ -21,8 +20,7 @@ plugins {
+ 
+ // Not Published to Gradle Plugin Portal
+ apply plugin: "org.apache.grails.gradle.grails-web"
+-apply plugin: "org.apache.grails.gradle.grails-gsp"
+-apply plugin: "cloud.wondrify.asset-pipeline"
++apply plugin: "org.apache.grails.gradle.grails-gson"
+ 
+ group = "myapp"
+ 
+@@ -34,24 +32,20 @@ repositories {
+ }
+ 
+ dependencies {
+-    profile "org.apache.grails.profiles:web"
++    profile "org.apache.grails.profiles:rest-api"
+     developmentOnly "org.springframework.boot:spring-boot-devtools" // Spring Boot DevTools may cause performance slowdowns or compatibility issues on larger applications
+-    testAndDevelopmentOnly "org.webjars.npm:bootstrap"
+-    testAndDevelopmentOnly "org.webjars.npm:bootstrap-icons"
+-    testAndDevelopmentOnly "org.webjars.npm:jquery"
+     implementation platform("org.apache.grails:grails-bom:$grailsVersion")
+     implementation "org.apache.grails:grails-core"
+     implementation "org.apache.grails:grails-data-hibernate5"
++    implementation "org.apache.grails:grails-data-mongodb-gson-templates"
+     implementation "org.apache.grails:grails-databinding"
+     implementation "org.apache.grails:grails-events"
+-    implementation "org.apache.grails:grails-gsp"
+     implementation "org.apache.grails:grails-interceptors"
+-    implementation "org.apache.grails:grails-layout"
+     implementation "org.apache.grails:grails-logging"
+     implementation "org.apache.grails:grails-rest-transforms"
+-    implementation "org.apache.grails:grails-scaffolding"
+     implementation "org.apache.grails:grails-services"
+     implementation "org.apache.grails:grails-url-mappings"
++    implementation "org.apache.grails:grails-views-gson"
+     implementation "org.apache.grails:grails-web-boot"
+     implementation "org.springframework.boot:spring-boot-autoconfigure"
+     implementation "org.springframework.boot:spring-boot-starter"
+@@ -60,13 +54,11 @@ dependencies {
+     implementation "org.springframework.boot:spring-boot-starter-tomcat"
+     implementation "org.springframework.boot:spring-boot-starter-validation"
+     console "org.apache.grails:grails-console"
+-    runtimeOnly "cloud.wondrify:asset-pipeline-grails"
+     runtimeOnly "com.h2database:h2"
+     runtimeOnly "com.zaxxer:HikariCP"
+-    runtimeOnly "org.fusesource.jansi:jansi"
+-    integrationTestImplementation testFixtures("org.apache.grails:grails-geb")
+     testImplementation "org.apache.grails:grails-testing-support-datamapping"
+-    testImplementation "org.apache.grails:grails-testing-support-web"
++    testImplementation "org.apache.grails:grails-testing-support-views-gson"
++    testImplementation "org.mockito:mockito-core"
+     testImplementation "org.spockframework:spock-core"
+ }
+ 
+@@ -76,18 +68,3 @@ tasks.withType(Test).configureEach {
+     useJUnitPlatform()
+ }
+ 
+-assets {
+-    excludes = [
+-            'webjars/jquery/**',
+-            'webjars/bootstrap/**',
+-            'webjars/bootstrap-icons/**'
+-    ]
+-    includes = [
+-            'webjars/jquery/*/dist/jquery.js',
+-            'webjars/bootstrap/*/dist/js/bootstrap.bundle.js',
+-            'webjars/bootstrap/*/dist/css/bootstrap.css',
+-            'webjars/bootstrap-icons/*/font/bootstrap-icons.css',
+-            'webjars/bootstrap-icons/*/font/fonts/*',
+-    ]
+-}
+-
+diff --git a/myapp/gradle.properties b/myapp/gradle.properties
+index 6bd7c223..6d958d44 100644
+--- a/myapp/gradle.properties
++++ b/myapp/gradle.properties
+@@ -1,4 +1,4 @@
+-grailsVersion=7.0.0
++grailsVersion=7.1.0
+ version=0.1
+ org.gradle.caching=true
+ org.gradle.daemon=true
+diff --git a/myapp/gradle/wrapper/gradle-wrapper.properties b/myapp/gradle/wrapper/gradle-wrapper.properties
+index d4081da4..aaaabb3c 100644
+--- a/myapp/gradle/wrapper/gradle-wrapper.properties
++++ b/myapp/gradle/wrapper/gradle-wrapper.properties
+@@ -1,6 +1,6 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-8.14.3-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-8.14.4-bin.zip
+ networkTimeout=10000
+ validateDistributionUrl=true
+ zipStoreBase=GRADLE_USER_HOME
+diff --git a/myapp/grails-app/assets/images/advancedgrails.svg b/myapp/grails-app/assets/images/advancedgrails.svg
+deleted file mode 100644
+index 8b63ec8b..00000000
+--- a/myapp/grails-app/assets/images/advancedgrails.svg
++++ /dev/null
+@@ -1,27 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+-<svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+-	 width="93.58px" height="93.58px" viewBox="0 0 93.58 93.58" enable-background="new 0 0 93.58 93.58" xml:space="preserve">
+-<g>
+-	<g>
+-		<circle fill="none" stroke="#FEB672" stroke-width="2.8347" stroke-miterlimit="10" cx="46.79" cy="46.789" r="45.374"/>
+-	</g>
+-	<g>
+-		<path fill="#FEB672" d="M71.126,29.576c0,0.414-0.337,0.75-0.75,0.75h-3.25v3.25c0,0.415-0.337,0.751-0.751,0.751h-1.499
+-			c-0.415,0-0.75-0.336-0.75-0.751v-3.25h-3.251c-0.414,0-0.749-0.336-0.749-0.75v-1.498c0-0.416,0.335-0.752,0.749-0.752h3.251
+-			v-3.249c0-0.414,0.335-0.75,0.75-0.75h1.499c0.414,0,0.751,0.336,0.751,0.75v3.249h3.25c0.413,0,0.75,0.336,0.75,0.752V29.576z"/>
+-	</g>
+-	<path fill="#FEB672" d="M50.42,60.386c0.554,1.467,0.855,1.951,1.493,3.44c0.271,0.627,0.523,1.228,0.649,1.518
+-		c0.049,0.117,0.036,0.248-0.033,0.355c-0.172,0.259-0.552,0.747-1.181,1.086c-1.098,0.594-3.409,0.809-4.555,0.812h-0.006
+-		c-1.146-0.004-3.457-0.219-4.558-0.812c-0.627-0.339-1.006-0.827-1.177-1.086c-0.07-0.107-0.083-0.238-0.032-0.355
+-		c0.123-0.29,0.376-0.891,0.646-1.518c0.64-1.489,0.941-1.974,1.495-3.44c0.485-1.294,0.729-3.175,0.745-4.593
+-		c0.006-0.604-0.03-1.122-0.106-1.476c-0.121-0.56-0.501-1.412-0.907-2.042c-0.548-0.849-1.527-1.583-2.157-1.919
+-		c-0.475-0.254-1.984-0.817-2.576-1.146c-0.755-0.416-1.739-1.067-2.399-1.584c-0.735-0.574-2.182-1.992-2.746-2.695
+-		c-1.084-1.344-2.083-2.922-2.565-4.62c-0.601-2.106-0.576-3.009-0.657-3.688c-0.014-0.117,0.075-0.222,0.191-0.227
+-		c0.73-0.025,3.854-0.093,16.809-0.081c12.953-0.012,16.076,0.056,16.806,0.081c0.118,0.005,0.206,0.109,0.191,0.227
+-		c-0.08,0.68-0.057,1.582-0.654,3.688c-0.486,1.698-1.483,3.276-2.567,4.62c-0.564,0.703-2.011,2.121-2.746,2.695
+-		c-0.661,0.517-1.646,1.168-2.399,1.584c-0.594,0.328-2.102,0.892-2.576,1.146c-0.63,0.336-1.608,1.07-2.158,1.919
+-		c-0.405,0.63-0.785,1.482-0.904,2.042c-0.079,0.354-0.112,0.872-0.107,1.476C49.69,57.211,49.935,59.092,50.42,60.386z"/>
+-</g>
+-</svg>
+diff --git a/myapp/grails-app/assets/images/apple-touch-icon-retina.png b/myapp/grails-app/assets/images/apple-touch-icon-retina.png
+deleted file mode 100644
+index d5bc4c0da0bf34d32c86eee86f14845f1e5bf412..0000000000000000000000000000000000000000
+GIT binary patch
+literal 0
+HcmV?d00001
+
+literal 7038
+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
+
+diff --git a/myapp/grails-app/assets/images/apple-touch-icon.png b/myapp/grails-app/assets/images/apple-touch-icon.png
+deleted file mode 100644
+index c3681cc467d3c572d6696ad8c47bcabe03e73e9a..0000000000000000000000000000000000000000
+GIT binary patch
+literal 0
+HcmV?d00001
+
+literal 3077
+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
+TOgI^o00000NkvXXu0mjfLl)`&
+
+diff --git a/myapp/grails-app/assets/images/documentation.svg b/myapp/grails-app/assets/images/documentation.svg
+deleted file mode 100644
+index 29bc9d57..00000000
+--- a/myapp/grails-app/assets/images/documentation.svg
++++ /dev/null
+@@ -1,19 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+-<svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+-	 width="93.58px" height="93.58px" viewBox="0 0 93.58 93.58" enable-background="new 0 0 93.58 93.58" xml:space="preserve">
+-<g>
+-	<g>
+-		<circle fill="none" stroke="#FEB672" stroke-width="2.8347" stroke-miterlimit="10" cx="46.88" cy="46.792" r="45.374"/>
+-	</g>
+-	<path fill="#FEB672" d="M64.379,40.958v24.062c0,1.208-0.979,2.188-2.188,2.188H31.567c-1.208,0-2.188-0.979-2.188-2.188V28.562
+-		c0-1.208,0.98-2.188,2.188-2.188h18.229v12.396c0,1.208,0.979,2.188,2.188,2.188H64.379z M55.629,44.604
+-		c0-0.41-0.318-0.729-0.729-0.729H38.858c-0.41,0-0.729,0.319-0.729,0.729v1.458c0,0.41,0.319,0.729,0.729,0.729H54.9
+-		c0.41,0,0.729-0.319,0.729-0.729V44.604z M55.629,50.438c0-0.41-0.318-0.729-0.729-0.729H38.858c-0.41,0-0.729,0.319-0.729,0.729
+-		v1.458c0,0.41,0.319,0.729,0.729,0.729H54.9c0.41,0,0.729-0.319,0.729-0.729V50.438z M55.629,56.271
+-		c0-0.41-0.318-0.729-0.729-0.729H38.858c-0.41,0-0.729,0.319-0.729,0.729v1.458c0,0.41,0.319,0.729,0.729,0.729H54.9
+-		c0.41,0,0.729-0.319,0.729-0.729V56.271z M63.468,38.042H52.713V27.287c0.318,0.205,0.592,0.41,0.82,0.638l9.297,9.297
+-		C63.059,37.449,63.264,37.723,63.468,38.042z"/>
+-</g>
+-</svg>
+diff --git a/myapp/grails-app/assets/images/favicon.ico b/myapp/grails-app/assets/images/favicon.ico
+deleted file mode 100644
+index 76e4b11feda94c87ef50f4350eceeb1506e31311..0000000000000000000000000000000000000000
+GIT binary patch
+literal 0
+HcmV?d00001
+
+literal 5558
+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
+aAB7=xL9F5|-{N;0+0aiDzfp{|{l5XfK*m4-
+
+diff --git a/myapp/grails-app/assets/images/grails-cupsonly-logo-white.svg b/myapp/grails-app/assets/images/grails-cupsonly-logo-white.svg
+deleted file mode 100644
+index d3fe882c..00000000
+--- a/myapp/grails-app/assets/images/grails-cupsonly-logo-white.svg
++++ /dev/null
+@@ -1,26 +0,0 @@
+-<?xml version="1.0"?>
+-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="500">
+-    <desc iVinci="yes" version="4.5" gridStep="20" showGrid="no" snapToGrid="no" codePlatform="0"/>
+-    <g id="Layer1" opacity="1">
+-        <g id="Shape1">
+-            <desc shapeID="1" type="0" basicInfo-basicType="0" basicInfo-roundedRectRadius="12" basicInfo-polygonSides="6" basicInfo-starPoints="5" bounding="rect(-74.3391,-50.75,148.678,101.5)" text="" font-familyName="" font-pixelSize="20" font-bold="0" font-underline="0" font-alignment="1" strokeStyle="0" markerStart="0" markerEnd="0" shadowEnabled="0" shadowOffsetX="0" shadowOffsetY="2" shadowBlur="4" shadowOpacity="160" blurEnabled="0" blurRadius="4" transform="matrix(4.79624,0,0,4.79624,500,250)" pers-center="0,0" pers-size="0,0" pers-start="0,0" pers-end="0,0" locked="0" mesh="" flag=""/>
+-            <path id="shapePath1" d="M527.264,491.011 C544.051,488.613 563.236,483.817 572.829,479.021 C582.421,474.224 589.615,467.03 589.615,462.234 C589.615,462.234 587.217,457.438 584.819,452.641 C580.023,445.447 575.227,435.854 563.236,409.475 C558.44,397.484 547.589,366.072 544.051,351.92 C540.386,330.773 540.051,308.254 544.051,287.171 C547.531,274.839 552.314,262.919 560.838,253.597 C570.402,240.945 581.622,228.467 596.81,222.422 C644.094,203.599 699.929,162.469 728.707,116.904 C738.299,100.117 742.876,92.923 746.372,83.3305 C755.023,59.5988 762.66,34.3876 762.28,8.98871 L762.28,6.59059 L498.487,6.59059 L232.295,6.59059 L232.295,11.3868 C231.901,74.2274 269.048,130.868 313.831,172.061 C337.813,193.644 366.59,210.431 400.164,222.422 C412.154,227.218 416.951,229.616 426.543,239.208 C438.534,253.597 448.126,270.384 452.923,289.569 C455.827,317.286 453.654,346.577 445.728,373.503 L440.932,387.892 C438.534,397.484 431.339,411.873 419.349,435.854 C407.358,459.836 407.358,462.234 407.358,464.632 C412.154,479.021 440.932,488.613 484.098,493.409 C493.691,493.409 508.079,493.409 527.264,491.011 M325.822,409.475 C342.609,407.077 356.998,402.281 361.794,395.086 L361.794,392.688 L359.396,385.494 C342.609,354.318 333.016,327.939 333.016,301.56 C333.016,287.171 335.415,279.977 340.211,267.986 C347.405,255.995 349.803,252.125 361.794,247.329 C366.59,244.876 372.313,243.95 374.711,242.478 C380.979,240.625 388.173,236.81 388.173,236.81 C388.173,236.81 383.868,235.884 379.016,233.486 C364.628,228.69 359.396,224.82 347.405,217.625 C309.035,196.042 285.054,174.459 261.073,143.284 C253.878,131.293 250.156,125.996 246.684,121.163 L244.286,116.904 C241.888,114.506 145.963,114.506 143.565,116.904 C141.939,150.478 158.03,180.057 179.536,205.635 C204.661,235.514 225.101,244.005 244.286,248.801 C261.073,253.597 263.471,255.995 270.665,265.588 C275.462,277.578 277.86,284.773 277.86,299.161 C280.258,320.745 273.063,342.328 258.675,373.503 C253.878,383.096 249.082,392.688 249.082,392.688 C249.082,395.086 253.878,399.883 258.675,402.281 C270.665,409.475 304.239,414.271 325.822,409.475 M716.716,409.475 C735.901,407.077 747.892,402.281 750.29,395.086 C750.29,392.688 750.29,390.29 743.095,375.901 C728.008,346.118 717.597,310.72 726.308,277.578 C731.287,264.162 737.689,250.182 752.688,247.852 C776.669,240.658 795.854,229.616 819.835,205.635 C834.224,191.246 847.61,166.971 851.369,152.876 C854.382,141.577 858.172,128.066 855.807,116.904 C853.409,114.506 755.086,114.506 752.688,116.904 C752.688,116.904 750.29,119.302 747.892,121.7 C745.493,128.895 735.901,143.284 728.707,150.478 C719.114,162.469 690.337,191.246 680.744,198.44 C663.057,216.559 629.114,228.768 611.199,236.81 C613.597,239.208 625.587,246.403 635.18,248.801 C654.365,255.995 654.365,255.995 661.559,267.986 C666.355,279.977 668.754,287.171 668.754,301.56 C670.08,334.844 653.109,365.67 639.976,392.688 C657.022,411.883 692.824,411.394 716.716,409.475 Z" style="stroke:none;fill-rule:evenodd;fill:#ffffff;fill-opacity:1;"/>
+-        </g>
+-        <g id="Shape2">
+-            <desc shapeID="2" type="0" basicInfo-basicType="0" basicInfo-roundedRectRadius="12" basicInfo-polygonSides="6" basicInfo-starPoints="5" bounding="rect(-3.75,-28,7.5,56)" text="" font-familyName="" font-pixelSize="20" font-bold="0" font-underline="0" font-alignment="1" strokeStyle="0" markerStart="0" markerEnd="0" shadowEnabled="0" shadowOffsetX="0" shadowOffsetY="2" shadowBlur="4" shadowOpacity="160" blurEnabled="0" blurRadius="4" transform="matrix(1,0,0,1,417.25,99.5)" pers-center="0,0" pers-size="0,0" pers-start="0,0" pers-end="0,0" locked="0" mesh="" flag=""/>
+-            <path id="shapePath2" d="M413.5,127.5 C414,126.5 416,123 416.5,122.5 C416,123 414,126.5 413.5,127.5 M421,71.5 " style="stroke:none;fill-rule:evenodd;fill:#669020;fill-opacity:1;"/>
+-        </g>
+-        <g id="Shape3">
+-            <desc shapeID="3" type="0" basicInfo-basicType="0" basicInfo-roundedRectRadius="12" basicInfo-polygonSides="6" basicInfo-starPoints="5" bounding="rect(0,0,0,0)" text="" font-familyName="" font-pixelSize="20" font-bold="0" font-underline="0" font-alignment="1" strokeStyle="0" markerStart="0" markerEnd="0" shadowEnabled="0" shadowOffsetX="0" shadowOffsetY="2" shadowBlur="4" shadowOpacity="160" blurEnabled="0" blurRadius="4" transform="matrix(1,0,0,1,0,0)" pers-center="0,0" pers-size="0,0" pers-start="0,0" pers-end="0,0" locked="0" mesh="" flag=""/>
+-            <path id="shapePath3" d="M0,0 Z" style="stroke:none;fill-rule:evenodd;fill:#4c4c4c;fill-opacity:1;"/>
+-        </g>
+-        <g id="Shape4">
+-            <desc shapeID="4" type="0" basicInfo-basicType="0" basicInfo-roundedRectRadius="12" basicInfo-polygonSides="6" basicInfo-starPoints="5" bounding="rect(0,0,0,0)" text="" font-familyName="" font-pixelSize="20" font-bold="0" font-underline="0" font-alignment="1" strokeStyle="0" markerStart="0" markerEnd="0" shadowEnabled="0" shadowOffsetX="0" shadowOffsetY="2" shadowBlur="4" shadowOpacity="160" blurEnabled="0" blurRadius="4" transform="matrix(1,0,0,1,0,0)" pers-center="0,0" pers-size="0,0" pers-start="0,0" pers-end="0,0" locked="0" mesh="" flag=""/>
+-            <path id="shapePath4" d="M0,0 Z" style="stroke:none;fill-rule:evenodd;fill:#000000;fill-opacity:1;"/>
+-        </g>
+-        <g id="Shape5">
+-            <desc shapeID="5" type="0" basicInfo-basicType="0" basicInfo-roundedRectRadius="12" basicInfo-polygonSides="6" basicInfo-starPoints="5" bounding="rect(-84.6928,-47.6497,169.386,95.2993)" text="" font-familyName="" font-pixelSize="20" font-bold="0" font-underline="0" font-alignment="1" strokeStyle="0" markerStart="0" markerEnd="0" shadowEnabled="0" shadowOffsetX="0" shadowOffsetY="2" shadowBlur="4" shadowOpacity="160" blurEnabled="0" blurRadius="4" transform="matrix(1,0,0,1,90.9499,90.9738)" pers-center="0,0" pers-size="0,0" pers-start="0,0" pers-end="0,0" locked="0" mesh="" flag=""/>
+-            <path id="shapePath5" d="M0,0 Z" style="stroke:none;fill-rule:evenodd;fill:#0d0d0d;fill-opacity:1;"/>
+-        </g>
+-    </g>
+-</svg>
+diff --git a/myapp/grails-app/assets/images/grails.svg b/myapp/grails-app/assets/images/grails.svg
+deleted file mode 100644
+index 79f698b6..00000000
+--- a/myapp/grails-app/assets/images/grails.svg
++++ /dev/null
+@@ -1,13 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<svg width="80px" height="80px" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+-    <title>grails</title>
+-    <desc>Created with Sketch.</desc>
+-    <defs></defs>
+-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+-        <g id="grails">
+-            <circle id="Oval" fill="#FFFFFF" cx="42.0769231" cy="39.0769231" r="35"></circle>
+-            <path d="M39.9489231,0 C17.8861538,0 0,17.8836923 0,39.9476923 C0,62.0110769 17.8867692,79.8966154 39.9489231,79.8966154 C62.0129231,79.8966154 79.8984615,62.0110769 79.8984615,39.9476923 C79.8984615,17.8836923 62.0129231,0 39.9489231,0 Z M61.128,19.2553846 C60.9101538,19.088 60.6313846,18.9464615 60.2984615,18.8307692 C59.9729231,18.7156923 59.6172308,18.5987692 59.2381538,18.4849231 C58.8658462,18.3716923 58.512,18.2178462 58.1913846,18.0258462 C57.8726154,17.8381538 57.6049231,17.5833846 57.3932308,17.2744615 C57.184,16.9667692 57.0781538,16.5544615 57.0781538,16.0467692 C57.0781538,15.5544615 57.1753846,15.1163077 57.3692308,14.7495385 C57.5649231,14.3772308 57.8270769,14.0621538 58.1507692,13.8135385 C58.4763077,13.5618462 58.856,13.3710769 59.2769231,13.2449231 C59.7033846,13.1193846 60.1495385,13.0547692 60.5987692,13.0547692 C61.1230769,13.0547692 61.6350769,13.1310769 62.1206154,13.2775385 C62.5883077,13.4215385 63.0184615,13.6590769 63.3969231,13.9858462 L62.0590769,15.4498462 C61.8898462,15.2547692 61.6658462,15.1058462 61.392,15.0110769 C61.1009231,14.9076923 60.8196923,14.8566154 60.56,14.8566154 C60.4073846,14.8566154 60.2473846,14.8726154 60.0855385,14.9095385 C59.9230769,14.9458462 59.768,15.0024615 59.6227692,15.08 C59.4750769,15.1593846 59.3513846,15.2646154 59.2596923,15.3932308 C59.1649231,15.5255385 59.1169231,15.688 59.1169231,15.8732308 C59.1169231,16.1778462 59.2276923,16.4030769 59.4572308,16.5661538 C59.6713846,16.7187692 59.9452308,16.8516923 60.2732308,16.9563077 C60.5938462,17.0627692 60.944,17.1710769 61.3126154,17.2744615 C61.6769231,17.3796923 62.0215385,17.5292308 62.3390769,17.7193846 C62.6541538,17.9089231 62.9181538,18.168 63.1224615,18.4849231 C63.3292308,18.8018462 63.4326154,19.2307692 63.4326154,19.7673846 C63.4326154,20.2756923 63.3366154,20.7273846 63.1464615,21.1083077 C62.9563077,21.488 62.6972308,21.8067692 62.3735385,22.0553846 C62.0504615,22.3027692 61.6670769,22.4941538 61.2412308,22.6135385 C60.8086154,22.7366154 60.3483077,22.7975385 59.8707692,22.7975385 C59.272,22.7975385 58.7070769,22.7064615 58.1938462,22.5236923 C57.696,22.3458462 57.2276923,22.0596923 56.7950769,21.6689231 L58.1858462,20.1403077 C58.3950769,20.4049231 58.6603077,20.6147692 58.9673846,20.7630769 C59.2953846,20.9169231 59.6406154,20.9975385 59.9901538,20.9975385 C60.1630769,20.9975385 60.3372308,20.9778462 60.512,20.9378462 C60.6873846,20.8972308 60.8461538,20.8326154 60.9889231,20.7538462 C61.1329231,20.6701538 61.2486154,20.5612308 61.3384615,20.4332308 C61.4276923,20.3009231 61.4732308,20.1415385 61.4732308,19.9655385 C61.4744615,19.6609231 61.36,19.4295385 61.128,19.2553846 Z M50.1169231,13.2935385 L52.0763077,13.2935385 L52.0763077,20.7575385 L55.9021538,20.7575385 L55.9021538,22.56 L50.1175385,22.56 L50.1175385,13.2935385 L50.1169231,13.2935385 Z M45.8529231,13.2935385 L47.8110769,13.2935385 L47.8110769,22.56 L45.8529231,22.56 L45.8529231,13.2935385 Z M38.976,13.2935385 L40.6147692,13.2935385 L44.6461538,22.56 L42.432,22.56 L41.6252308,20.5729231 L37.9113846,20.5729231 L37.1304615,22.56 L34.9704615,22.56 L38.976,13.2935385 Z M26.8307692,13.2935385 L30.4043077,13.2935385 C30.8744615,13.2935385 31.3267692,13.3390769 31.7507692,13.432 C32.1686154,13.5206154 32.5409231,13.6756923 32.856,13.8867692 C33.1698462,14.0984615 33.4221538,14.3852308 33.6073846,14.7415385 C33.7926154,15.0978462 33.8861538,15.5526154 33.8861538,16.0873846 C33.8861538,16.7335385 33.7163077,17.2910769 33.3803077,17.744 C33.0584615,18.1778462 32.5858462,18.4596923 31.9766154,18.5876923 L31.8326154,18.6184615 L34.2024615,22.56 L31.8535385,22.56 L29.8947692,18.8147692 L28.7907692,18.8147692 L28.7907692,22.56 L26.8313846,22.56 L26.8313846,13.2935385 L26.8307692,13.2935385 Z M16.5335385,15.9064615 C16.7796923,15.3076923 17.1298462,14.7913846 17.5741538,14.3704615 C18.0166154,13.9495385 18.5489231,13.6227692 19.1569231,13.3944615 C19.7661538,13.1686154 20.4418462,13.0541538 21.1643077,13.0541538 C21.9058462,13.0541538 22.5975385,13.1452308 23.2221538,13.3230769 C23.824,13.4953846 24.3630769,13.7950769 24.8233846,14.2104615 L23.4412308,15.7187692 C23.1649231,15.4436923 22.8498462,15.2313846 22.5083077,15.0843077 C22.1501538,14.9304615 21.6984615,14.8566154 21.1643077,14.8566154 C20.7181538,14.8566154 20.3083077,14.9304615 19.9464615,15.0843077 C19.5827692,15.2375385 19.2676923,15.4523077 19.008,15.7249231 C18.7476923,15.9993846 18.5470769,16.328 18.408,16.7027692 C18.2695385,17.0781538 18.2018462,17.4898462 18.2018462,17.9267692 C18.2018462,18.3716923 18.2695385,18.7852308 18.408,19.1575385 C18.5470769,19.5273846 18.7489231,19.8541538 19.008,20.128 C19.2683077,20.3993846 19.5833846,20.6153846 19.9464615,20.768 C20.3076923,20.92 20.7187692,20.9963077 21.1643077,20.9963077 C21.6184615,20.9963077 22.0141538,20.9452308 22.3452308,20.8418462 C22.6566154,20.7452308 22.9126154,20.6455385 23.1058462,20.5433846 L23.1193846,20.5353846 L23.1409231,20.5150769 L23.1618462,20.4775385 L23.1618462,18.904 L21.4818462,18.904 L21.4818462,17.1052308 L25.0424615,17.1052308 L25.0424615,21.9187692 C24.4449231,22.2258462 23.8172308,22.4504615 23.1778462,22.5864615 C22.5236923,22.728 21.8449231,22.7969231 21.1643077,22.7969231 C20.4418462,22.7969231 19.7667692,22.6830769 19.1569231,22.4566154 C18.5489231,22.232 18.016,21.9021538 17.5741538,21.4812308 C17.1316923,21.0621538 16.7796923,20.5433846 16.5335385,19.9433846 C16.2861538,19.3452308 16.16,18.6670769 16.16,17.9267692 C16.16,17.1876923 16.2861538,16.5083077 16.5335385,15.9064615 Z M29.3230769,47.7033846 C28.7243077,47.9667692 27.96,48.2658462 27.6615385,48.4246154 C27.1107692,48.7181538 26.2584615,49.3606154 25.7796923,50.0978462 C25.4252308,50.6461538 25.0953846,51.3913846 24.9883077,51.88 C24.9230769,52.1876923 24.8904615,52.6381538 24.8972308,53.1673846 C24.9101538,54.4018462 25.1230769,56.0436923 25.5470769,57.1698462 C26.0295385,58.4486154 26.2923077,58.8744615 26.8486154,60.1698462 C27.0849231,60.7181538 27.3064615,61.2406154 27.4135385,61.4953846 C27.4584615,61.5963077 27.4449231,61.712 27.3846154,61.8030769 C27.2369231,62.0289231 26.9052308,62.4547692 26.3556923,62.7501538 C25.3987692,63.2670769 23.3833846,63.4535385 22.3833846,63.4603077 L22.3790769,63.4603077 C21.3809231,63.4529231 19.3655385,63.2670769 18.4073846,62.7501538 C17.8578462,62.4547692 17.5273846,62.0289231 17.3796923,61.8030769 C17.3181538,61.712 17.3064615,61.5963077 17.3495385,61.4953846 C17.4578462,61.2406154 17.68,60.7175385 17.9156923,60.1698462 C18.472,58.8744615 18.7347692,58.4486154 19.2172308,57.1698462 C19.6412308,56.0436923 19.8541538,54.4018462 19.8664615,53.1673846 C19.8726154,52.6387692 19.8412308,52.1876923 19.7741538,51.88 C19.6670769,51.3907692 19.3378462,50.6455385 18.9833846,50.0978462 C18.5058462,49.3612308 17.6516923,48.7181538 17.1021538,48.4246154 C16.6886154,48.2049231 15.3741538,47.712 14.8572308,47.4270769 C14.1987692,47.0627692 13.3403077,46.4966154 12.7643077,46.0449231 C12.1224615,45.544 10.8621538,44.3058462 10.3692308,43.6941538 C9.42461538,42.5224615 8.55446154,41.1483077 8.13353846,39.6664615 C7.60984615,37.8289231 7.62953846,37.0424615 7.56061538,36.4492308 C7.54830769,36.3489231 7.62461538,36.2584615 7.72676923,36.2529231 C8.232,36.2363077 10.0516923,36.1944615 16.408,36.1846154 C16.5335385,36.1827692 16.6455385,36.2609231 16.6904615,36.3778462 C18.4781538,41.1138462 23.1415385,45.0307692 29.2953846,47.1618462 C29.5470769,47.2473846 29.5686154,47.5963077 29.3230769,47.7033846 Z M44.9729231,61.1815385 C45.7550769,63.2584615 46.1821538,63.9470769 47.0861538,66.0529231 C47.4683077,66.9421538 47.8289231,67.792 48.0043077,68.2018462 C48.0750769,68.3686154 48.056,68.5526154 47.9575385,68.7052308 C47.7156923,69.0732308 47.1772308,69.7618462 46.2867692,70.2424615 C44.7329231,71.0824615 41.4596923,71.3864615 39.8356923,71.3926154 L39.8295385,71.3926154 C38.2055385,71.3864615 34.9335385,71.0824615 33.3790769,70.2424615 C32.4886154,69.7618462 31.9526154,69.0732308 31.7107692,68.7052308 C31.6123077,68.5526154 31.5932308,68.3686154 31.664,68.2018462 C31.8393846,67.792 32.1975385,66.9421538 32.5796923,66.0529231 C33.4843077,63.9470769 33.9113846,63.2584615 34.6941538,61.1815385 C35.3833846,59.352 35.7298462,56.6873846 35.7507692,54.6793846 C35.7593846,53.8258462 35.7083077,53.0904615 35.6006154,52.5895385 C35.4276923,51.7975385 34.8916923,50.5907692 34.3156923,49.6990769 C33.5403077,48.4984615 32.1532308,47.4596923 31.2615385,46.984 C30.5870769,46.6246154 28.4547692,45.8252308 27.6147692,45.3612308 C26.5452308,44.7723077 25.1513846,43.8504615 24.2166154,43.1193846 C23.1747692,42.3046154 21.128,40.2966154 20.3292308,39.3009231 C18.7944615,37.3969231 17.3803077,35.1655385 16.6966154,32.7612308 C15.8486154,29.7766154 15.8812308,28.5015385 15.768,27.5372308 C15.7489231,27.3704615 15.8726154,27.2246154 16.0375385,27.2184615 C17.072,27.1809231 21.4935385,27.0849231 39.8350769,27.1033846 C58.1747692,27.0849231 62.5963077,27.1809231 63.6301538,27.2184615 C63.7969231,27.2246154 63.9212308,27.3704615 63.9003077,27.5372308 C63.7870769,28.5015385 63.8196923,29.7772308 62.9723077,32.7612308 C62.2873846,35.1655385 60.8738462,37.3969231 59.3390769,39.3009231 C58.5396923,40.296 56.4941538,42.304 55.4523077,43.1193846 C54.5163077,43.8504615 53.1218462,44.7723077 52.0523077,45.3612308 C51.2135385,45.8252308 49.08,46.6246154 48.408,46.984 C47.5150769,47.4596923 46.1292308,48.4984615 45.3513846,49.6990769 C44.7766154,50.5907692 44.2406154,51.7975385 44.0689231,52.5895385 C43.9593846,53.0904615 43.9101538,53.8264615 43.9187692,54.6793846 C43.9366154,56.6873846 44.2843077,59.352 44.9729231,61.1815385 Z M69.528,43.6935385 C69.0363077,44.3052308 67.7766154,45.5433846 67.1347692,46.0443077 C66.5575385,46.496 65.6996923,47.0621538 65.04,47.4264615 C64.5230769,47.7113846 63.2092308,48.2043077 62.7969231,48.424 C62.2461538,48.7175385 61.392,49.36 60.9132308,50.0972308 C60.56,50.6455385 60.2295385,51.3907692 60.1236923,51.8793846 C60.0553846,52.1870769 60.0264615,52.6375385 60.0301538,53.1667692 C60.0430769,54.4012308 60.2572308,56.0430769 60.6806154,57.1692308 C61.1636923,58.448 61.4258462,58.8738462 61.9821538,60.1692308 C62.2178462,60.7175385 62.4387692,61.24 62.5483077,61.4947692 C62.5913846,61.5956923 62.5796923,61.7113846 62.5181538,61.8024615 C62.3692308,62.0283077 62.04,62.4541538 61.4904615,62.7495385 C60.5310769,63.2664615 58.5181538,63.4529231 57.5181538,63.4596923 L57.5144615,63.4596923 C56.5144615,63.4523077 54.4990769,63.2664615 53.5421538,62.7495385 C52.9913846,62.4541538 52.6621538,62.0283077 52.5132308,61.8024615 C52.4516923,61.7113846 52.44,61.5956923 52.4830769,61.4947692 C52.5913846,61.24 52.8123077,60.7169231 53.0492308,60.1692308 C53.6055385,58.8738462 53.8676923,58.448 54.3495385,57.1692308 C54.7735385,56.0430769 54.9876923,54.4012308 55.0012308,53.1667692 C55.0049231,52.6381538 54.9747692,52.1870769 54.9089231,51.8793846 C54.8018462,51.3901538 54.4713846,50.6449231 54.1181538,50.0972308 C53.64,49.3606154 52.7864615,48.7175385 52.2356923,48.424 C51.9378462,48.2652308 51.1710769,47.9661538 50.5747692,47.7027692 C50.3286154,47.5956923 50.3501538,47.2473846 50.6024615,47.1606154 C56.7575385,45.0295385 61.4196923,41.1126154 63.2067692,36.3766154 C63.2523077,36.2596923 63.3655385,36.1815385 63.4892308,36.1833846 C69.8461538,36.1938462 71.6658462,36.2350769 72.1704615,36.2516923 C72.2726154,36.2578462 72.3483077,36.3476923 72.3366154,36.448 C72.2695385,37.0412308 72.2873846,37.8270769 71.7643077,39.6652308 C71.3433846,41.1476923 70.4732308,42.5218462 69.528,43.6935385 Z M31.8473846,16.072 C31.8473846,16.3415385 31.7864615,16.5513846 31.6707692,16.7009231 C31.5544615,16.8498462 31.4061538,16.9587692 31.2295385,17.0283077 C31.0590769,17.0966154 30.8627692,17.1378462 30.6523077,17.1526154 C30.4430769,17.1649231 30.2443077,17.1723077 30.0609231,17.1723077 L28.7901538,17.1723077 L28.7901538,14.9347692 L30.1926154,14.9347692 C30.3778462,14.9347692 30.5710769,14.9470769 30.7686154,14.976 C30.968,15 31.1470769,15.0553846 31.3009231,15.1298462 C31.4584615,15.2098462 31.592,15.3255385 31.6916923,15.4738462 C31.7944615,15.6227692 31.8473846,15.8270769 31.8473846,16.072 Z M39.7353846,15.8221538 L40.9643077,18.9335385 L38.5187692,18.9335385 L39.7353846,15.8221538 Z" id="Shape" fill="#FEB672" fill-rule="nonzero"></path>
+-        </g>
+-    </g>
+-</svg>
+\ No newline at end of file
+diff --git a/myapp/grails-app/assets/images/slack.svg b/myapp/grails-app/assets/images/slack.svg
+deleted file mode 100644
+index 34fcf4ce..00000000
+--- a/myapp/grails-app/assets/images/slack.svg
++++ /dev/null
+@@ -1,18 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<svg width="45px" height="45px" viewBox="0 0 45 45" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+-    <!-- Generator: Sketch 52.1 (67048) - http://www.bohemiancoding.com/sketch -->
+-    <title>slack_orange</title>
+-    <desc>Created with Sketch.</desc>
+-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+-        <g id="slack_orange">
+-            <path d="M22.502,0 C10.073,0 0,10.073 0,22.499 C0,34.927 10.073,45 22.502,45 C34.927,45 45,34.927 45,22.499 C45,10.073 34.927,0 22.502,0 Z" id="Shape" fill="#FEB672"></path>
+-            <g id="Slack_Mark_Monochrome_White" transform="translate(11.000000, 11.000000)" fill="#FFFFFF">
+-                <rect id="Rectangle-path" transform="translate(11.554441, 11.462704) rotate(-18.518296) translate(-11.554441, -11.462704) " x="9.94812935" y="9.91115274" width="3.21262291" height="3.10310168"></rect>
+-                <g id="Group">
+-                    <rect id="Rectangle-path" transform="translate(11.554441, 11.462704) rotate(-18.518296) translate(-11.554441, -11.462704) " x="9.94812935" y="9.91115274" width="3.21262291" height="3.10310168"></rect>
+-                    <path d="M22.0142857,8.30555556 C19.6595238,0.456349206 16.2642857,-1.36904762 8.41507937,0.985714286 C0.565873016,3.34047619 -1.25952381,6.73571429 1.0952381,14.5849206 C3.45,22.434127 6.8452381,24.2595238 14.6944444,21.9047619 C22.5436508,19.55 24.3690476,16.1547619 22.0142857,8.30555556 Z M18.0531746,13.3984127 L16.5746032,13.8912698 L17.0857143,15.4246032 C17.2865079,16.0452381 16.9579365,16.7206349 16.3373016,16.9214286 C16.2095238,16.9579365 16.0634921,16.9944444 15.9357143,16.9761905 C15.4611111,16.9579365 15.0047619,16.647619 14.8404762,16.1730159 L14.3293651,14.6396825 L11.2809524,15.6619048 L11.7920635,17.1952381 C11.9928571,17.815873 11.6642857,18.4912698 11.0436508,18.6920635 C10.915873,18.7285714 10.7698413,18.7650794 10.6420635,18.7468254 C10.1674603,18.7285714 9.71111111,18.418254 9.5468254,17.9436508 L9.03571429,16.4103175 L7.55714286,16.9031746 C7.42936508,16.9396825 7.28333333,16.9761905 7.15555556,16.9579365 C6.68095238,16.9396825 6.22460317,16.6293651 6.06031746,16.1547619 C5.85952381,15.534127 6.18809524,14.8587302 6.80873016,14.6579365 L8.28730159,14.1650794 L7.3015873,11.2261905 L5.82301587,11.7190476 C5.6952381,11.7555556 5.54920635,11.7920635 5.42142857,11.7738095 C4.9468254,11.7555556 4.49047619,11.4452381 4.32619048,10.9706349 C4.12539683,10.35 4.45396825,9.67460317 5.07460317,9.47380952 L6.5531746,8.98095238 L6.04206349,7.44761905 C5.84126984,6.82698413 6.16984127,6.1515873 6.79047619,5.95079365 C7.41111111,5.75 8.08650794,6.07857143 8.28730159,6.69920635 L8.7984127,8.23253968 L11.8468254,7.21031746 L11.3357143,5.67698413 C11.1349206,5.05634921 11.4634921,4.38095238 12.084127,4.18015873 C12.7047619,3.97936508 13.3801587,4.30793651 13.5809524,4.92857143 L14.0920635,6.46190476 L15.5706349,5.96904762 C16.1912698,5.76825397 16.8666667,6.0968254 17.0674603,6.71746032 C17.268254,7.33809524 16.9396825,8.01349206 16.3190476,8.21428571 L14.8404762,8.70714286 L15.8261905,11.6460317 L17.3047619,11.1531746 C17.9253968,10.952381 18.6007937,11.2809524 18.8015873,11.9015873 C19.002381,12.5222222 18.6738095,13.197619 18.0531746,13.3984127 Z" id="Shape" fill-rule="nonzero"></path>
+-                </g>
+-            </g>
+-        </g>
+-    </g>
+-</svg>
+\ No newline at end of file
+diff --git a/myapp/grails-app/assets/javascripts/application.js b/myapp/grails-app/assets/javascripts/application.js
+deleted file mode 100644
+index c290381f..00000000
+--- a/myapp/grails-app/assets/javascripts/application.js
++++ /dev/null
+@@ -1,20 +0,0 @@
+-// This is a manifest file that'll be compiled into application.js.
+-//
+-// Any JavaScript file within this directory can be referenced here using a relative path.
+-//
+-// You're free to add application-wide JavaScript to this file, but it's generally better
+-// to create separate JavaScript files as needed.
+-//
+-//= require webjars/jquery/3.7.1/dist/jquery.js
+-//= require webjars/bootstrap/5.3.7/dist/js/bootstrap.bundle
+-//= require_self
+-
+-if (typeof jQuery !== 'undefined') {
+-    (function($) {
+-        $('#spinner').ajaxStart(function() {
+-            $(this).fadeIn();
+-        }).ajaxStop(function() {
+-            $(this).fadeOut();
+-        });
+-    })(jQuery);
+-}
+\ No newline at end of file
+diff --git a/myapp/grails-app/assets/stylesheets/application.css b/myapp/grails-app/assets/stylesheets/application.css
+deleted file mode 100644
+index ec609495..00000000
+--- a/myapp/grails-app/assets/stylesheets/application.css
++++ /dev/null
+@@ -1,14 +0,0 @@
+-/*
+-* This is a manifest file that'll be compiled into application.css, which will include all the files
+-* listed below.
+-*
+-* Any CSS file within this directory can be referenced here using a relative path.
+-*
+-* You're free to add application-wide styles to this file and they'll appear at the top of the
+-* compiled file, but it's generally better to create a new file per style scope.
+-*
+-*= require webjars/bootstrap/5.3.7/dist/css/bootstrap
+-*= require webjars/bootstrap-icons/1.13.1/font/bootstrap-icons
+-*= require grails
+-*= require_self
+-*/
+diff --git a/myapp/grails-app/assets/stylesheets/errors.css b/myapp/grails-app/assets/stylesheets/errors.css
+deleted file mode 100644
+index bd71149c..00000000
+--- a/myapp/grails-app/assets/stylesheets/errors.css
++++ /dev/null
+@@ -1,90 +0,0 @@
+-.filename {
+-    font-style: italic;
+-}
+-
+-.exceptionMessage {
+-    margin: 10px;
+-    border: 1px solid #000;
+-    padding: 5px;
+-    background-color: #E9E9E9;
+-}
+-
+-.stack,
+-.snippet {
+-    margin: 10px 0;
+-}
+-
+-.stack,
+-.snippet {
+-    border: 1px solid #ccc;
+-}
+-
+-/* error details */
+-.error-details {
+-    border: 1px solid #FFAAAA;
+-    background-color:#FFF3F3;
+-    line-height: 1.5;
+-    overflow: hidden;
+-    padding: 10px 0 5px 25px;
+-}
+-
+-.error-details dt {
+-    clear: left;
+-    float: left;
+-    font-weight: bold;
+-    margin-right: 5px;
+-}
+-
+-.error-details dt:after {
+-    content: ":";
+-}
+-
+-.error-details dd {
+-    display: block;
+-}
+-
+-/* stack trace */
+-.stack {
+-    padding: 5px;
+-    overflow: auto;
+-    height: 300px;
+-}
+-
+-/* code snippet */
+-.snippet {
+-    background-color: #fff;
+-    font-family: monospace;
+-}
+-
+-.snippet .line {
+-    display: block;
+-}
+-
+-.snippet .lineNumber {
+-    background-color: #ddd;
+-    color: #999;
+-    display: inline-block;
+-    margin-right: 5px;
+-    padding: 0 3px;
+-    text-align: right;
+-    width: 3em;
+-}
+-
+-.snippet .error {
+-    background-color: #fff3f3;
+-    font-weight: bold;
+-}
+-
+-.snippet .error .lineNumber {
+-    background-color: #faa;
+-    color: #333;
+-    font-weight: bold;
+-}
+-
+-.snippet .line:first-child .lineNumber {
+-    padding-top: 5px;
+-}
+-
+-.snippet .line:last-child .lineNumber {
+-    padding-bottom: 5px;
+-}
+\ No newline at end of file
+diff --git a/myapp/grails-app/assets/stylesheets/grails.css b/myapp/grails-app/assets/stylesheets/grails.css
+deleted file mode 100644
+index 2ab65051..00000000
+--- a/myapp/grails-app/assets/stylesheets/grails.css
++++ /dev/null
+@@ -1,77 +0,0 @@
+-table.scaffold tr>td:first-child, tr>th:first-child {
+-    padding-left: 1.25em;
+-}
+-
+-table.scaffold tr>td:last-child, tr>th:last-child {
+-    padding-right: 1.25em;
+-}
+-
+-table.scaffold th {
+-    background-image: linear-gradient(
+-            to bottom,
+-            #ffffff 0%,
+-            #f8f8f8 30%,
+-            #eaeaea 70%,
+-            #d4d4d4 100%
+-    );
+-    border-bottom: 2px solid #b3b3b3; /* Adding a subtle shadow effect */
+-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1); /* Adding a drop shadow */
+-}
+-
+-[data-bs-theme=dark] table.scaffold th {
+-    background-image: linear-gradient(
+-            to bottom,
+-            #4a4a4a 0%,
+-            #3e3e3e 30%,
+-            #2a2a2a 70%,
+-            #1e1e1e 100%
+-    );
+-    border-bottom: 2px solid #141414; /* Adding a subtle shadow effect */
+-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3); /* Adding a drop shadow */
+-}
+-
+-table.scaffold thead th {
+-    white-space: nowrap;
+-}
+-
+-table.scaffold th a {
+-    display: block;
+-    text-decoration: none;
+-}
+-
+-table.scaffold th a:link, th a:visited {
+-    color: #666666;
+-}
+-
+-table.scaffold th a:hover, th a:focus {
+-    color: #333333;
+-}
+-
+-table.scaffold th.sortable a {
+-    background-position: right;
+-    background-repeat: no-repeat;
+-    padding-right: 1.1em;
+-}
+-
+-table.scaffold th {
+-    position: relative;
+-}
+-
+-
+-table.scaffold th.asc a:after {
+-    content: '▲';
+-    position: absolute;
+-    right: 10px;
+-    font-size: 0.8em;
+-}
+-
+-table.scaffold th.desc a:after {
+-    content: '▼';
+-    position: absolute;
+-    right: 10px;
+-    font-size: 0.8em;
+-}
+-
+-table.scaffold th:hover {
+-    background: #f5f5f5 !important;
+-}
+\ No newline at end of file
+diff --git a/myapp/grails-app/conf/application.yml b/myapp/grails-app/conf/application.yml
+index 83c5ff71..1a5af033 100644
+--- a/myapp/grails-app/conf/application.yml
++++ b/myapp/grails-app/conf/application.yml
+@@ -4,17 +4,6 @@ info:
+     version: '@info.app.version@'
+     grailsVersion: '@info.app.grailsVersion@'
+ grails:
+-  views:
+-    default:
+-      codec: html
+-    gsp:
+-      encoding: UTF-8
+-      htmlcodec: xml
+-      codecs:
+-        expression: html
+-        scriptlet: html
+-        taglib: none
+-        staticparts: none
+   mime:
+     disable:
+       accept:
+@@ -25,31 +14,28 @@ grails:
+           - Presto
+           - Trident
+     types:
+-      all: '*/*'
+-      atom: application/atom+xml
+-      css: text/css
+-      csv: text/csv
+-      form: application/x-www-form-urlencoded
+-      html:
+-      - text/html
+-      - application/xhtml+xml
+-      js: text/javascript
+       json:
+       - application/json
+       - text/json
+-      multipartForm: multipart/form-data
+-      pdf: application/pdf
+-      rss: application/rss+xml
+-      text: text/plain
+       hal:
+       - application/hal+json
+       - application/hal+xml
+       xml:
+       - text/xml
+       - application/xml
++      atom: application/atom+xml
++      css: text/css
++      csv: text/csv
++      js: text/javascript
++      rss: application/rss+xml
++      text: text/plain
++      all: '*/*'
+   codegen:
+     defaultPackage: myapp
+-  profile: web
++  profile: rest-api
++  views:
++    default:
++      codec: html
+ dataSource:
+   driverClassName: org.h2.Driver
+   username: sa
+diff --git a/myapp/grails-app/controllers/myapp/ApplicationController.groovy b/myapp/grails-app/controllers/myapp/ApplicationController.groovy
+new file mode 100644
+index 00000000..617d3aa0
+--- /dev/null
++++ b/myapp/grails-app/controllers/myapp/ApplicationController.groovy
+@@ -0,0 +1,15 @@
++package myapp
++
++import grails.core.GrailsApplication
++import grails.plugins.GrailsPluginManager
++import grails.plugins.PluginManagerAware
++
++class ApplicationController implements PluginManagerAware {
++
++    GrailsApplication grailsApplication
++    GrailsPluginManager pluginManager
++
++    def index() {
++        [grailsApplication: grailsApplication, pluginManager: pluginManager]
++    }
++}
+diff --git a/myapp/grails-app/controllers/myapp/UrlMappings.groovy b/myapp/grails-app/controllers/myapp/UrlMappings.groovy
+index 92cc809b..1f47d23f 100644
+--- a/myapp/grails-app/controllers/myapp/UrlMappings.groovy
++++ b/myapp/grails-app/controllers/myapp/UrlMappings.groovy
+@@ -2,13 +2,13 @@ package myapp
+ 
+ class UrlMappings {
+     static mappings = {
+-        "/$controller/$action?/$id?(.$format)?"{
+-            constraints {
+-                // apply constraints here
+-            }
+-        }
+-
+-        "/"(view:"/index")
++        delete "/$controller/$id(.$format)?"(action:"delete")
++        get "/$controller(.$format)?"(action:"index")
++        get "/$controller/$id(.$format)?"(action:"show")
++        post "/$controller(.$format)?"(action:"save")
++        put "/$controller/$id(.$format)?"(action:"update")
++        patch "/$controller/$id(.$format)?"(action:"patch")
++        "/"(controller: 'application', action:'index')
+         "500"(view:'/error')
+         "404"(view:'/notFound')
+ 
+diff --git a/myapp/grails-app/taglib/.gitkeep b/myapp/grails-app/taglib/.gitkeep
+deleted file mode 100644
+index e69de29b..00000000
+diff --git a/myapp/grails-app/views/application/index.gson b/myapp/grails-app/views/application/index.gson
+new file mode 100644
+index 00000000..91f9cd7c
+--- /dev/null
++++ b/myapp/grails-app/views/application/index.gson
+@@ -0,0 +1,32 @@
++import grails.core.*
++import grails.util.*
++import grails.plugins.*
++import org.grails.core.artefact.*
++
++model {
++	GrailsApplication grailsApplication
++	GrailsPluginManager pluginManager
++}
++
++json {
++	message "Welcome to Grails!"
++    environment Environment.current.name
++    appversion grailsApplication.metadata.getApplicationVersion()
++    grailsversion GrailsUtil.grailsVersion
++    groovyversion GroovySystem.getVersion()
++    jvmversion System.getProperty('java.version')
++    reloadingagentenabled Environment.reloadingAgentEnabled
++    artefacts (
++        controllers: grailsApplication.getArtefactInfo(ControllerArtefactHandler.TYPE).classesByName.size(),
++        domains: grailsApplication.getArtefactInfo(DomainClassArtefactHandler.TYPE).classesByName.size(),
++        services: grailsApplication.getArtefactInfo(ServiceArtefactHandler.TYPE).classesByName.size()
++    )
++    controllers grailsApplication.getArtefacts(ControllerArtefactHandler.TYPE), { GrailsClass c ->
++        name c.fullName
++        logicalPropertyName c.logicalPropertyName
++    }
++    plugins pluginManager.allPlugins, { GrailsPlugin plugin ->
++    	name plugin.name
++    	version plugin.version
++    }
++}
+diff --git a/myapp/grails-app/views/error.gson b/myapp/grails-app/views/error.gson
+new file mode 100644
+index 00000000..314e80db
+--- /dev/null
++++ b/myapp/grails-app/views/error.gson
+@@ -0,0 +1,6 @@
++response.status 500
++
++json {
++    message "Internal server error"
++    error 500
++}
+\ No newline at end of file
+diff --git a/myapp/grails-app/views/error.gsp b/myapp/grails-app/views/error.gsp
+deleted file mode 100644
+index 4fd96204..00000000
+--- a/myapp/grails-app/views/error.gsp
++++ /dev/null
+@@ -1,33 +0,0 @@
+-<!doctype html>
+-<html>
+-    <head>
+-        <title><g:if env="development">Grails Runtime Exception</g:if><g:else>Error</g:else></title>
+-        <meta name="layout" content="main">
+-        <g:if env="development"><asset:stylesheet src="errors.css"/></g:if>
+-    </head>
+-    <body>
+-        <div class="container">
+-            <g:if env="development">
+-                <g:if test="${Throwable.isInstance(exception)}">
+-                    <g:renderException exception="${exception}" detailsClass="alert alert-danger" stackClass="bg-body-secondary" snippetClass="bg-body-secondary snippet" lineErrorClass="bg-danger" />
+-                </g:if>
+-                <g:elseif test="${request.getAttribute('javax.servlet.error.exception')}">
+-                    <g:renderException exception="${request.getAttribute('javax.servlet.error.exception')}" />
+-                </g:elseif>
+-                <g:else>
+-                    <ul class="errors">
+-                        <li>An error has occurred</li>
+-                        <li>Exception: ${exception}</li>
+-                        <li>Message: ${message}</li>
+-                        <li>Path: ${path}</li>
+-                    </ul>
+-                </g:else>
+-            </g:if>
+-            <g:else>
+-                <ul class="errors">
+-                    <li>An error has occurred</li>
+-                </ul>
+-            </g:else>
+-        </div>
+-    </body>
+-</html>
+diff --git a/myapp/grails-app/views/errors/_errors.gson b/myapp/grails-app/views/errors/_errors.gson
+new file mode 100644
+index 00000000..c1ae732d
+--- /dev/null
++++ b/myapp/grails-app/views/errors/_errors.gson
+@@ -0,0 +1,42 @@
++import org.springframework.validation.*
++
++/**
++ * Renders validation errors according to vnd.error: https://github.com/blongden/vnd.error
++ */
++model {
++    Errors errors
++}
++
++response.status UNPROCESSABLE_ENTITY
++
++json {
++    Errors errorsObject = (Errors)this.errors
++    def allErrors = errorsObject.allErrors
++    int errorCount = allErrors.size()
++    def resourcePath = g.link(resource:request.uri, absolute:false)
++    def resourceLink = g.link(resource:request.uri, absolute:true)
++    if(errorCount == 1) {
++        def error = allErrors.iterator().next()
++        message messageSource.getMessage(error, locale)
++        path resourcePath
++        _links {
++            self {
++                href resourceLink
++            }
++        }
++    }
++    else {
++        total errorCount
++        _embedded {
++            errors(allErrors) { ObjectError error ->
++                message messageSource.getMessage(error, locale)
++                path resourcePath
++                _links {
++                    self {
++                        href resourceLink
++                    }
++                }
++            }
++        }
++    }
++}
+diff --git a/myapp/grails-app/views/index.gsp b/myapp/grails-app/views/index.gsp
+deleted file mode 100644
+index c7544050..00000000
+--- a/myapp/grails-app/views/index.gsp
++++ /dev/null
+@@ -1,84 +0,0 @@
+-<%@ page import="grails.util.Environment; org.springframework.core.SpringVersion; org.springframework.boot.SpringBootVersion"
+-%><!doctype html>
+-<html>
+-<head>
+-    <meta name="layout" content="main"/>
+-    <title>Welcome to Grails</title>
+-</head>
+-<body>
+-<content tag="nav">
+-    <li class="nav-item dropdown">
+-        <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">Application Status <span class="caret"></span></a>
+-        <ul class="dropdown-menu">
+-            <li><a class="dropdown-item" href="#">Server: ${request.getServletContext().getServerInfo()}</a></li>
+-            <li><a class="dropdown-item" href="#">Host: ${InetAddress.getLocalHost()}</a></li>
+-            <li><a class="dropdown-item" href="#">Environment: ${Environment.current.name}</a></li>
+-            <li><a class="dropdown-item" href="#">App version:
+-                <g:meta name="info.app.version"/></a>
+-            </li>
+-            <li><a class="dropdown-item" href="#">App profile: ${grailsApplication.config.getProperty('grails.profile')}</a></li>
+-            <li><hr class="dropdown-divider"></li>
+-            <li><a class="dropdown-item" href="#">Grails version:
+-                <g:meta name="info.app.grailsVersion"/></a>
+-            </li>
+-            <li><a class="dropdown-item" href="#">Groovy version: ${GroovySystem.getVersion()}</a></li>
+-            <li><a class="dropdown-item" href="#">JVM version: ${System.getProperty('java.version')}</a></li>
+-            <li><a class="dropdown-item" href="#">Spring Boot version: ${SpringBootVersion.getVersion()}</a></li>
+-            <li><a class="dropdown-item" href="#">Spring version: ${SpringVersion.getVersion()}</a></li>
+-            <li><hr class="dropdown-divider"></li>
+-            <li><a class="dropdown-item" href="#">Reloading active: ${Environment.reloadingAgentEnabled}</a></li>
+-        </ul>
+-    </li>
+-    <li class="nav-item dropdown">
+-        <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">Artefacts <span class="caret"></span></a>
+-        <ul class="dropdown-menu">
+-            <li><a class="dropdown-item" href="#">Controllers: ${grailsApplication.controllerClasses.size()}</a></li>
+-            <li><a class="dropdown-item" href="#">Domains: ${grailsApplication.domainClasses.size()}</a></li>
+-            <li><a class="dropdown-item" href="#">Services: ${grailsApplication.serviceClasses.size()}</a></li>
+-            <li><a class="dropdown-item" href="#">Tag Libraries: ${grailsApplication.tagLibClasses.size()}</a></li>
+-        </ul>
+-    </li>
+-    <li class="nav-item dropdown">
+-        <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">Installed Plugins<span class="caret"></span></a>
+-        <ul class="dropdown-menu dropdown-menu-right">
+-            <g:each var="plugin" in="${applicationContext.getBean('pluginManager').allPlugins}">
+-                <li><a class="dropdown-item" href="#">${plugin.name} - ${plugin.version}</a></li>
+-            </g:each>
+-        </ul>
+-    </li>
+-</content>
+-
+-<div class="svg" role="presentation">
+-    <div class="bg-dark-subtle text-center">
+-        <asset:image src="grails-cupsonly-logo-white.svg" class="w-50"/>
+-    </div>
+-</div>
+-
+-<div id="content" role="main">
+-    <div class="container">
+-        <section class="row colset-2-its">
+-            <h1>Welcome to Grails</h1>
+-
+-            <p>
+-                Congratulations, you have successfully started your first Grails application! At the moment
+-                this is the default page, feel free to modify it to either redirect to a controller or display
+-                whatever content you may choose. Below is a list of controllers that are currently deployed in
+-                this application, click on each to execute its default action:
+-            </p>
+-
+-            <div id="controllers" role="navigation">
+-                <h2>Available Controllers:</h2>
+-                <ul>
+-                    <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">
+-                        <li class="controller">
+-                            <g:link controller="${c.logicalPropertyName}">${c.fullName}</g:link>
+-                        </li>
+-                    </g:each>
+-                </ul>
+-            </div>
+-        </section>
+-    </div>
+-</div>
+-
+-</body>
+-</html>
+diff --git a/myapp/grails-app/views/layouts/main.gsp b/myapp/grails-app/views/layouts/main.gsp
+deleted file mode 100644
+index 6f09bcc9..00000000
+--- a/myapp/grails-app/views/layouts/main.gsp
++++ /dev/null
+@@ -1,81 +0,0 @@
+-<!doctype html>
+-<html lang="en" class="no-js">
+-<head>
+-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+-    <title>
+-    <g:layoutTitle default="Grails"/>
+-    </title>
+-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+-    <asset:link rel="icon" href="favicon.ico" type="image/x-ico"/>
+-    <asset:stylesheet src="application.css"/>
+-    <g:layoutHead/>
+-</head>
+-
+-<body>
+-
+-<nav class="navbar navbar-expand-lg bg-body-tertiary">
+-    <div class="container-fluid">
+-        <a class="navbar-brand" href="/#"><asset:image class="w-75" src="grails.svg" alt="Grails Logo"/></a>
+-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+-            <span class="navbar-toggler-icon"></span>
+-        </button>
+-
+-        <div class="collapse navbar-collapse" aria-expanded="false" id="navbarContent">
+-            <ul class="navbar-nav">
+-                <g:pageProperty name="page.nav"/>
+-            </ul>
+-        </div>
+-    </div>
+-</nav>
+-
+-<g:layoutBody/>
+-
+-<div class="footer" role="contentinfo">
+-    <div class="container-fluid">
+-        <div class="row">
+-            <div class="card border-0 col-12 col-md">
+-                <div class="card-body">
+-                    <h6 class="card-title">
+-                        <a class="link-underline link-underline-opacity-0" href="https://guides.grails.org" target="_blank">
+-                            <asset:image src="advancedgrails.svg" alt="Grails Guides" class="me-2" width="34" />Grails Guides
+-                        </a>
+-                    </h6>
+-                    <p class="card-text">Building your first Grails app? Looking to add security, or create a Single-Page-App? Check out the <a href="https://guides.grails.org" target="_blank">Grails Guides</a> for step-by-step tutorials.</p>
+-                </div>
+-            </div>
+-            <div class="card border-0 col-12 col-md">
+-                <div class="card-body">
+-                    <h6 class="card-title">
+-                        <a class="link-underline link-underline-opacity-0" href="https://grails.apache.org/docs/" target="_blank">
+-                            <asset:image src="documentation.svg" alt="Grails Documentation" class="me-2" width="34" />Documentation
+-                        </a>
+-                    </h6>
+-                    <p class="card-text">Ready to dig in? You can find in-depth documentation for all the features of Grails in the <a href="https://grails.apache.org/docs/" target="_blank">User Guide</a>.</p>
+-                </div>
+-            </div>
+-            <div class="card border-0 col-12 col-md">
+-                <div class="card-body">
+-                    <h6 class="card-title">
+-                        <a class="link-underline link-underline-opacity-0" href="https://slack.grails.org" target="_blank">
+-                            <asset:image src="slack.svg" alt="Grails Slack" class="me-2" width="34" />Join the Community
+-                        </a>
+-                    </h6>
+-                    <p class="card-text">Get feedback and share your experience with other Grails developers in the community <a href="https://slack.grails.org" target="_blank">Slack channel</a>.</p>
+-                </div>
+-            </div>
+-        </div>
+-    </div>
+-</div>
+-
+-<div id="spinner" class="position-absolute top-0 end-0 p-1" style="display:none;">
+-    <div class="spinner-border spinner-border-sm" role="status">
+-        <span class="visually-hidden">Loading...</span>
+-    </div>
+-</div>
+-
+-
+-<asset:javascript src="application.js"/>
+-
+-</body>
+-</html>
+diff --git a/myapp/grails-app/views/notFound.gson b/myapp/grails-app/views/notFound.gson
+new file mode 100644
+index 00000000..1a710b26
+--- /dev/null
++++ b/myapp/grails-app/views/notFound.gson
+@@ -0,0 +1,6 @@
++response.status 404
++
++json {
++	message "Not Found"
++	error 404
++}
+\ No newline at end of file
+diff --git a/myapp/grails-app/views/notFound.gsp b/myapp/grails-app/views/notFound.gsp
+deleted file mode 100644
+index ca4f853f..00000000
+--- a/myapp/grails-app/views/notFound.gsp
++++ /dev/null
+@@ -1,20 +0,0 @@
+-<!doctype html>
+-<html>
+-    <head>
+-        <title>Page Not Found</title>
+-        <meta name="layout" content="main">
+-        <g:if env="development"><asset:stylesheet src="errors.css"/></g:if>
+-    </head>
+-    <body>
+-        <div id="content" role="main">
+-            <div class="container">
+-                <section class="row">
+-                    <div class="alert alert-danger" role="alert">
+-                        <h1>Error: Page Not Found (404)</h1>
+-                        <div><i class="bi-exclamation-circle"></i> Path: ${request.forwardURI}</div>
+-                    </div>
+-                </section>
+-            </div>
+-        </div>
+-    </body>
+-</html>
+diff --git a/myapp/grails-app/views/object/_object.gson b/myapp/grails-app/views/object/_object.gson
+new file mode 100644
+index 00000000..114568f7
+--- /dev/null
++++ b/myapp/grails-app/views/object/_object.gson
+@@ -0,0 +1,5 @@
++import groovy.transform.*
++
++@Field Object object
++
++json g.render(object)
+diff --git a/myapp/grails-forge-cli.yml b/myapp/grails-forge-cli.yml
+index 3bbba8eb..f6dcc1ef 100644
+--- a/myapp/grails-forge-cli.yml
++++ b/myapp/grails-forge-cli.yml
+@@ -1,8 +1,8 @@
+-applicationType: web
++applicationType: rest_api
+ defaultPackage: myapp
+-testFramework: spock
++reloading: devtools
+ sourceLanguage: groovy
+ buildTool: gradle
+ gormImpl: gorm-hibernate5
+ servletImpl: spring-boot-starter-tomcat
+-features: [app-name, asset-pipeline-grails, base, geb-with-testcontainers, gorm-hibernate5, gradle, grails-application, grails-console, grails-dependencies, grails-gorm-testing-support, grails-gradle-plugin, grails-gsp, grails-profiles, grails-url-mappings, grails-web, grails-web-testing-support, grails-wrapper, h2, logback, readme, scaffolding, spock, spring-boot-autoconfigure, spring-boot-devtools, spring-boot-starter, spring-boot-starter-tomcat, spring-resources, yaml]
++features: [app-name, base, gorm-hibernate5, gradle, grails-application, grails-console, grails-dependencies, grails-gorm-testing-support, grails-gradle-plugin, grails-profiles, grails-url-mappings, grails-web, grails-wrapper, h2, logback, mockito, readme, spock, spring-boot-autoconfigure, spring-boot-devtools, spring-boot-starter, spring-boot-starter-tomcat, spring-resources, views-json, views-json-testing-support, yaml]
+diff --git a/myapp/grails-wrapper.jar b/myapp/grails-wrapper.jar
+index baa69660aa9c4456f0588548efb01a406ae4fccb..fb3d439769317f1038e9bcdc2c4661c6f9306ca5 100644
+GIT binary patch
+delta 26323
+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
+C%v)Ii
+
+delta 24230
+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
+Y;9w5{`H`Swzuty>t)py?|26yn0JuL?<^TWy
+
+diff --git a/myapp/src/integration-test/groovy/myapp/MyappSpec.groovy b/myapp/src/integration-test/groovy/myapp/MyappSpec.groovy
+deleted file mode 100644
+index 3143de28..00000000
+--- a/myapp/src/integration-test/groovy/myapp/MyappSpec.groovy
++++ /dev/null
+@@ -1,19 +0,0 @@
+-package myapp
+-import grails.plugin.geb.ContainerGebSpec
+-import grails.testing.mixin.integration.Integration
+-
+-/**
+- * See https://grails.apache.org/docs/latest/guide/testing.html#functionalTesting and https://groovy.apache.org/geb/manual/current/
+- * for more instructions on how to write functional tests with Grails and Geb.
+- */
+-@Integration
+-class MyappSpec extends ContainerGebSpec {
+-
+-    void 'should display the correct title on the home page'() {
+-        when: 'visiting the home page'
+-            go('/')
+-
+-        then: 'the page title is correct'
+-            title == 'Welcome to Grails'
+-    }
+-}
