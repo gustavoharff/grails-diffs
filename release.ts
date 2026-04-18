@@ -126,9 +126,10 @@ function generateNewReleaseBranch() {
   // child_process.execSync(`sdk use grails ${version}`);
 
   const forgeFlag = semver.major(version) >= 7 ? "-t forge" : ""
+  const testFlag = semver.lt(version, '7.0.8', ) ? `--test=${TEST}` : ""
 
   child_process.execSync(
-    `grails ${forgeFlag} ${command} --servlet=${SERVLET} --jdk=${jdk} --gorm=${GORM} --test=${TEST} ${APP_NAME}`
+    `grails ${forgeFlag} ${command} --servlet=${SERVLET} --jdk=${jdk} --gorm=${GORM} ${testFlag} ${APP_NAME}`
   );
 
   // commit and push branch
